@@ -1,6 +1,11 @@
+import Board from "./components/Board";
 
-export default function Home() {
+const Home = () => {
   return (
-  <div> Trackiy</div>
+    <div className="min-h-screen bg-gray-100">
+      <Board />
+    </div>
   );
-}
+};
+
+export default Home;
