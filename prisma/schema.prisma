@@ -4,21 +4,23 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-generator client {
-  provider = "prisma-client-js"
-}
+
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
 
 model Ticket {
   id          String   @id @default(cuid())
   title       String
   description String
-  status      Status   @default(READY_TO_DEVELOP)
+  statusId    String
+  status      Status   @relation(fields: [statusId], references: [id])
   priority    Priority @default(MEDIUM)
   assignee    String?
   reporter    String?
@@ -26,15 +28,29 @@ model Ticket {
   updatedAt   DateTime @updatedAt
 }
 
-enum Status {
-  READY_TO_DEVELOP
-  IN_DEVELOPMENT
-  CODE_REVIEW
-  DONE
+model Status {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  tickets   Ticket[]
+  column    Column?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Priority {
   LOW
   MEDIUM
   HIGH
+}
+
+model Column {
+  id        String   @id @default(cuid())
+  title     String
+  statusId  String   @unique
+  status    Status   @relation(fields: [statusId], references: [id])
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("columns")
 }

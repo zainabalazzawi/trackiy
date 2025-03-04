@@ -1,17 +1,29 @@
-export type Status = 'READY_TO_DEVELOP' | 'IN_DEVELOPMENT' | 'CODE_REVIEW' | 'DONE';
 
 export interface Ticket {
   id: string;
   title: string;
   description: string;
-  status: Status;
-  assignee?: string;
+  statusId: string;
+  status: {
+    id: string;
+    name: string;
+  };
   priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  reporter?: string
+  assignee?: string;
+  reporter?: string;
 }
 
 export interface Column {
-  id: Status;
+  id: string;
   title: string;
+  statusId: string;
+  status: {
+    id: string;
+    name: string;
+  };
+  order: number;
   tickets: Ticket[];
-} 
+}
+
+export type TicketInput = Omit<Ticket, "id" | "createdAt" | "updatedAt">;
+
