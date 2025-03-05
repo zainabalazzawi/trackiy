@@ -11,35 +11,35 @@ interface ColumnProps {
 
 const Column = ({ column }: ColumnProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(column.title);
+  const [name, setName] = useState(column.name);
   const queryClient = useQueryClient();
 
-  const updateColumnTitle = async (id: string, newTitle: string) => {
+  const updateColumnName = async (id: string, newName: string) => {
     const response = await axios.patch('/api/columns', { 
       id, 
-      title: newTitle,
-      status: newTitle
+      name: newName,
+      status: newName
     });
     return response.data;
   }
 
   const updateColumnMutation = useMutation({
-    mutationFn: ({ id, title }: { id: string; title: string }) => 
-      updateColumnTitle(id, title),
+    mutationFn: ({ id, name }: { id: string; name: string }) => 
+      updateColumnName(id, name),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['columns'] });
       setIsEditing(false);
     },
   });
 
-  const handleTitleSubmit = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleNameSubmit = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       updateColumnMutation.mutate({ 
         id: column.id, 
-        title 
+        name 
       });
     } else if (e.key === 'Escape') {
-      setTitle(column.title);
+      setName(column.name);
       setIsEditing(false);
     }
   };
@@ -49,11 +49,11 @@ const Column = ({ column }: ColumnProps) => {
       <div className="mb-4">
         {isEditing ? (
           <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={handleTitleSubmit}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={handleNameSubmit}
             onBlur={() => {
-              setTitle(column.title);
+              setName(column.name);
               setIsEditing(false);
             }}
             autoFocus
@@ -63,7 +63,7 @@ const Column = ({ column }: ColumnProps) => {
             className="font- text-gray-700 cursor-pointer hover:text-gray-900"
             onClick={() => setIsEditing(true)}
           >
-            {column.title}
+            {column.name}
           </h2>
         )}
       </div>

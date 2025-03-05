@@ -61,7 +61,7 @@ const Board = () => {
             key={column.id}
             column={{
               ...column,
-              tickets: tickets.filter((ticket) => ticket.statusId === column.statusId),
+              tickets: tickets.filter((ticket) => ticket.columnId === column.id),
             }}
           />
         ))}

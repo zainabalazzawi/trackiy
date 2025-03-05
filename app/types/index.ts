@@ -1,8 +1,12 @@
-
 export interface Ticket {
   id: string;
   title: string;
   description: string;
+  columnId: string;
+  column: {
+    id: string;
+    name: string;
+  };
   statusId: string;
   status: {
     id: string;
@@ -15,7 +19,7 @@ export interface Ticket {
 
 export interface Column {
   id: string;
-  title: string;
+  name: string;
   statusId: string;
   status: {
     id: string;
@@ -25,5 +29,5 @@ export interface Column {
   tickets: Ticket[];
 }
 
-export type TicketInput = Omit<Ticket, "id" | "createdAt" | "updatedAt">;
+export type TicketInput = Omit<Ticket, "id" | "createdAt" | "updatedAt" | "column">;
 
