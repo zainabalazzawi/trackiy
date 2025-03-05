@@ -29,5 +29,11 @@ export interface Column {
   tickets: Ticket[];
 }
 
-export type TicketInput = Omit<Ticket, "id" | "createdAt" | "updatedAt" | "column">;
+export type TicketInput = {
+  title: string;
+  description: string;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  assignee?: string;
+  reporter?: string;
+};
 

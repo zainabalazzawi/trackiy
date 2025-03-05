@@ -27,7 +27,6 @@ import { TicketInput } from "../types";
 const defaultValues: TicketInput = {
   title: "",
   description: "",
-  status: "READY_TO_DEVELOP",
   priority: "MEDIUM",
   assignee:  "",
   reporter:  "",

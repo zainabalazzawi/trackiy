@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Column from "./Column";
+
 import CreateTicketForm from "./CreateTicketForm";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +26,7 @@ const Board = () => {
 
   const getColumns = async (): Promise<ColumnType[]> => {
     const response = await axios.get('/api/columns');
-    return response.data.sort((a, b) => a.order - b.order);
+    return response.data.sort((a:ColumnType, b: ColumnType) => a.order - b.order);
   };
 
   const { data: tickets = [] } = useQuery({

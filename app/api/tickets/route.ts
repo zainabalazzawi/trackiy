@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const firstColumn = await prisma.column.findFirst({
+    const firstColumn = await prisma.column.findFirstOrThrow({
       where: { order: 0 },
       include: { status: true },
     });
