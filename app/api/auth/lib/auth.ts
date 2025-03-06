@@ -6,6 +6,17 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcrypt"
 
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    };
+  }
+} 
+
 const prisma = new PrismaClient()
 export const authOptions: NextAuthOptions = {
   providers: [
