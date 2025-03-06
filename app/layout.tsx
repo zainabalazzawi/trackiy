@@ -3,8 +3,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import QueryProvider from "./providers/QueryProvider";
-import { SessionProvider } from "next-auth/react";
 import Header from "./components/Header";
 import ClientLayout from "./client-layout";
 
