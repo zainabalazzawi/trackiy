@@ -76,7 +76,7 @@ const SignupForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       }
     });
   };
-
+console.log(mutation.error)
   return (
     <div className="space-y-6">
       <Button
@@ -138,12 +138,11 @@ const SignupForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           >
             {mutation.isPending ? "Signing up..." : "Sign up"}
           </Button>
-
+{/* 
           {mutation.isError && (
             <div className="mt-4 p-4 text-red-800 border border-red-800 rounded text-center">
-              User with this email already exists
             </div>
-          )}
+          )} */}
           {mutation.isSuccess && (
             <div className="mt-4 p-4 text-green-800 border border-green-800 rounded text-center">
               Account created successfully!
