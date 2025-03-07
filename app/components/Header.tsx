@@ -1,27 +1,24 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SignInDialog from "./SignInDialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Header = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-
-  const showCreateGroupButton = pathname !== "/create-group";
-
-  const handleCreateGroupClick = () => {
-    router.push("/create-group");
-  };
 
   return (
     <div className="bg-background border-b">
