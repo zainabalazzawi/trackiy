@@ -19,16 +19,16 @@ type SignInDialogProps = {
   signUpDescription?: string;
 };
 
-const SignInDialog = ({ 
-  children, 
+const SignInDialog = ({
+  children,
   redirectUrl,
   signInDescription,
-  signUpDescription
+  signUpDescription,
 }: SignInDialogProps) => {
   const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
   const [open, setOpen] = useState(false);
-  
+
   const handleLoginSuccess = () => {
     setOpen(false);
     if (redirectUrl) {
@@ -38,9 +38,7 @@ const SignInDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isSignUp ? "Create Account" : "Sign In"}</DialogTitle>

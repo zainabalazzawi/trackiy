@@ -68,13 +68,9 @@ const SignupForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   const handleGoogleSignUp = () => {
     signIn("google", {
-      redirect: false,
-      callbackUrl: window.location.origin,
-    }).then((result) => {
-      if (result?.ok && !result?.error && onSuccess) {
-        onSuccess();
-      }
-    });
+      callbackUrl: "/"
+    })
+  
   };
 console.log(mutation.error)
   return (
