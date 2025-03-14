@@ -6,14 +6,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 interface CardProps {
   ticket: Ticket;
 }
 
 const TicketCard = ({ ticket }: CardProps) => {
+  const router = useRouter();
+
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card 
+      className="hover:shadow-md transition-shadow cursor-pointer" 
+      onClick={() => router.push(`/tickets/${ticket.id}`)}
+    >
       <CardHeader className="pb-2">
         <CardTitle className="text-base">{ticket.title}</CardTitle>
         <CardDescription className="text-sm line-clamp-2">

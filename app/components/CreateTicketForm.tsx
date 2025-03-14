@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import axios from "axios";
-import { TicketInput } from "../types";
+import { Ticket, TicketInput  } from "../types";
 
 
 const defaultValues: TicketInput = {
@@ -39,14 +39,14 @@ interface CreateTicketFormProps {
 
  const  CreateTicketForm = ({ onSuccess }: CreateTicketFormProps) => {
   const queryClient = useQueryClient();
-  const form = useForm<TicketInput>({
+  const form = useForm<Ticket>({
     defaultValues,
   });
 
   const { handleSubmit, reset, control } = form;
 
 
-  const createTicket = async (data: TicketInput) => {
+  const createTicket = async (data: Ticket) => {
     const response = await axios.post('/api/tickets', data);
     return response.data;
   }

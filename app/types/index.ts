@@ -12,7 +12,7 @@ export interface Ticket {
     id: string;
     name: string;
   };
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  priority: "LOW" | "MEDIUM" | "HIGH";
   assignee?: string;
   reporter?: string;
 }
@@ -28,12 +28,14 @@ export interface Column {
   order: number;
   tickets: Ticket[];
 }
+export type TicketInput = Omit<
+  Ticket,
+  "id" | "columnId" | "column" | "statusId" | "status"
+>;
 
-export type TicketInput = {
-  title: string;
-  description: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  assignee?: string;
-  reporter?: string;
-};
-
+export interface Status {
+  id: string;
+  name: string;
+  column: Column;
+  tickets: Ticket[];
+}
