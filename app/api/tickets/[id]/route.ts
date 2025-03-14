@@ -1,14 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request) {
   try {
+    const body = await request.json();
+    const { status, id } = body;
+
     const ticket = await prisma.ticket.findUnique({
       where: {
-        id: params.id,
+        id: id,
       },
       include: {
         status: true,
@@ -17,10 +17,7 @@ export async function GET(
     });
 
     if (!ticket) {
-      return NextResponse.json(
-        { error: "Ticket not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
     }
 
     return NextResponse.json(ticket);
@@ -33,20 +30,17 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { status } = body;
+    const { status, id } = body;
 
     const updatedTicket = await prisma.ticket.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: {
-        statusId: status, 
+        statusId: status,
       },
       include: {
         status: true,
@@ -56,10 +50,10 @@ export async function PATCH(
 
     return NextResponse.json(updatedTicket);
   } catch (error) {
-    console.error('Error updating ticket:', error);
+    console.error("Error updating ticket:", error);
     return NextResponse.json(
-      { error: 'Failed to update ticket' },
+      { error: "Failed to update ticket" },
       { status: 500 }
     );
   }
-} 
+}
