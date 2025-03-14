@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }>  }
+) {
   try {
-    const body = await request.json();
-    const { status, id } = body;
-
+    const { id } = await params;
     const ticket = await prisma.ticket.findUnique({
       where: {
         id: id,
