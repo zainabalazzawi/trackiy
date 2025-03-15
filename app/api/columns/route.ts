@@ -7,10 +7,13 @@ export async function GET() {
       include: {
         status: true,
         tickets: true
+      },
+      orderBy: {
+        order: 'asc'
       }
     });
 
-    if (columns.length === 0) {
+     if (columns.length === 0) {
       const defaultStatuses = [
         "Ready to Development",
         "In Development",
@@ -18,14 +21,32 @@ export async function GET() {
         "Done"
       ];
 
-      const createdStatuses = await Promise.all(
-        defaultStatuses.map(name => 
+      // First check if statuses exist
+      const existingStatuses = await prisma.status.findMany({
+        where: {
+          name: {
+            in: defaultStatuses
+          }
+        }
+      });
+
+      // Only create statuses that don't exist
+      const statusesToCreate = defaultStatuses.filter(
+        name => !existingStatuses.find(status => status.name === name)
+      );
+
+      const newStatuses = await Promise.all(
+        statusesToCreate.map(name => 
           prisma.status.create({ data: { name } })
         )
       );
 
+      // Combine existing and new statuses
+      const allStatuses = [...existingStatuses, ...newStatuses];
+
+      // Create columns for all statuses
       columns = await Promise.all(
-        createdStatuses.map((status, index) => 
+        allStatuses.map((status, index) => 
           prisma.column.create({
             data: {
               name: status.name,

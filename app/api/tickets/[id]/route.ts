@@ -40,12 +40,19 @@ export async function PATCH(
     const body = await request.json();
     const { status } = body;
 
+    const column = await prisma.column.findUniqueOrThrow({
+      where: {
+        statusId: status,
+      },
+    });
+
     const updatedTicket = await prisma.ticket.update({
       where: {
         id: id,
       },
       data: {
         statusId: status,
+        columnId: column.id
       },
       include: {
         status: true,
