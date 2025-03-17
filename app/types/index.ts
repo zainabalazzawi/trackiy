@@ -1,3 +1,5 @@
+
+export type Priority = "LOW" | "MEDIUM" | "HIGH";
 export interface Ticket {
   id: string;
   title: string;
@@ -11,8 +13,8 @@ export interface Ticket {
   status: {
     id: string;
     name: string;
-  };
-  priority: "LOW" | "MEDIUM" | "HIGH";
+  } | string;
+  priority: Priority,
   assignee?: string;
   reporter?: string;
 }

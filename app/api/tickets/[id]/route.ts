@@ -1,4 +1,6 @@
+import { Ticket } from "@/app/types";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -38,29 +40,26 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { status } = body;
-
-    const column = await prisma.column.findUniqueOrThrow({
-      where: {
-        statusId: status,
-      },
-    });
-
+    
     const updatedTicket = await prisma.ticket.update({
-      where: {
-        id: id,
-      },
+      where: { id },
       data: {
-        statusId: status,
-        columnId: column.id
+        description: body.description,
+        title: body.title,
+        priority: body.priority,
+        assignee: body.assignee,
+        ...(body.status && {
+          statusId: body.status,
+          columnId: (await prisma.column.findUniqueOrThrow({
+            where: { statusId: body.status }
+          })).id
+        })
       },
-      include: {
-        status: true,
-        column: true,
-      },
+      include: { status: true, column: true }
     });
 
     return NextResponse.json(updatedTicket);
+
   } catch (error) {
     console.error("Error updating ticket:", error);
     return NextResponse.json(
