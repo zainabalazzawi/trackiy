@@ -72,6 +72,7 @@ const TicketPage = () => {
               updateTicketMutation.mutate({ description: value })
             }
             label="Description"
+             type="textarea"
           />
         </div>
 

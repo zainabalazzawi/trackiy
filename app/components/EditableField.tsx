@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Pencil, X } from "lucide-react";
 
 interface EditableFieldProps {
   value: string;
   onSave: (value: string) => void;
   label?: string;
+  type?: 'input' | 'textarea';
 }
 
-const EditableField = ({ value, onSave, label }: EditableFieldProps) => {
+const EditableField = ({ value, onSave, label, type = 'input' }: EditableFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
 
@@ -21,12 +23,19 @@ const EditableField = ({ value, onSave, label }: EditableFieldProps) => {
   if (isEditing) {
     return (
       <div className="flex items-center gap-2">
-        {/* add Textarea */}
-        <Input
-          value={editedValue}
-          onChange={(e) => setEditedValue(e.target.value)}
-          autoFocus
-        />
+        {type === 'textarea' ? (
+          <Textarea
+            value={editedValue}
+            onChange={(e) => setEditedValue(e.target.value)}
+            autoFocus
+          />
+        ) : (
+          <Input
+            value={editedValue}
+            onChange={(e) => setEditedValue(e.target.value)}
+            autoFocus
+          />
+        )}
         <Button size="sm" onClick={handleSave}>
           Save
         </Button>

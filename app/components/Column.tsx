@@ -57,10 +57,11 @@ const Column = ({ column }: ColumnProps) => {
               setIsEditing(false);
             }}
             autoFocus
+            className='bg-gray-100'
           />
         ) : (
           <h2 
-            className="font- text-gray-700 cursor-pointer hover:text-gray-900"
+            className=" text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-100 rounded-lg pl-2 py-1"
             onClick={() => setIsEditing(true)}
           >
             {column.name}
