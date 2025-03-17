@@ -15,11 +15,11 @@ const StatusSelect = ({
   return (
     <div>
       <Select
-        defaultValue={ticket?.status.id}
+        defaultValue={ticket?.statusId}
         onValueChange={handleStatusChange}
       >
         <SelectTrigger className="w-[55%] mb-3 rounded">
-          <SelectValue placeholder={ticket?.status.id} />
+          <SelectValue placeholder={ticket?.statusId} />
         </SelectTrigger>
         <SelectContent>
           {statuses?.map((status: Status) => (
