@@ -1,3 +1,4 @@
+import { useDroppable } from '@dnd-kit/core';
 import { Column as ColumnType } from '../types';
 import TicketCard from './TicketCard';
 import axios from 'axios';
@@ -13,6 +14,14 @@ const Column = ({ column }: ColumnProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(column.name);
   const queryClient = useQueryClient();
+
+  const { setNodeRef, isOver } = useDroppable({
+    id: column.id,
+    data: {
+      type: 'column',
+      column
+    }
+  });
 
   const updateColumnName = async (id: string, newName: string) => {
     const response = await axios.patch('/api/columns', { 
@@ -45,7 +54,15 @@ const Column = ({ column }: ColumnProps) => {
   };
 
   return (
-    <div className="bg-gray-200 p-4 rounded-lg w-80">
+    <div 
+      ref={setNodeRef}
+      className={`
+        p-4 
+        rounded-lg 
+        w-80
+        ${isOver ? 'bg-gray-300' : 'bg-gray-200 '}
+      `}
+    >
       <div className="mb-4">
         {isEditing ? (
           <Input
