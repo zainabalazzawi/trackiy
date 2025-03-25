@@ -25,6 +25,7 @@ import axios from "axios";
 import { Ticket, Column as ColumnType } from "../types";
 import { useState } from "react";
 import TicketCard from "./TicketCard";
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 const Board = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -103,9 +104,12 @@ const Board = () => {
     }
 
     if (active.id !== over.id) {
+      const overTicket = tickets.find(t => t.id === over.id);
+      const targetColumnId = overTicket ? overTicket.columnId : over.id;
+
       updateTicketMutation.mutate({
         ticketId: active.id as string,
-        columnId: over.id as string,
+        columnId: targetColumnId as string,
       });
     }
 
@@ -128,23 +132,39 @@ const Board = () => {
         </Dialog>
       </div>
 
-      <DndContext
+      <DndContext 
         sensors={sensors}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         <div className="flex gap-6 overflow-x-auto pb-4">
-          {columns.map((column) => (
-            <Column
-              key={column.id}
-              column={{
-                ...column,
-                tickets: tickets.filter(
-                  (ticket) => ticket.columnId === column.id
-                ),
-              }}
-            />
-          ))}
+          {columns.map((column) => {
+            const columnTickets = tickets.filter(
+              (ticket) => ticket.columnId === column.id
+            );
+            
+            return (
+              <Column
+                key={column.id}
+                column={{
+                  ...column,
+                  tickets: columnTickets,
+                }}
+              >
+                <SortableContext 
+                  items={columnTickets.map(t => t.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {columnTickets.map((ticket) => (
+                    <TicketCard 
+                      key={ticket.id} 
+                      ticket={ticket}
+                    />
+                  ))}
+                </SortableContext>
+              </Column>
+            );
+          })}
         </div>
 
         <DragOverlay>

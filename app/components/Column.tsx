@@ -8,9 +8,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface ColumnProps {
   column: ColumnType;
+  children?: React.ReactNode;
 }
 
-const Column = ({ column }: ColumnProps) => {
+const Column = ({ column, children }: ColumnProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(column.name);
   const queryClient = useQueryClient();
@@ -86,9 +87,7 @@ const Column = ({ column }: ColumnProps) => {
         )}
       </div>
       <div className="space-y-3">
-        {column.tickets.map((ticket) => (
-          <TicketCard key={ticket.id} ticket={ticket} />
-        ))}
+        {children}
       </div>
     </div>
   );
