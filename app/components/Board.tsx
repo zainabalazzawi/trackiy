@@ -1,6 +1,14 @@
 "use client";
 
-import { DndContext, DragEndEvent, DragOverlay, useSensor, useSensors, PointerSensor, DragStartEvent } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  DragStartEvent,
+} from "@dnd-kit/core";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Column from "./Column";
 
@@ -16,7 +24,7 @@ import {
 import axios from "axios";
 import { Ticket, Column as ColumnType } from "../types";
 import { useState } from "react";
-import TicketCard from './TicketCard';
+import TicketCard from "./TicketCard";
 
 const Board = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,41 +34,59 @@ const Board = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5, 
+        distance: 5,
       },
     })
   );
 
   const getTickets = async (): Promise<Ticket[]> => {
-    const response = await axios.get('/api/tickets');
+    const response = await axios.get("/api/tickets");
     return response.data;
   };
 
   const getColumns = async (): Promise<ColumnType[]> => {
-    const response = await axios.get('/api/columns');
-    return response.data.sort((a:ColumnType, b: ColumnType) => a.order - b.order);
+    const response = await axios.get("/api/columns");
+    return response.data.sort(
+      (a: ColumnType, b: ColumnType) => a.order - b.order
+    );
   };
 
   const { data: tickets = [] } = useQuery({
     queryKey: ["tickets"],
-    queryFn: getTickets
+    queryFn: getTickets,
   });
 
   const { data: columns = [] } = useQuery({
-    queryKey: ['columns'],
-    queryFn: getColumns
+    queryKey: ["columns"],
+    queryFn: getColumns,
   });
 
   const updateTicketMutation = useMutation({
-    mutationFn: async ({ ticketId, columnId }: { ticketId: string; columnId: string }) => {
-      const column = columns.find(col => col.id === columnId);
+    mutationFn: async ({
+      ticketId,
+      columnId,
+    }: {
+      ticketId: string;
+      columnId: string;
+    }) => {
+      const column = columns.find((col) => col.id === columnId);
       const response = await axios.patch(`/api/tickets/${ticketId}`, {
-        status: column?.statusId
+        status: column?.statusId,
       });
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    onMutate: ({
+      ticketId,
+      columnId,
+    }: {
+      ticketId: string;
+      columnId: string;
+    }) => {
+      queryClient.setQueryData(["tickets"], (old: Ticket[]) => {
+        return old.map((ticket: Ticket) =>
+          ticket.id === ticketId ? { ...ticket, columnId } : ticket
+        );
+      });
     },
   });
 
@@ -70,7 +96,7 @@ const Board = () => {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (!over) {
       setActiveId(null);
       return;
@@ -79,7 +105,7 @@ const Board = () => {
     if (active.id !== over.id) {
       updateTicketMutation.mutate({
         ticketId: active.id as string,
-        columnId: over.id as string
+        columnId: over.id as string,
       });
     }
 
@@ -102,7 +128,7 @@ const Board = () => {
         </Dialog>
       </div>
 
-      <DndContext 
+      <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -113,7 +139,9 @@ const Board = () => {
               key={column.id}
               column={{
                 ...column,
-                tickets: tickets.filter((ticket) => ticket.columnId === column.id),
+                tickets: tickets.filter(
+                  (ticket) => ticket.columnId === column.id
+                ),
               }}
             />
           ))}
@@ -121,8 +149,8 @@ const Board = () => {
 
         <DragOverlay>
           {activeId ? (
-            <TicketCard 
-              ticket={tickets.find(t => t.id === activeId)!}
+            <TicketCard
+              ticket={tickets.find((t) => t.id === activeId)!}
               isDragging={true}
             />
           ) : null}
