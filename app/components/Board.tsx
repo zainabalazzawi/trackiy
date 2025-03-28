@@ -25,12 +25,19 @@ import axios from "axios";
 import { Ticket, Column as ColumnType } from "../types";
 import { useState } from "react";
 import TicketCard from "./TicketCard";
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { Check, Plus, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const Board = () => {
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isAddingColumn, setIsAddingColumn] = useState(false);
+  const [newColumnName, setNewColumnName] = useState("");
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -91,6 +98,18 @@ const Board = () => {
     },
   });
 
+  const createColumnMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const response = await axios.post("/api/columns", { name });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["columns"] });
+      setIsAddingColumn(false);
+      setNewColumnName("");
+    },
+  });
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
@@ -104,7 +123,7 @@ const Board = () => {
     }
 
     if (active.id !== over.id) {
-      const overTicket = tickets.find(t => t.id === over.id);
+      const overTicket = tickets.find((t) => t.id === over.id);
       const targetColumnId = overTicket ? overTicket.columnId : over.id;
 
       updateTicketMutation.mutate({
@@ -114,6 +133,12 @@ const Board = () => {
     }
 
     setActiveId(null);
+  };
+
+  const handleAddColumn = () => {
+    if (newColumnName.trim()) {
+      createColumnMutation.mutate(newColumnName);
+    }
   };
 
   return (
@@ -132,7 +157,7 @@ const Board = () => {
         </Dialog>
       </div>
 
-      <DndContext 
+      <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -142,7 +167,7 @@ const Board = () => {
             const columnTickets = tickets.filter(
               (ticket) => ticket.columnId === column.id
             );
-            
+
             return (
               <Column
                 key={column.id}
@@ -151,20 +176,69 @@ const Board = () => {
                   tickets: columnTickets,
                 }}
               >
-                <SortableContext 
-                  items={columnTickets.map(t => t.id)}
+                <SortableContext
+                  items={columnTickets.map((t) => t.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   {columnTickets.map((ticket) => (
-                    <TicketCard 
-                      key={ticket.id} 
-                      ticket={ticket}
-                    />
+                    <TicketCard key={ticket.id} ticket={ticket} />
                   ))}
                 </SortableContext>
               </Column>
             );
           })}
+
+          <div className="w-80">
+            {isAddingColumn ? (
+              <div className="p-4 rounded-lg bg-gray-200">
+                <div className="flex flex-col gap-2">
+                  <Input
+                    value={newColumnName}
+                    onChange={(e) => setNewColumnName(e.target.value)}
+                    placeholder="Enter column name"
+                    className="bg-white"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleAddColumn();
+                      } else if (e.key === "Escape") {
+                        setIsAddingColumn(false);
+                        setNewColumnName("");
+                      }
+                    }}
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={handleAddColumn}
+                      className="h-6 w-6"
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        setIsAddingColumn(false);
+                        setNewColumnName("");
+                      }}
+                      className="h-6 w-6"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAddingColumn(true)}
+                className="w-full h-full min-h-[100px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+              >
+                <Plus className="h-6 w-6 text-gray-400" />
+              </button>
+            )}
+          </div>
         </div>
 
         <DragOverlay>
