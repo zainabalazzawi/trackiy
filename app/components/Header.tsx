@@ -2,7 +2,8 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Clock, Layout } from "lucide-react";
+import Link from "next/link";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,34 @@ const Header = () => {
   return (
     <div className="bg-background border-b">
       <div className="mx-auto px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-6">Trackiy</div>
+        <div className="flex items-center gap-6">
+          <Link href="/" className="font-semibold text-xl">
+            Trackiy
+          </Link>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2">
+                Projects
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuItem onClick={() => router.push('/projects/recent')}>
+                <Clock className="mr-2 h-4 w-4" />
+                Recent projects
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/projects')}>
+                <Layout className="mr-2 h-4 w-4" />
+                View all projects
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/projects/new')}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create project
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         <div className="flex items-center">
           {session && <div className="mr-3">Welcome {session.user?.name}</div>}
