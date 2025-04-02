@@ -45,7 +45,7 @@ const Header = () => {
                 <Layout className="mr-2 h-4 w-4" />
                 View all projects
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/projects/new')}>
+              <DropdownMenuItem onClick={() => router.push('/projects/create')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create project
               </DropdownMenuItem>

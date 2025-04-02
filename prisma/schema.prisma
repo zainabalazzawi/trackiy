@@ -46,6 +46,8 @@ model Column {
   order     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?
 
   @@map("columns")
 }
@@ -91,6 +93,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  Project       Project[]
 }
 
 model VerificationRequest {
@@ -102,4 +105,23 @@ model VerificationRequest {
   updatedAt  DateTime @updatedAt
 
   @@unique([identifier, token])
+}
+
+enum ProjectType {
+  SERVICE_MANAGEMENT
+  TEAM_MANAGED_SOFTWARE
+}
+
+model Project {
+  id          String      @id @default(cuid())
+  name        String
+  key         String      @unique
+  type        ProjectType
+  description String?
+  columns     Column[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdBy   User        @relation(fields: [userId], references: [id])
+  userId      String
+  lead        String?
 }

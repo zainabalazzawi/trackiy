@@ -143,7 +143,7 @@ const Board = () => {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-8">
+      {/* <div className="flex justify-between items-center mb-8">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button>Add New Ticket</Button>
@@ -249,7 +249,7 @@ const Board = () => {
             />
           ) : null}
         </DragOverlay>
-      </DndContext>
+      </DndContext> */}
     </div>
   );
 };
