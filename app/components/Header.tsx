@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 const Header = () => {
   const { data: session } = useSession();
@@ -26,7 +27,14 @@ const Header = () => {
       <div className="mx-auto px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-6">
           <Link href="/" className="font-semibold text-xl">
-            Trackiy
+          <Image
+            src="/Trackiy.svg"
+            alt="Logo"
+            width={100}
+            height={100}
+            className="cursor-pointer"
+            onClick={() => router.push("/")}
+          />
           </Link>
 
           <DropdownMenu>

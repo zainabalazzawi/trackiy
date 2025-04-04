@@ -15,7 +15,21 @@ const CreateProject = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>(null);
   const [showSteps, setShowSteps] = useState(false);
 
+  const getTemplateInfo = () => {
+    if (selectedTemplate === 'kanban') {
+      return {
+        title: "Kanban",
+        description: "Visualise and advance your project forward using issues on a powerful board."
+      };
+    }
+    return {
+      title: "Customer service management",
+      description: "Deliver great service experiences fast with a template designed to help your external customers."
+    };
+  };
+
   if (showSteps) {
+    const templateInfo = getTemplateInfo();
     return (
       <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
         <Button
@@ -40,13 +54,10 @@ const CreateProject = () => {
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center"></div>
-
                   <div className="flex flex-col items-start">
-                    <h3 className="font-semibold text-lg">Kanban</h3>
-
+                    <h3 className="font-semibold text-lg">{templateInfo.title}</h3>
                     <p className="text-gray-500 text-sm">
-                      Visualise and advance your project forward using issues on
-                      a powerful board.
+                      {templateInfo.description}
                     </p>
                   </div>
                 </div>
@@ -78,7 +89,7 @@ const CreateProject = () => {
                   complexity.
                 </p>
                 <Button
-                  className="w-full bg-purple-900 hover:bg-purple-700"
+                  className="w-full bg-purple-100 text-purple-900 hover:bg-purple-800 hover:text-white"
                   onClick={() => console.log("Selected team-managed")}
                 >
                   Select a team-managed project
