@@ -5,31 +5,158 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import InfoCard from "@/app/components/InfoCard";
 
 type ProjectCategory = "software" | "service" | null;
 type TemplateType = "kanban" | "customer-service" | null;
+type ProjectType = "team-managed" | "company-managed" | null;
 
 const CreateProject = () => {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState<ProjectCategory>(null);
+  const [selectedCategory, setSelectedCategory] =
+    useState<ProjectCategory>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>(null);
   const [showSteps, setShowSteps] = useState(false);
+  const [showProjectDetails, setShowProjectDetails] = useState(false);
+  const [projectType, setProjectType] = useState<ProjectType>(null);
+  const [projectName, setProjectName] = useState("");
+  const [projectKey, setProjectKey] = useState("");
 
   const getTemplateInfo = () => {
-    if (selectedTemplate === 'kanban') {
+    if (selectedTemplate === "kanban") {
       return {
         title: "Kanban",
-        description: "Visualise and advance your project forward using issues on a powerful board."
+        description:
+          "Visualise and advance your project forward using issues on a powerful board.",
       };
     }
     return {
       title: "Customer service management",
-      description: "Deliver great service experiences fast with a template designed to help your external customers."
+      description:
+        "Deliver great service experiences fast with a template designed to help your external customers.",
     };
   };
+  const getTProjectType = () => {
+    if (projectType === "team-managed") {
+      return {
+        title: "Team-managed",
+        description:
+          "Control your own working processes and practices in a self-contained space.",
+      };
+    }
+    return {
+      title: "Company-managed",
+      description:
+        "Work with other teams across many projects in a standard way.",
+    };
+  };
+  const templateInfo = getTemplateInfo();
+  const projectTypeInfo = getTProjectType();
+
+  const handleCreateProject = async () => {
+    try {
+      const response = await fetch("/api/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: projectName,
+          key: projectKey,
+          type: projectType,
+          template: selectedTemplate,
+        }),
+      });
+
+      if (response.ok) {
+        router.push("/projects");
+      } else {
+        console.error("Failed to create project");
+      }
+    } catch (error) {
+      console.error("Error creating project:", error);
+    }
+  };
+
+  if (showProjectDetails) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
+        <Button
+          variant="ghost"
+          onClick={() => setShowProjectDetails(false)}
+          className="my-6 ml-6 text-gray-600 hover:text-gray-900"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Back to project types
+        </Button>
+
+        <div className="flex flex-row mx-auto w-[80%] gap-4">
+          <div className="p-6">
+            <h1 className="text-2xl font-semibold mb-2">Add project details</h1>
+            <p className="text-gray-500 mb-8">
+              Explore what's possible when you collaborate with your team. Edit
+              project details anytime in project settings.
+            </p>
+
+            <div className="flex gap-8">
+              <div className="space-y-4 w-[70%]">
+                <div>
+                  <Label className="mb-2">Name *</Label>
+                  <Input
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    placeholder="Try a team name, project goal, or inspiring idea"
+                  />
+                </div>
+
+                <div>
+                  <Label className="mb-2">Key *</Label>
+                  <Input
+                    value={projectKey}
+                    onChange={(e) =>
+                      setProjectKey(e.target.value.toUpperCase())
+                    }
+                    className="uppercase"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="h-[40%]">
+            <InfoCard
+              title={templateInfo.title}
+              description={templateInfo.description}
+              changeLabel="Change template"
+              label="Template"
+            />
+            <InfoCard
+              title={projectTypeInfo.title}
+              description={projectTypeInfo.description}
+              changeLabel="Change type"
+              label="Type"
+
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 mt-8 w-[80%] mx-auto">
+          <Button variant="outline" onClick={() => router.push("/projects")}>
+            Cancel
+          </Button>
+          <Button
+            disabled={!projectName || !projectKey}
+            onClick={handleCreateProject}
+          >
+            Create project
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (showSteps) {
-    const templateInfo = getTemplateInfo();
     return (
       <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
         <Button
@@ -50,20 +177,10 @@ const CreateProject = () => {
               <h1 className="text-2xl font-semibold">Project template</h1>
             </div>
 
-            <Card className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center"></div>
-                  <div className="flex flex-col items-start">
-                    <h3 className="font-semibold text-lg">{templateInfo.title}</h3>
-                    <p className="text-gray-500 text-sm">
-                      {templateInfo.description}
-                    </p>
-                  </div>
-                </div>
-                <Button variant="outline">Change template</Button>
-              </div>
-            </Card>
+            <InfoCard
+              title={templateInfo.title}
+              description={templateInfo.description}
+            />
           </div>
 
           {/* Step 2: Project Type */}
@@ -90,11 +207,13 @@ const CreateProject = () => {
                 </p>
                 <Button
                   className="w-full bg-purple-100 text-purple-900 hover:bg-purple-800 hover:text-white"
-                  onClick={() => console.log("Selected team-managed")}
+                  onClick={() => {
+                    setProjectType("team-managed");
+                    setShowProjectDetails(true);
+                  }}
                 >
                   Select a team-managed project
                 </Button>
-            
               </div>
 
               {/* Company-managed option */}
@@ -112,7 +231,10 @@ const CreateProject = () => {
                 <Button
                   variant="outline"
                   className="w-full border-blue-600 text-blue-900 hover:bg-blue-50"
-                  onClick={() => console.log("Selected company-managed")}
+                  onClick={() => {
+                    setProjectType("company-managed");
+                    setShowProjectDetails(true);
+                  }}
                 >
                   Select a company-managed project
                 </Button>
@@ -129,30 +251,42 @@ const CreateProject = () => {
       {/* Sidebar */}
       <div className="w-[20%] border-r bg-white">
         <div className="p-4 border-b">
-          <Button variant="ghost" className="w-full justify-start" onClick={() => router.back()}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => router.back()}
+          >
             <X className="h-4 w-4 mr-2" />
             Project templates
           </Button>
         </div>
         <div className="p-4">
-          <h2 className="text-sm font-medium text-gray-500 mb-2">Made for you</h2>
+          <h2 className="text-sm font-medium text-gray-500 mb-2">
+            Made for you
+          </h2>
           <div className="space-y-1">
             <Button
               variant="ghost"
-              className={`w-full justify-start ${selectedCategory === 'software' ? 'bg-blue-50 text-blue-600' : ''}`}
+              className={`w-full justify-start ${
+                selectedCategory === "software"
+                  ? "bg-blue-50 text-blue-600"
+                  : ""
+              }`}
               onClick={() => {
-                setSelectedCategory('software');
-                setSelectedTemplate(null); 
+                setSelectedCategory("software");
+                setSelectedTemplate(null);
               }}
             >
               Software development
             </Button>
             <Button
               variant="ghost"
-              className={`w-full justify-start ${selectedCategory === 'service' ? 'bg-blue-50 text-blue-600' : ''}`}
+              className={`w-full justify-start ${
+                selectedCategory === "service" ? "bg-blue-50 text-blue-600" : ""
+              }`}
               onClick={() => {
-                setSelectedCategory('service');
-                setSelectedTemplate(null); 
+                setSelectedCategory("service");
+                setSelectedTemplate(null);
               }}
             >
               Service management
@@ -166,32 +300,38 @@ const CreateProject = () => {
         {selectedCategory && (
           <div className="w-[80%] mx-auto">
             <h1 className="text-2xl font-semibold mb-2">
-              {selectedCategory === 'software' ? 'Software development' : 'Service management'}
+              {selectedCategory === "software"
+                ? "Software development"
+                : "Service management"}
             </h1>
             <p className="text-gray-500 mb-8">
-              {selectedCategory === 'software' 
-                ? 'Plan, track and release great software. Get up and running quickly with templates that suit the way your team works. Plus, integrations for DevOps teams that want to connect work across their entire toolchain.'
-                : 'Empower every team, from IT to HR to marketing, as they collect, prioritize, assign, and track incoming requests with ease. Get up and running quickly by selecting one of our tailored templates that include pre-configured workflows, forms, and settings based on service management best practices.'}
+              {selectedCategory === "software"
+                ? "Plan, track and release great software. Get up and running quickly with templates that suit the way your team works. Plus, integrations for DevOps teams that want to connect work across their entire toolchain."
+                : "Empower every team, from IT to HR to marketing, as they collect, prioritize, assign, and track incoming requests with ease. Get up and running quickly by selecting one of our tailored templates that include pre-configured workflows, forms, and settings based on service management best practices."}
             </p>
 
             <div className="space-y-4">
-              {selectedCategory === 'software' ? (
+              {selectedCategory === "software" ? (
                 <>
-                  <Card 
+                  <Card
                     className={`p-6 hover:shadow-md cursor-pointer border-2 transition-colors ${
-                      selectedTemplate === 'kanban' ? 'border-emerald-950' : 'border-transparent'
+                      selectedTemplate === "kanban"
+                        ? "border-emerald-950"
+                        : "border-transparent"
                     }`}
-                    onClick={() => setSelectedTemplate('kanban')}
+                    onClick={() => setSelectedTemplate("kanban")}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex gap-4">
-                        <div className="w-16 h-16 bg-blue-50 rounded flex items-center justify-center">
-                        </div>
+                        <div className="w-16 h-16 bg-blue-50 rounded flex items-center justify-center"></div>
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-semibold text-lg">Kanban</h3>
                           </div>
-                          <p className="text-gray-500">Visualise and advance your project forward using issues on a powerful board.</p>
+                          <p className="text-gray-500">
+                            Visualise and advance your project forward using
+                            issues on a powerful board.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -199,21 +339,27 @@ const CreateProject = () => {
                 </>
               ) : (
                 <>
-                  <Card 
+                  <Card
                     className={`p-6 hover:shadow-md cursor-pointer border-2 transition-colors ${
-                      selectedTemplate === 'customer-service' ? 'border-emerald-950' : 'border-transparent'
+                      selectedTemplate === "customer-service"
+                        ? "border-emerald-950"
+                        : "border-transparent"
                     }`}
-                    onClick={() => setSelectedTemplate('customer-service')}
+                    onClick={() => setSelectedTemplate("customer-service")}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex gap-4">
-                        <div className="w-16 h-16 bg-blue-50 rounded flex items-center justify-center">
-                        </div>
+                        <div className="w-16 h-16 bg-blue-50 rounded flex items-center justify-center"></div>
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg">Customer service management</h3>
+                            <h3 className="font-semibold text-lg">
+                              Customer service management
+                            </h3>
                           </div>
-                          <p className="text-gray-500">Deliver great service experiences fast with a template designed to help your external customers.</p>
+                          <p className="text-gray-500">
+                            Deliver great service experiences fast with a
+                            template designed to help your external customers.
+                          </p>
                         </div>
                       </div>
                     </div>
