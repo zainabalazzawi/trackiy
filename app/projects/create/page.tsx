@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import InfoCard from "@/app/components/InfoCard";
+import { useProjects } from "@/app/hooks/useProjects";
 
 type ProjectCategory = "software" | "service" | null;
 type TemplateType = "kanban" | "customer-service" | null;
@@ -23,6 +24,7 @@ const CreateProject = () => {
   const [projectType, setProjectType] = useState<ProjectType>(null);
   const [projectName, setProjectName] = useState("");
   const [projectKey, setProjectKey] = useState("");
+  const { createProject, isCreating } = useProjects();
 
   const getTemplateInfo = () => {
     if (selectedTemplate === "kanban") {
@@ -57,26 +59,14 @@ const CreateProject = () => {
 
   const handleCreateProject = async () => {
     try {
-      const response = await fetch("/api/projects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: projectName,
-          key: projectKey,
-          type: projectType,
-          template: selectedTemplate,
-        }),
+      await createProject({
+        name: projectName,
+        key: projectKey,
+        type: projectType === "team-managed" ? "team-managed" : "service-management",
       });
-
-      if (response.ok) {
-        router.push("/projects");
-      } else {
-        console.error("Failed to create project");
-      }
+      router.push("/projects");
     } catch (error) {
-      console.error("Error creating project:", error);
+      console.error("Failed to create project:", error);
     }
   };
 

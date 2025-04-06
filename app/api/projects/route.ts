@@ -67,17 +67,31 @@ export async function POST(request: Request) {
       "Done"
     ];
     
-    await Promise.all(
-      defaultColumns.map(async (columnName, index) => {
-        // Create status first
-        const status = await prisma.status.create({
-          data: { name: columnName },
+    // First, get or create all statuses
+    const statuses = await Promise.all(
+      defaultColumns.map(async (columnName) => {
+        // Try to find existing status
+        const existingStatus = await prisma.status.findFirst({
+          where: { name: columnName }
         });
 
-        // Then create column
+        if (existingStatus) {
+          return existingStatus;
+        }
+
+        // Create new status if it doesn't exist
+        return prisma.status.create({
+          data: { name: columnName }
+        });
+      })
+    );
+
+    // Then create columns with the statuses
+    await Promise.all(
+      statuses.map((status, index) => {
         return prisma.column.create({
           data: {
-            name: columnName,
+            name: status.name,
             statusId: status.id,
             order: index,
             projectId: project.id,
@@ -86,11 +100,81 @@ export async function POST(request: Request) {
       })
     );
 
-    return NextResponse.json(project);
+    // Fetch the complete project with columns
+    const completeProject = await prisma.project.findUnique({
+      where: { id: project.id },
+      include: {
+        columns: {
+          include: {
+            tickets: true,
+            status: true
+          },
+          orderBy: {
+            order: 'asc'
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(completeProject);
   } catch (error) {
     console.error("Error creating project:", error);
     return NextResponse.json(
       { error: "Failed to create project" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const projects = await prisma.project.findMany({
+      where: {
+        userId: session.user.id
+      },
+      include: {
+        columns: {
+          include: {
+            tickets: true,
+            status: true
+          },
+          orderBy: {
+            order: 'asc'
+          }
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(projects);
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch projects" },
       { status: 500 }
     );
   }
