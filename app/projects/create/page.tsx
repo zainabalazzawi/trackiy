@@ -10,9 +10,9 @@ import { Label } from "@/components/ui/label";
 import InfoCard from "@/app/components/InfoCard";
 import { useProjects } from "@/app/hooks/useProjects";
 
-type ProjectCategory = "software" | "service" | null;
-type TemplateType = "kanban" | "customer-service" | null;
-type ProjectType = "team-managed" | "company-managed" | null;
+export type ProjectCategory = "SOFTWARE" | "SERVICE" | null;
+export type TemplateType = "KANBAN" | "CUSTOMER_SERVICE" | null;
+export type ProjectType = "TEAM_MANAGED" | "COMPANY_MANAGED" | null;
 
 const CreateProject = () => {
   const router = useRouter();
@@ -27,7 +27,7 @@ const CreateProject = () => {
   const { createProject, isCreating } = useProjects();
 
   const getTemplateInfo = () => {
-    if (selectedTemplate === "kanban") {
+    if (selectedTemplate === "KANBAN") {
       return {
         title: "Kanban",
         description:
@@ -41,7 +41,7 @@ const CreateProject = () => {
     };
   };
   const getTProjectType = () => {
-    if (projectType === "team-managed") {
+    if (projectType === "TEAM_MANAGED") {
       return {
         title: "Team-managed",
         description:
@@ -62,7 +62,9 @@ const CreateProject = () => {
       await createProject({
         name: projectName,
         key: projectKey,
-        type: projectType === "team-managed" ? "team-managed" : "service-management",
+        type: projectType === "TEAM_MANAGED" ? "TEAM_MANAGED" : "COMPANY_MANAGED",
+        template: selectedTemplate === "KANBAN" ? "KANBAN" : "CUSTOMER_SERVICE",
+        category: selectedCategory === 'SOFTWARE' ? 'SOFTWARE' : 'SERVICE'
       });
       router.push("/projects");
     } catch (error) {
@@ -198,7 +200,7 @@ const CreateProject = () => {
                 <Button
                   className="w-full bg-purple-100 text-purple-900 hover:bg-purple-800 hover:text-white"
                   onClick={() => {
-                    setProjectType("team-managed");
+                    setProjectType("TEAM_MANAGED");
                     setShowProjectDetails(true);
                   }}
                 >
@@ -222,7 +224,7 @@ const CreateProject = () => {
                   variant="outline"
                   className="w-full border-blue-600 text-blue-900 hover:bg-blue-50"
                   onClick={() => {
-                    setProjectType("company-managed");
+                    setProjectType("COMPANY_MANAGED");
                     setShowProjectDetails(true);
                   }}
                 >
@@ -258,12 +260,12 @@ const CreateProject = () => {
             <Button
               variant="ghost"
               className={`w-full justify-start ${
-                selectedCategory === "software"
+                selectedCategory === "SOFTWARE"
                   ? "bg-blue-50 text-blue-600"
                   : ""
               }`}
               onClick={() => {
-                setSelectedCategory("software");
+                setSelectedCategory("SOFTWARE");
                 setSelectedTemplate(null);
               }}
             >
@@ -272,10 +274,10 @@ const CreateProject = () => {
             <Button
               variant="ghost"
               className={`w-full justify-start ${
-                selectedCategory === "service" ? "bg-blue-50 text-blue-600" : ""
+                selectedCategory === "SERVICE" ? "bg-blue-50 text-blue-600" : ""
               }`}
               onClick={() => {
-                setSelectedCategory("service");
+                setSelectedCategory("SERVICE");
                 setSelectedTemplate(null);
               }}
             >
@@ -290,26 +292,26 @@ const CreateProject = () => {
         {selectedCategory && (
           <div className="w-[80%] mx-auto">
             <h1 className="text-2xl font-semibold mb-2">
-              {selectedCategory === "software"
+              {selectedCategory === "SOFTWARE"
                 ? "Software development"
                 : "Service management"}
             </h1>
             <p className="text-gray-500 mb-8">
-              {selectedCategory === "software"
+              {selectedCategory === "SOFTWARE"
                 ? "Plan, track and release great software. Get up and running quickly with templates that suit the way your team works. Plus, integrations for DevOps teams that want to connect work across their entire toolchain."
                 : "Empower every team, from IT to HR to marketing, as they collect, prioritize, assign, and track incoming requests with ease. Get up and running quickly by selecting one of our tailored templates that include pre-configured workflows, forms, and settings based on service management best practices."}
             </p>
 
             <div className="space-y-4">
-              {selectedCategory === "software" ? (
+              {selectedCategory === "SOFTWARE" ? (
                 <>
                   <Card
                     className={`p-6 hover:shadow-md cursor-pointer border-2 transition-colors ${
-                      selectedTemplate === "kanban"
+                      selectedTemplate === "KANBAN"
                         ? "border-emerald-950"
                         : "border-transparent"
                     }`}
-                    onClick={() => setSelectedTemplate("kanban")}
+                    onClick={() => setSelectedTemplate("KANBAN")}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex gap-4">
@@ -331,11 +333,11 @@ const CreateProject = () => {
                 <>
                   <Card
                     className={`p-6 hover:shadow-md cursor-pointer border-2 transition-colors ${
-                      selectedTemplate === "customer-service"
+                      selectedTemplate === "CUSTOMER_SERVICE"
                         ? "border-emerald-950"
                         : "border-transparent"
                     }`}
-                    onClick={() => setSelectedTemplate("customer-service")}
+                    onClick={() => setSelectedTemplate("CUSTOMER_SERVICE")}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex gap-4">

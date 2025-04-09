@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Project } from "@prisma/client"; // You might need to create a types file
+
 
 export function useProjects() {
   const queryClient = useQueryClient();
@@ -17,7 +17,9 @@ export function useProjects() {
     mutationFn: async (projectData: {
       name: string;
       key: string;
-      type: "team-managed" | "service-management";
+      type: "TEAM_MANAGED" | "COMPANY_MANAGED";
+      template: "KANBAN" | "CUSTOMER_SERVICE";
+      category: "SOFTWARE" | "SERVICE"
     }) => {
       const response = await axios.post("/api/projects", projectData);
       return response.data;

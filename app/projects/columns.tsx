@@ -14,7 +14,7 @@ export type Project = {
   id: string
   name: string
   key: string
-  type: "TEAM_MANAGED_SOFTWARE" | "SERVICE_MANAGEMENT"
+  type: "TEAM_MANAGED" | "COMPANY_MANAGED"
   createdBy: {
     id: string
     name: string | null
@@ -59,7 +59,7 @@ export const columns: ColumnDef<Project>[] = [
     header: "Type",
     cell: ({ row }) => {
       const type = row.getValue("type") as string
-      return type === "TEAM_MANAGED_SOFTWARE" ? "Team-managed software" : "Service management"
+      return type === "TEAM_MANAGED" ? "Team-managed " : "Service-management"
     },
   },
   {

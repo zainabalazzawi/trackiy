@@ -108,9 +108,19 @@ model VerificationRequest {
   @@unique([identifier, token])
 }
 
+enum ProjectCategory {
+  SERVICE
+  SOFTWARE
+}
+
 enum ProjectType {
-  SERVICE_MANAGEMENT
-  TEAM_MANAGED_SOFTWARE
+  TEAM_MANAGED
+  COMPANY_MANAGED
+}
+
+enum ProjectTemplate {
+  KANBAN
+  CUSTOMER_SERVICE
 }
 
 model Project {
@@ -119,6 +129,8 @@ model Project {
   key         String      @unique
   type        ProjectType
   description String?
+  template    ProjectTemplate 
+  category    ProjectCategory
   columns     Column[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt

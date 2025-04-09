@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, key, type } = body;
+    const { name, key, type, template, category } = body;
 
     // Validate required fields
     if (!name || !key || !type) {
@@ -42,7 +42,9 @@ export async function POST(request: Request) {
       data: {
         name,
         key: key.toUpperCase(),
-        type: type === "team-managed" ? "TEAM_MANAGED_SOFTWARE" : "SERVICE_MANAGEMENT",
+        category: category === "SOFTWARE" ? "SOFTWARE" : "SERVICE",
+        type: type === "TEAM_MANAGED" ? "TEAM_MANAGED" : "COMPANY_MANAGED",
+        template: template  === "KANBAN" ? "KANBAN" : "CUSTOMER_SERVICE",
         userId: session.user.id,
         lead: session.user.id,
       },
