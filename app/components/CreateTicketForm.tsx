@@ -34,10 +34,11 @@ const defaultValues: TicketInput = {
 
 interface CreateTicketFormProps {
   onSuccess?: () => void;
+  projectId: string;
 }
 
 
- const  CreateTicketForm = ({ onSuccess }: CreateTicketFormProps) => {
+ const  CreateTicketForm = ({ onSuccess, projectId }: CreateTicketFormProps) => {
   const queryClient = useQueryClient();
   const form = useForm<Ticket>({
     defaultValues,
@@ -47,13 +48,16 @@ interface CreateTicketFormProps {
 
 
   const createTicket = async (data: Ticket) => {
-    const response = await axios.post('/api/tickets', data);
+    const response = await axios.post('/api/tickets', {
+      ...data,
+      projectId,
+    });
     return response.data;
   }
   const createTicketMutation = useMutation({
     mutationFn: createTicket,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+      queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
       reset(defaultValues);
       onSuccess?.();
     },

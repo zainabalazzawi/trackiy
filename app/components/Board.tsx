@@ -32,7 +32,11 @@ import {
 import { Check, Plus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-const Board = () => {
+interface BoardProps {
+  projectId: string;
+}
+
+const Board = ({ projectId }: BoardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -48,24 +52,22 @@ const Board = () => {
   );
 
   const getTickets = async (): Promise<Ticket[]> => {
-    const response = await axios.get("/api/tickets");
+    const response = await axios.get(`/api/projects/${projectId}/tickets`);
     return response.data;
   };
 
   const getColumns = async (): Promise<ColumnType[]> => {
-    const response = await axios.get("/api/columns");
-    return response.data.sort(
-      (a: ColumnType, b: ColumnType) => a.order - b.order
-    );
+    const response = await axios.get(`/api/projects/${projectId}/columns`);
+    return response.data;
   };
 
   const { data: tickets = [] } = useQuery({
-    queryKey: ["tickets"],
+    queryKey: ["tickets", projectId],
     queryFn: getTickets,
   });
 
   const { data: columns = [] } = useQuery({
-    queryKey: ["columns"],
+    queryKey: ["columns", projectId],
     queryFn: getColumns,
   });
 
@@ -80,6 +82,7 @@ const Board = () => {
       const column = columns.find((col) => col.id === columnId);
       const response = await axios.patch(`/api/tickets/${ticketId}`, {
         status: column?.statusId,
+        projectId
       });
       return response.data;
     },
@@ -90,7 +93,7 @@ const Board = () => {
       ticketId: string;
       columnId: string;
     }) => {
-      queryClient.setQueryData(["tickets"], (old: Ticket[]) => {
+      queryClient.setQueryData(["tickets", projectId], (old: Ticket[]) => {
         return old.map((ticket: Ticket) =>
           ticket.id === ticketId ? { ...ticket, columnId } : ticket
         );
@@ -100,11 +103,14 @@ const Board = () => {
 
   const createColumnMutation = useMutation({
     mutationFn: async (name: string) => {
-      const response = await axios.post("/api/columns", { name });
+      const response = await axios.post("/api/columns", { 
+        name,
+        projectId
+      });
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["columns"] });
+      queryClient.invalidateQueries({ queryKey: ["columns", projectId] });
       setIsAddingColumn(false);
       setNewColumnName("");
     },
@@ -143,16 +149,19 @@ const Board = () => {
 
   return (
     <div className="p-6">
-      {/* <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button>Add New Ticket</Button>
+            <Button>Create Ticket</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New Ticket</DialogTitle>
+              <DialogTitle>Create Ticket</DialogTitle>
             </DialogHeader>
-            <CreateTicketForm onSuccess={() => setIsOpen(false)} />
+            <CreateTicketForm 
+              onSuccess={() => setIsOpen(false)} 
+              projectId={projectId}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -249,7 +258,7 @@ const Board = () => {
             />
           ) : null}
         </DragOverlay>
-      </DndContext> */}
+      </DndContext>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Link from "next/link"
 
 export type Project = {
   id: string
@@ -43,9 +44,12 @@ export const columns: ColumnDef<Project>[] = [
           <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
             {project.key.charAt(0)}
           </div>
-          <span className="text-blue-600 hover:underline cursor-pointer">
-            {project.name}
-          </span>
+          <Link 
+          href={`/projects/${project.id}`}
+          className="text-blue-600 hover:underline cursor-pointer"
+        >
+          {project.name}
+        </Link>
         </div>
       )
     },

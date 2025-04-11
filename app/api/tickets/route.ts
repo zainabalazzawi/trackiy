@@ -14,9 +14,21 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    
+    const { projectId } = body;
+    
+    if (!projectId) {
+      return NextResponse.json(
+        { error: "Project ID is required" },
+        { status: 400 }
+      );
+    }
 
     const firstColumn = await prisma.column.findFirstOrThrow({
-      where: { order: 0 },
+      where: { 
+        projectId: projectId,
+        order: 0 
+      },
       include: { status: true },
     });
 
