@@ -5,11 +5,11 @@ import { authOptions } from "../../../auth/lib/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
-) {
+  { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
-    
+    const { id } = await params;
+
     if (!session?.user) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -20,7 +20,7 @@ export async function GET(
     const tickets = await prisma.ticket.findMany({
       where: {
         column: {
-          projectId: params.id
+          projectId: id
         }
       },
       include: {
