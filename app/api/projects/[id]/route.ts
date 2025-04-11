@@ -5,16 +5,17 @@ import { authOptions } from "../../auth/lib/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }) {
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await getServerSession(authOptions);
-
+    const { id } = await params;
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const project = await prisma.project.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         columns: {
           include: {

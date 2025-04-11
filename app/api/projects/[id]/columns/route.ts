@@ -5,9 +5,10 @@ import { authOptions } from "../../../auth/lib/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
@@ -19,7 +20,7 @@ export async function GET(
 
     const columns = await prisma.column.findMany({
       where: {
-        projectId: params.id
+        projectId: id
       },
       include: {
         status: true,
