@@ -55,7 +55,7 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
           cursor-pointer"
         onClick={(e) => {
           if (!isCurrentlyDragging) {
-            router.push(`/tickets/${ticket.id}`);
+            router.push(`/projects/${ticket.column.projectId}/tickets/${ticket.id}`);
           }
         }}
       >

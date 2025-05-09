@@ -103,7 +103,7 @@ const Board = ({ projectId }: BoardProps) => {
 
   const createColumnMutation = useMutation({
     mutationFn: async (name: string) => {
-      const response = await axios.post("/api/columns", { 
+      const response = await axios.post(`/api/projects/${projectId}/columns`, { 
         name,
         projectId
       });

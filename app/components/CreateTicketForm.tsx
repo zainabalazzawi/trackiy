@@ -46,12 +46,8 @@ interface CreateTicketFormProps {
 
   const { handleSubmit, reset, control } = form;
 
-
   const createTicket = async (data: Ticket) => {
-    const response = await axios.post('/api/tickets', {
-      ...data,
-      projectId,
-    });
+    const response = await axios.post(`/api/projects/${projectId}/tickets`, data);
     return response.data;
   }
   const createTicketMutation = useMutation({

@@ -10,13 +10,13 @@ import StatusSelect from "@/app/components/StatusSelect";
 
 const TicketPage = () => {
   const params = useParams();
-  const ticketId = params.id as string;
+  const { ticketId, projectId } = params as { ticketId: string; projectId: string };
   const queryClient = useQueryClient();
 
   const { data: ticket, isLoading } = useQuery<Ticket>({
     queryKey: ["ticket", ticketId],
     queryFn: async () => {
-      const response = await axios.get(`/api/tickets/${ticketId}`);
+      const response = await axios.get(`/api/projects/${projectId}/tickets/${ticketId}`);
       return response.data;
     },
   });
@@ -32,7 +32,7 @@ const TicketPage = () => {
   const updateTicketMutation = useMutation({
     mutationFn: async (updateData: Partial<Ticket>) => {
       const response = await axios.patch(
-        `/api/tickets/${ticketId}`,
+        `/api/projects/${projectId}/tickets/${ticketId}`,
         updateData
       );
       return response.data;

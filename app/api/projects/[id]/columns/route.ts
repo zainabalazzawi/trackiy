@@ -39,4 +39,74 @@ export async function GET(
       { status: 500 }
     );
   }
-} 
+}
+
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, name } = body;
+
+    const column = await prisma.column.update({
+      where: { id },
+      data: { name },
+      include: {
+        status: true,
+        tickets: true,
+      },
+    });
+
+    await prisma.status.update({
+      where: { id: column.statusId },
+      data: { name },
+    });
+
+    return NextResponse.json(column);
+  } catch (error) {
+    console.error("Error updating column:", error);
+    return NextResponse.json(
+      { error: "Failed to update column" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { name, projectId } = body;
+
+    const highestOrderColumn = await prisma.column.findFirst({
+      where: { projectId }
+    });
+
+    const newOrder = highestOrderColumn ? highestOrderColumn.order + 1 : 0;
+
+    // First create the status
+    const status = await prisma.status.create({
+      data: { name }
+    });
+
+    // Then create the column with the new status
+    const column = await prisma.column.create({
+      data: {
+        name,
+        statusId: status.id,
+        order: newOrder,
+        projectId // Add the projectId to associate the column with the project
+      },
+      include: {
+        status: true,
+        tickets: true
+      }
+    });
+
+    return NextResponse.json(column);
+  } catch (error) {
+    console.error("Error creating column:", error);
+    return NextResponse.json(
+      { error: "Failed to create column" },
+      { status: 500 }
+    );
+  }
+}

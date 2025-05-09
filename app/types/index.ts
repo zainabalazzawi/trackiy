@@ -8,6 +8,7 @@ export interface Ticket {
   column: {
     id: string;
     name: string;
+    projectId: string
   };
   statusId: string;
   status: {

@@ -5,13 +5,16 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ ticketId: string; projectId: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { ticketId, projectId } = await params;
     const ticket = await prisma.ticket.findUnique({
       where: {
-        id: id,
+        id: ticketId,
+        column: {
+          projectId: projectId
+        }
       },
       include: {
         status: true,
@@ -35,14 +38,19 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ ticketId: string; projectId: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { ticketId, projectId } = await params;
     const body = await request.json();
     
     const updatedTicket = await prisma.ticket.update({
-      where: { id },
+      where: { 
+        id: ticketId,
+        column: {
+          projectId: projectId
+        }
+      },
       data: {
         description: body.description,
         title: body.title,
@@ -53,7 +61,7 @@ export async function PATCH(
           columnId: (await prisma.column.findFirstOrThrow({
             where: { 
               statusId: body.status,
-               projectId: body.projectId 
+              projectId: projectId 
             },
           })).id
         })
@@ -62,7 +70,6 @@ export async function PATCH(
     });
 
     return NextResponse.json(updatedTicket);
-
   } catch (error) {
     console.error("Error updating ticket:", error);
     return NextResponse.json(

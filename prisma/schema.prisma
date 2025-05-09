@@ -7,52 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Ticket {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  column      Column   @relation(fields: [columnId], references: [id])
-  columnId    String
-  status      Status   @relation(fields: [statusId], references: [id])
-  statusId    String
-  priority    Priority @default(MEDIUM)
-  assignee    String?
-  reporter    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Status {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  columns   Column[]
-  tickets   Ticket[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-}
-
-model Column {
-  id        String   @id @default(cuid())
-  name      String
-  status    Status   @relation(fields: [statusId], references: [id])
-  statusId  String
-  tickets   Ticket[]
-  order     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Project   Project? @relation(fields: [projectId], references: [id])
-  projectId String?
-
-  @@unique([name, projectId])
-  @@map("columns")
-}
-
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -108,6 +62,12 @@ model VerificationRequest {
   @@unique([identifier, token])
 }
 
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 enum ProjectCategory {
   SERVICE
   SOFTWARE
@@ -121,6 +81,45 @@ enum ProjectType {
 enum ProjectTemplate {
   KANBAN
   CUSTOMER_SERVICE
+}
+
+model Ticket {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  column      Column   @relation(fields: [columnId], references: [id])
+  columnId    String
+  status      Status   @relation(fields: [statusId], references: [id])
+  statusId    String
+  priority    Priority @default(MEDIUM)
+  assignee    String?
+  reporter    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Status {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  columns   Column[]
+  tickets   Ticket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Column {
+  id        String   @id @default(cuid())
+  name      String
+  status    Status   @relation(fields: [statusId], references: [id])
+  statusId  String
+  tickets   Ticket[]
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?
+
+  @@unique([name, projectId])
+  @@map("columns")
 }
 
 model Project {
