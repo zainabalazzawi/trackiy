@@ -80,7 +80,7 @@ const Board = ({ projectId }: BoardProps) => {
       columnId: string;
     }) => {
       const column = columns.find((col) => col.id === columnId);
-      const response = await axios.patch(`/api/tickets/${ticketId}`, {
+      const response = await axios.patch(`/api/projects/${projectId}/tickets/${ticketId}`, {
         status: column?.statusId,
         projectId
       });

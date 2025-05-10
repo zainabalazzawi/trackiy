@@ -24,7 +24,7 @@ const TicketPage = () => {
   const { data: statuses } = useQuery({
     queryKey: ["statuses"],
     queryFn: async () => {
-      const response = await axios.get("/api/statuses");
+      const response = await axios.get(`/api/projects/${projectId}/tickets/${ticketId}/statuses`);
       return response.data;
     },
   });
