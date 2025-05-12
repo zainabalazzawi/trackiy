@@ -89,18 +89,14 @@ export async function POST(request: Request) {
     );
 
     // Then create columns with the statuses
-    await Promise.all(
-      statuses.map((status, index) => {
-        return prisma.column.create({
-          data: {
-            name: status.name,
-            statusId: status.id,
-            order: index,
-            projectId: project.id,
-          },
-        });
-      })
-    );
+    await prisma.column.createMany({
+      data: statuses.map((status, index) => ({
+        name: status.name,
+        statusId: status.id,
+        order: index,
+        projectId: project.id,
+      })),
+    });
 
     // Fetch the complete project with columns
     const completeProject = await prisma.project.findUnique({

@@ -179,6 +179,7 @@ const Board = ({ projectId }: BoardProps) => {
 
             return (
               <Column
+                projectId={projectId}
                 key={column.id}
                 column={{
                   ...column,

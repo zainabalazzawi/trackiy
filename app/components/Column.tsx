@@ -9,9 +9,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 interface ColumnProps {
   column: ColumnType;
   children?: React.ReactNode;
+  projectId: string
 }
 
-const Column = ({ column, children }: ColumnProps) => {
+const Column = ({ column, children, projectId }: ColumnProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(column.name);
   const queryClient = useQueryClient();
@@ -25,7 +26,7 @@ const Column = ({ column, children }: ColumnProps) => {
   });
 
   const updateColumnName = async (id: string, newName: string) => {
-    const response = await axios.patch('/api/columns', { 
+    const response = await axios.patch(`/api/projects/${projectId}/columns`, { 
       id, 
       name: newName,
       status: newName

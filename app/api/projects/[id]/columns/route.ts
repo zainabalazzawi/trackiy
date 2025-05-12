@@ -45,11 +45,11 @@ export async function GET(
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { id, name } = body;
+    const { id, name,  order } = body;
 
     const column = await prisma.column.update({
       where: { id },
-      data: { name },
+      data: { name , order},
       include: {
         status: true,
         tickets: true,
@@ -77,7 +77,8 @@ export async function POST(request: Request) {
     const { name, projectId } = body;
 
     const highestOrderColumn = await prisma.column.findFirst({
-      where: { projectId }
+      where: { projectId },
+      orderBy: { order: 'desc' }
     });
 
     const newOrder = highestOrderColumn ? highestOrderColumn.order + 1 : 0;
