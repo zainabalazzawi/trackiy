@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/lib/auth";
 
@@ -107,6 +107,27 @@ export async function POST(request: Request) {
     console.error("Error creating column:", error);
     return NextResponse.json(
       { error: "Failed to create column" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id } = body;
+
+
+    // Delete the column
+    const deletedColumn = await prisma.column.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true, deletedColumn });
+  } catch (error) {
+    console.error("Error deleting column:", error);
+    return NextResponse.json(
+      { error: "Failed to delete column" },
       { status: 500 }
     );
   }
