@@ -66,6 +66,7 @@ export async function POST(request: Request) {
       "Ready to Development",
       "In Development",
       "Ready for Code Review",
+      "Ready for QA",
       "Done"
     ];
     

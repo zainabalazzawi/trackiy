@@ -117,11 +117,35 @@ export async function DELETE(request: NextRequest) {
     const body = await request.json();
     const { id } = body;
 
+    // Find the column to get its statusId before deleting
+    const column = await prisma.column.findUnique({
+      where: { id },
+      select: { statusId: true }
+    });
+
+    if (!column) {
+      return NextResponse.json({ error: "Column not found" }, { status: 404 });
+    }
 
     // Delete the column
     const deletedColumn = await prisma.column.delete({
       where: { id },
     });
+
+    // Check if any other columns or tickets use this status
+    const otherColumns = await prisma.column.count({
+      where: { statusId: column.statusId }
+    });
+    const otherTickets = await prisma.ticket.count({
+      where: { statusId: column.statusId }
+    });
+
+    // If no other columns or tickets use this status, delete the status
+    if (otherColumns === 0 && otherTickets === 0) {
+      await prisma.status.delete({
+        where: { id: column.statusId }
+      });
+    }
 
     return NextResponse.json({ success: true, deletedColumn });
   } catch (error) {
