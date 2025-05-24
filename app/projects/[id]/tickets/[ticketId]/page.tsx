@@ -10,7 +10,7 @@ import StatusSelect from "@/app/components/StatusSelect";
 
 const TicketPage = () => {
   const params = useParams();
-  const { ticketId, projectId } = params as { ticketId: string; projectId: string };
+  const { id: projectId, ticketId } = params as { id: string; ticketId: string };
   const queryClient = useQueryClient();
 
   const { data: ticket, isLoading } = useQuery<Ticket>({
@@ -22,9 +22,9 @@ const TicketPage = () => {
   });
 
   const { data: statuses } = useQuery({
-    queryKey: ["statuses"],
+    queryKey: ["statuses", projectId],
     queryFn: async () => {
-      const response = await axios.get(`/api/projects/${projectId}/tickets/${ticketId}/statuses`);
+      const response = await axios.get(`/api/projects/${projectId}/statuses`);
       return response.data;
     },
   });
@@ -44,6 +44,9 @@ const TicketPage = () => {
 
   if (isLoading) return <div className="p-6">Loading...</div>;
   if (!ticket) return <div className="p-6">Ticket not found</div>;
+
+
+  console.log(statuses)
 
   return (
     <div className="p-6 w-full">

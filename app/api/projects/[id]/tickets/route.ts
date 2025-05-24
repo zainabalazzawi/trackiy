@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
-    const { id } = await params;
+    const { id : projectId} = await params;
 
     if (!session?.user) {
       return NextResponse.json(
@@ -20,7 +20,7 @@ export async function GET(
     const tickets = await prisma.ticket.findMany({
       where: {
         column: {
-          projectId: id
+          projectId: projectId
         }
       },
       include: {

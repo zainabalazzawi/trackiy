@@ -94,7 +94,7 @@ export async function POST(request: Request) {
       data: statuses.map((status, index) => ({
         name: status.name,
         statusId: status.id,
-        order: index,
+        order: index,  // We keep the order in the Column model
         projectId: project.id,
       })),
     });
