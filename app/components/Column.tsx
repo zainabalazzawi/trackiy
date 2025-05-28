@@ -102,6 +102,7 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
       `}
     >
       <div className="mb-4 flex justify-between">
+        {/* edit col name */}
         {isEditing ? (
           <Input
             value={name}
@@ -142,6 +143,8 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
       <div className="space-y-3">
         {children}
       </div>
+
+      {/* delete col */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>

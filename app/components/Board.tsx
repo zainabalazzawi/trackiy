@@ -197,7 +197,7 @@ const Board = ({ projectId }: BoardProps) => {
               </Column>
             );
           })}
-
+      {/* add new col */}
           <div className="w-80">
             {isAddingColumn ? (
               <div className="p-4 rounded-lg bg-gray-200">

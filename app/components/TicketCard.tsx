@@ -2,7 +2,6 @@ import { Ticket } from "../types";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -61,9 +60,6 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
       >
         <CardHeader className="pb-2">
           <CardTitle className="text-base">{ticket.title}</CardTitle>
-          <CardDescription className="text-sm line-clamp-2">
-            {ticket.description}
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
