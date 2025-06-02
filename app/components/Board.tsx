@@ -85,8 +85,21 @@ const Board = ({ projectId }: BoardProps) => {
         projectId
       });
       return response.data;
+      
     },
-
+    onMutate: ({
+      ticketId,
+      columnId,
+    }: {
+      ticketId: string;
+      columnId: string;
+    }) => {
+      queryClient.setQueryData(["tickets", projectId], (old: Ticket[]) => {
+        return old.map((ticket: Ticket) =>
+          ticket.id === ticketId ? { ...ticket, columnId } : ticket
+        );
+      });
+    },
   });
 
   const createColumnMutation = useMutation({
