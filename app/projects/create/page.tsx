@@ -62,9 +62,10 @@ const CreateProject = () => {
       await createProject({
         name: projectName,
         key: projectKey,
-        type: projectType === "TEAM_MANAGED" ? "TEAM_MANAGED" : "COMPANY_MANAGED",
+        type:
+          projectType === "TEAM_MANAGED" ? "TEAM_MANAGED" : "COMPANY_MANAGED",
         template: selectedTemplate === "KANBAN" ? "KANBAN" : "CUSTOMER_SERVICE",
-        category: selectedCategory === 'SOFTWARE' ? 'SOFTWARE' : 'SERVICE'
+        category: selectedCategory === "SOFTWARE" ? "SOFTWARE" : "SERVICE",
       });
       router.push("/projects");
     } catch (error) {
@@ -128,7 +129,6 @@ const CreateProject = () => {
               description={projectTypeInfo.description}
               changeLabel="Change type"
               label="Type"
-
             />
           </div>
         </div>
@@ -148,6 +148,7 @@ const CreateProject = () => {
     );
   }
 
+  // check the step 
   if (showSteps) {
     return (
       <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
@@ -305,57 +306,30 @@ const CreateProject = () => {
             <div className="space-y-4">
               {selectedCategory === "SOFTWARE" ? (
                 <>
-                  <Card
-                    className={`p-6 hover:shadow-md cursor-pointer border-2 transition-colors ${
+                  <InfoCard
+                    className={`cursor-pointer transition-colors ${
                       selectedTemplate === "KANBAN"
-                        ? "border-emerald-950"
-                        : "border-transparent"
+                        ? "border-2 border-emerald-950"
+                        : "border-2 border-transparent"
                     }`}
                     onClick={() => setSelectedTemplate("KANBAN")}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex gap-4">
-                        <div className="w-16 h-16 bg-blue-50 rounded flex items-center justify-center"></div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg">Kanban</h3>
-                          </div>
-                          <p className="text-gray-500">
-                            Visualise and advance your project forward using
-                            issues on a powerful board.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
+                    title="Kanban"
+                    description="Visualise and advance your project forward using issues on a powerful board."
+                  />
                 </>
               ) : (
                 <>
-                  <Card
-                    className={`p-6 hover:shadow-md cursor-pointer border-2 transition-colors ${
+                  <InfoCard
+                    className={`cursor-pointer transition-colors ${
                       selectedTemplate === "CUSTOMER_SERVICE"
-                        ? "border-emerald-950"
-                        : "border-transparent"
+                        ? "border-2 border-emerald-950"
+                        : "border-2 border-transparent"
                     }`}
                     onClick={() => setSelectedTemplate("CUSTOMER_SERVICE")}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex gap-4">
-                        <div className="w-16 h-16 bg-blue-50 rounded flex items-center justify-center"></div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg">
-                              Customer service management
-                            </h3>
-                          </div>
-                          <p className="text-gray-500">
-                            Deliver great service experiences fast with a
-                            template designed to help your external customers.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
+                    title="Customer service management"
+                    description="Deliver great service experiences fast with a template
+                          designed to help your external customers."
+                  />
                 </>
               )}
             </div>

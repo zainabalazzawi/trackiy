@@ -8,6 +8,8 @@ interface InfoCardProps {
   label?: string;
   onChangeClick?: () => void;
   changeLabel?: string;
+  onClick?: () => void;
+  className?: string;
 }
 
 const InfoCard = ({
@@ -17,16 +19,25 @@ const InfoCard = ({
   onChangeClick,
   label,
   changeLabel,
+  onClick,
+  className,
 }: InfoCardProps) => {
   return (
-    <div>
+    <div
+      onClick={onClick}
+    >
+      
       <div className="flex justify-between items-center mt-6 mb-1">
         {label}
-        <Button variant='ghost' className="cursor-pointer" onClick={onChangeClick}>
+        <Button
+          variant="ghost"
+          className="cursor-pointer"
+          onClick={onChangeClick}
+        >
           {changeLabel}
         </Button>
       </div>
-      <Card className="p-6">
+      <Card className={`p-6 ${className || ''}`}>
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
             <div className="w-24 h-20 bg-blue-50 rounded-lg flex items-center justify-center"></div>
