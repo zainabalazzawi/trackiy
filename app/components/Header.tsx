@@ -97,9 +97,9 @@ const Header = () => {
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {/* <DropdownMenuItem onClick={() => router.push("/settings")}>
+                  <DropdownMenuItem onClick={() => router.push("/settings")}>
                     Settings
-                  </DropdownMenuItem> */}
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => signOut({ callbackUrl: "/" })}
                   >

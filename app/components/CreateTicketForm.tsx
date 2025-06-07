@@ -44,7 +44,7 @@ interface CreateTicketFormProps {
     defaultValues,
   });
 
-  const { handleSubmit, reset, control } = form;
+  const { handleSubmit, control } = form;
 
   const createTicket = async (data: Ticket) => {
     const response = await axios.post(`/api/projects/${projectId}/tickets`, data);
@@ -54,14 +54,13 @@ interface CreateTicketFormProps {
     mutationFn: createTicket,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
-      reset(defaultValues);
       onSuccess?.();
     },
     onError: (error) => {
       console.error('Error creating ticket:', error);
     }
   });
-
+console.log('control',control)
   return (
     <Form {...form}>
       <form
