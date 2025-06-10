@@ -44,6 +44,7 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
       className={`
         touch-none 
         transition-opacity
+        pb-2
         ${isCurrentlyDragging ? "opacity-50" : "opacity-100"}
       `}
     >

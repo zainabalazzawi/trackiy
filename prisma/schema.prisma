@@ -86,7 +86,7 @@ enum ProjectTemplate {
 model Ticket {
   id          String   @id @default(cuid())
   title       String
-  description String
+  description String?
   column      Column   @relation(fields: [columnId], references: [id])
   columnId    String
   status      Status   @relation(fields: [statusId], references: [id])

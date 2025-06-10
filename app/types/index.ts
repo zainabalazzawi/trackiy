@@ -3,7 +3,7 @@ export type Priority = "LOW" | "MEDIUM" | "HIGH";
 export interface Ticket {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   columnId: string;
   column: {
     id: string;

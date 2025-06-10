@@ -12,15 +12,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Column from "./Column";
 
-import CreateTicketForm from "./CreateTicketForm";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import axios from "axios";
 import { Ticket, Column as ColumnType } from "../types";
 import { useState } from "react";
@@ -42,6 +34,8 @@ const Board = ({ projectId }: BoardProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnName, setNewColumnName] = useState("");
+  const [isCreatingTicket, setIsCreatingTicket] = useState(false);
+  const [newTicket, setNewTicket] = useState("");
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -117,6 +111,19 @@ const Board = ({ projectId }: BoardProps) => {
     },
   });
 
+  const createTicketMutation = useMutation({
+    mutationFn: async (ticket: { title: string; columnId: string }) => {
+      const response = await axios.post(`/api/projects/${projectId}/tickets`, ticket);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
+      setIsCreatingTicket(false);
+      setNewTicket("");
+    },
+  });
+  
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
@@ -149,31 +156,14 @@ const Board = ({ projectId }: BoardProps) => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-8">
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button>Create Ticket</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create Ticket</DialogTitle>
-            </DialogHeader>
-            <CreateTicketForm 
-              onSuccess={() => setIsOpen(false)} 
-              projectId={projectId}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-
+    <div>
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-6 overflow-x-auto pb-4">
-          {columns.map((column) => {
+        <div className="flex gap-2 pb-4">
+          {columns.map((column, index) => {
             const columnTickets = tickets.filter(
               (ticket) => ticket.columnId === column.id
             );
@@ -195,11 +185,45 @@ const Board = ({ projectId }: BoardProps) => {
                     <TicketCard key={ticket.id} ticket={ticket} />
                   ))}
                 </SortableContext>
+                {index === 0 && (
+                  <div className="mt-2">
+                    {isCreatingTicket ? (
+                      <Input
+                        value={newTicket}
+                        onChange={e => setNewTicket(e.target.value)}
+                        placeholder="What needs to be done?"
+                        autoFocus
+                        className="h-14 text-lg px-5 py-4"
+                        onKeyDown={e => {
+                          if (e.key === "Enter" && newTicket.trim()) {
+                            createTicketMutation.mutate({ title: newTicket, columnId: column.id });
+                          } else if (e.key === "Escape") {
+                            setIsCreatingTicket(false);
+                            setNewTicket("");
+                          }
+                        }}
+                        onBlur={() => {
+                          setIsCreatingTicket(false);
+                          setNewTicket("");
+                        }}
+                      />
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        className="flex items-center justify-start gap-2 text-gray-600 text-base font-medium hover:text-gray-800 transition-colors focus:outline-none w-full rounded-sm"
+                        onClick={() => setIsCreatingTicket(true)}
+                      >
+                        <Plus className="h-5 w-5" />
+                        Create
+                      </Button>
+                    )}
+                  </div>
+                )}
               </Column>
             );
           })}
       {/* add new col */}
-          <div className="w-80">
+          <div className={`${isAddingColumn ? 'w-full' : ''}`}>
             {isAddingColumn ? (
               <div className="p-4 rounded-lg bg-gray-200">
                 <div className="flex flex-col gap-2">
@@ -207,7 +231,7 @@ const Board = ({ projectId }: BoardProps) => {
                     value={newColumnName}
                     onChange={(e) => setNewColumnName(e.target.value)}
                     placeholder="Enter column name"
-                    className="bg-white"
+                    className="bg-white w-full"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -244,7 +268,7 @@ const Board = ({ projectId }: BoardProps) => {
             ) : (
               <button
                 onClick={() => setIsAddingColumn(true)}
-                className="w-full h-full min-h-[100px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                className="rounded-lg  cursor-pointer border-2 border-dashed border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
                 <Plus className="h-6 w-6 text-gray-400" />
               </button>

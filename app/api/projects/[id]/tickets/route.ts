@@ -46,6 +46,7 @@ export async function POST(
   try {
     const { id: projectId } = await params;
     const body = await request.json();
+    const session = await getServerSession(authOptions);
 
     const firstColumn = await prisma.column.findFirstOrThrow({
       where: { 
@@ -58,12 +59,12 @@ export async function POST(
     const ticket = await prisma.ticket.create({
       data: {
         title: body.title,
-        description: body.description,
+        description: body.description  ?? null,
         columnId: firstColumn.id,
         statusId: firstColumn.statusId,
         priority: body.priority || "MEDIUM",
         assignee: body.assignee,
-        reporter: body.reporter,
+        reporter: session?.user.name,
       },
       include: {
         status: true,

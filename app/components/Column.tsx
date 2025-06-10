@@ -1,6 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
 import { Column as ColumnType } from '../types';
-import TicketCard from './TicketCard';
 import axios from 'axios';
 import { KeyboardEvent, useState } from 'react';
 import { Input } from '@/components/ui/input';
@@ -11,14 +10,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -95,13 +91,13 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
     <div 
       ref={setNodeRef}
       className={`
-        p-4 pr-2
+        py-4
         rounded-md
-        w-80
-        ${isOver ? 'bg-gray-300' : 'bg-gray-200 '}
+        w-full
+        ${isOver ? 'bg-gray-300' : 'bg-gray-200'}
       `}
     >
-      <div className="mb-4 flex justify-between">
+      <div className="mb-4 flex justify-between items-center px-2 h-[3%]">
         {/* edit col name */}
         {isEditing ? (
           <Input
@@ -117,7 +113,7 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
           />
         ) : (
           <h2 
-            className="text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-100 hover:w-[80%] rounded-md pl-2 py-1"
+            className="text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-100 hover:w-full rounded-md pl-2 py-1"
             onClick={() => setIsEditing(true)}
           >
             {column.name}
@@ -140,7 +136,8 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="space-y-3">
+      <div className='border-gray-50 border-1 mb-1'/>
+      <div className='px-1'>
         {children}
       </div>
 
