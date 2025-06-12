@@ -21,14 +21,18 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Check, Plus, X } from "lucide-react";
+import { CloudCheck, Check, Plus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSession } from "next-auth/react";
 
 interface BoardProps {
   projectId: string;
 }
 
 const Board = ({ projectId }: BoardProps) => {
+    const { data: session } = useSession();
+  
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -74,12 +78,14 @@ const Board = ({ projectId }: BoardProps) => {
       columnId: string;
     }) => {
       const column = columns.find((col) => col.id === columnId);
-      const response = await axios.patch(`/api/projects/${projectId}/tickets/${ticketId}`, {
-        status: column?.statusId,
-        projectId
-      });
+      const response = await axios.patch(
+        `/api/projects/${projectId}/tickets/${ticketId}`,
+        {
+          status: column?.statusId,
+          projectId,
+        }
+      );
       return response.data;
-      
     },
     onMutate: ({
       ticketId,
@@ -98,9 +104,9 @@ const Board = ({ projectId }: BoardProps) => {
 
   const createColumnMutation = useMutation({
     mutationFn: async (name: string) => {
-      const response = await axios.post(`/api/projects/${projectId}/columns`, { 
+      const response = await axios.post(`/api/projects/${projectId}/columns`, {
         name,
-        projectId
+        projectId,
       });
       return response.data;
     },
@@ -113,7 +119,10 @@ const Board = ({ projectId }: BoardProps) => {
 
   const createTicketMutation = useMutation({
     mutationFn: async (ticket: { title: string; columnId: string }) => {
-      const response = await axios.post(`/api/projects/${projectId}/tickets`, ticket);
+      const response = await axios.post(
+        `/api/projects/${projectId}/tickets`,
+        ticket
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -122,7 +131,6 @@ const Board = ({ projectId }: BoardProps) => {
       setNewTicket("");
     },
   });
-  
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -156,13 +164,13 @@ const Board = ({ projectId }: BoardProps) => {
   };
 
   return (
-    <div>
+    <div className="h-screen">
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-2 pb-4">
+        <div className="flex gap-2 pb-4 h-full">
           {columns.map((column, index) => {
             const columnTickets = tickets.filter(
               (ticket) => ticket.columnId === column.id
@@ -188,25 +196,50 @@ const Board = ({ projectId }: BoardProps) => {
                 {index === 0 && (
                   <div className="mt-2">
                     {isCreatingTicket ? (
-                      <Input
-                        value={newTicket}
-                        onChange={e => setNewTicket(e.target.value)}
-                        placeholder="What needs to be done?"
-                        autoFocus
-                        className="h-14 text-lg px-5 py-4"
-                        onKeyDown={e => {
-                          if (e.key === "Enter" && newTicket.trim()) {
-                            createTicketMutation.mutate({ title: newTicket, columnId: column.id });
-                          } else if (e.key === "Escape") {
+                      <div className="relative">
+                        <Input
+                          value={newTicket}
+                          onChange={(e) => setNewTicket(e.target.value)}
+                          placeholder="What needs to be done?"
+                          autoFocus
+                          className="h-32 text-lg"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && newTicket.trim()) {
+                              createTicketMutation.mutate({
+                                title: newTicket,
+                                columnId: column.id,
+                              });
+                            } else if (e.key === "Escape") {
+                              setIsCreatingTicket(false);
+                              setNewTicket("");
+                            }
+                          }}
+                          onBlur={() => {
                             setIsCreatingTicket(false);
                             setNewTicket("");
-                          }
-                        }}
-                        onBlur={() => {
-                          setIsCreatingTicket(false);
-                          setNewTicket("");
-                        }}
-                      />
+                          }}
+                        />
+                        <span className="absolute right-3 bottom-1.5">
+                          <Avatar>
+                            {session?.user?.image && (
+                              <AvatarImage
+                                src={session?.user?.image?.replace(
+                                  "s96-c",
+                                  "s400-c"
+                                )}
+                                className="object-cover cursor-pointer"
+                              />
+                            )}
+
+                            <AvatarFallback>
+                              {session?.user?.name
+                                ?.split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </AvatarFallback>
+                          </Avatar>{" "}
+                        </span>
+                      </div>
                     ) : (
                       <Button
                         variant="ghost"
@@ -222,8 +255,8 @@ const Board = ({ projectId }: BoardProps) => {
               </Column>
             );
           })}
-      {/* add new col */}
-          <div className={`${isAddingColumn ? 'w-full' : ''}`}>
+          {/* add new col */}
+          <div className={`${isAddingColumn ? "w-full" : ""}`}>
             {isAddingColumn ? (
               <div className="p-4 rounded-lg bg-gray-200">
                 <div className="flex flex-col gap-2">
