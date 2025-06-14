@@ -70,7 +70,7 @@ const TicketPage = () => {
           </div>
 
           <EditableField
-            value={ticket.description}
+            value={ticket.description ?? ""}
             onSave={(value) =>
               updateTicketMutation.mutate({ description: value })
             }
