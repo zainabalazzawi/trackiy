@@ -19,7 +19,8 @@ export function useProjects() {
       key: string;
       type: "TEAM_MANAGED" | "COMPANY_MANAGED";
       template: "KANBAN" | "CUSTOMER_SERVICE";
-      category: "SOFTWARE" | "SERVICE"
+      category: "SOFTWARE" | "SERVICE";
+      memberIds?: string[];
     }) => {
       const response = await axios.post("/api/projects", projectData);
       return response.data;

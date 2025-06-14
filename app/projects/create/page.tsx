@@ -66,6 +66,7 @@ const CreateProject = () => {
           projectType === "TEAM_MANAGED" ? "TEAM_MANAGED" : "COMPANY_MANAGED",
         template: selectedTemplate === "KANBAN" ? "KANBAN" : "CUSTOMER_SERVICE",
         category: selectedCategory === "SOFTWARE" ? "SOFTWARE" : "SERVICE",
+        memberIds: [], 
       });
       router.push("/projects");
     } catch (error) {

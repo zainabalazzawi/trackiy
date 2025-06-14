@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, key, type, template, category } = body;
+    const { name, key, type, template, category, memberIds = [] } = body;
 
     // Validate required fields
     if (!name || !key || !type) {
@@ -46,7 +46,6 @@ export async function POST(request: Request) {
         type: type === "TEAM_MANAGED" ? "TEAM_MANAGED" : "COMPANY_MANAGED",
         template: template  === "KANBAN" ? "KANBAN" : "CUSTOMER_SERVICE",
         userId: session.user.id,
-        lead: session.user.id,
       },
       include: {
         columns: true,
@@ -60,6 +59,22 @@ export async function POST(request: Request) {
         },
       },
     });
+
+    // Add the project creator as a member
+    const allMemberIds = memberIds.includes(session.user.id) 
+      ? memberIds 
+      : [...memberIds, session.user.id];
+
+    await Promise.all(
+      allMemberIds.map(async (userId: string) => {
+        return prisma.projectMember.create({
+          data: {
+            projectId: project.id,
+            userId,
+          },
+        });
+      })
+    );
 
     // Update default columns to match the ones in columns route
     const defaultColumns = [
@@ -120,6 +135,18 @@ export async function POST(request: Request) {
             image: true,
           },
         },
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -164,6 +191,18 @@ export async function GET() {
             name: true,
             email: true,
             image: true,
+          },
+        },
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
           },
         },
       },
