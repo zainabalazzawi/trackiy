@@ -138,6 +138,7 @@ model Project {
   createdBy   User        @relation("ProjectCreatedBy", fields: [userId], references: [id])
   userId      String
   members     ProjectMember[]
+  invitations Invitation[]
 }
 
 model ProjectMember {
@@ -148,4 +149,14 @@ model ProjectMember {
   userId    String
 
   @@unique([projectId, userId])
+}
+
+model Invitation {
+  id        String   @id @default(cuid())
+  email     String
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  token     String   @unique
+  status    String  
+  createdAt DateTime @default(now())
 }
