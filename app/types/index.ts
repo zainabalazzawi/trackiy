@@ -1,5 +1,6 @@
 
 export type Priority = "LOW" | "MEDIUM" | "HIGH";
+export type InvitationStatus = 'pending' | 'accepted';
 export interface Ticket {
   id: string;
   title: string;

@@ -84,6 +84,11 @@ enum ProjectTemplate {
   CUSTOMER_SERVICE
 }
 
+enum InvitationStatus {
+  pending
+  accepted
+}
+
 model Ticket {
   id          String   @id @default(cuid())
   title       String
@@ -157,6 +162,6 @@ model Invitation {
   project   Project  @relation(fields: [projectId], references: [id])
   projectId String
   token     String   @unique
-  status    String  
+  status    InvitationStatus @default(pending)
   createdAt DateTime @default(now())
 }

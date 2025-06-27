@@ -13,10 +13,12 @@ import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 
 type SignInDialogProps = {
-  children: ReactNode;
+  children?: ReactNode;
   redirectUrl?: string;
   signInDescription?: string;
   signUpDescription?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const SignInDialog = ({
@@ -24,20 +26,25 @@ const SignInDialog = ({
   redirectUrl,
   signInDescription,
   signUpDescription,
+  open,
+  onOpenChange,
 }: SignInDialogProps) => {
   const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
-  const [open, setOpen] = useState(false);
 
   const handleLoginSuccess = () => {
-    setOpen(false);
+    if (onOpenChange) {
+      onOpenChange(false);
+    }
     if (redirectUrl) {
       router.push(redirectUrl);
+    } else {
+      router.refresh();
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

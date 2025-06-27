@@ -173,7 +173,18 @@ export async function GET() {
 
     const projects = await prisma.project.findMany({
       where: {
-        userId: session.user.id
+        OR: [
+          // Projects created by the user
+          { userId: session.user.id },
+          // Projects where the user is a member
+          {
+            members: {
+              some: {
+                userId: session.user.id
+              }
+            }
+          }
+        ]
       },
       include: {
         columns: {
