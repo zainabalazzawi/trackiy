@@ -35,7 +35,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
 
   const inviteMutation = useMutation({
     mutationFn: async (email: string) => {
-      await axios.post(`/api/projects/${project.id}/invite`, { email });
+      await axios.post(`/api/projects/${project?.id}/invite`, { email });
     },
     onSuccess: () => {
       setInviteEmail("");

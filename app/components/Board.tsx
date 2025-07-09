@@ -15,7 +15,7 @@ import Column from "./Column";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { Ticket, Column as ColumnType, ProjectMember } from "../types";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import TicketCard from "./TicketCard";
 import {
   SortableContext,
@@ -42,10 +42,13 @@ const Board = ({ projectId }: BoardProps) => {
   const { data: session } = useSession();
   const { members } = useProjectMembers(projectId);
 
-  const membersById = members.reduce((acc: Record<string, ProjectMember>, member: ProjectMember) => {
-    acc[member.id] = member;
-    return acc;
-  }, {});
+  const membersById = members.reduce(
+    (acc: Record<string, ProjectMember>, member: ProjectMember) => {
+      acc[member.id] = member;
+      return acc;
+    },
+    {}
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -56,6 +59,8 @@ const Board = ({ projectId }: BoardProps) => {
   const [newTicket, setNewTicket] = useState("");
   const [selectedAssignee, setSelectedAssignee] =
     useState<string>("Unassigned");
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -227,6 +232,7 @@ const Board = ({ projectId }: BoardProps) => {
                     {isCreatingTicket ? (
                       <div className="relative">
                         <Input
+                          ref={inputRef}
                           value={newTicket}
                           onChange={(e) => setNewTicket(e.target.value)}
                           placeholder="What needs to be done?"
@@ -242,17 +248,31 @@ const Board = ({ projectId }: BoardProps) => {
                             }
                           }}
                           onBlur={() => {
-                            setIsCreatingTicket(false);
-                            setNewTicket("");
-                            setSelectedAssignee("Unassigned");
+                            if (!isSelectOpen) {
+                              setIsCreatingTicket(false);
+                              setNewTicket("");
+                              setSelectedAssignee("Unassigned");
+                            }
                           }}
                         />
                         <span className="absolute right-3 bottom-1.5">
                           <Select
                             value={selectedAssignee}
                             onValueChange={setSelectedAssignee}
+                            onOpenChange={(open) => {
+                              setIsSelectOpen(open);
+                              if (!open) {
+                                // When Select closes, refocus the input
+                                setTimeout(() => {
+                                  inputRef.current?.focus();
+                                }, 10);
+                              }
+                            }}
                           >
-                            <SelectTrigger className="w-8 h-8 p-0 border-0 bg-transparent hover:bg-gray-100 rounded-full cursor-pointer" hideArrow>
+                            <SelectTrigger
+                              className="w-8 h-8 p-0 border-0 bg-transparent hover:bg-gray-100 rounded-full cursor-pointer"
+                              hideArrow
+                            >
                               <SelectValue>
                                 {selectedAssignee !== "Unassigned" ? (
                                   <Avatar className="w-8 h-8">
@@ -278,8 +298,8 @@ const Board = ({ projectId }: BoardProps) => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="unassigned">
-                                  <User className="h-6 w-6 text-gray-500 mr-2" />
-                                  <span>Unassigned</span>
+                                <User className="h-6 w-6 text-gray-500 mr-2" />
+                                <span>Unassigned</span>
                               </SelectItem>
                               {members.map((member: ProjectMember) => (
                                 <SelectItem key={member.id} value={member.id}>
