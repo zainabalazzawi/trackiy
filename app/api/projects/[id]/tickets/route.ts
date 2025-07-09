@@ -63,7 +63,7 @@ export async function POST(
         columnId: firstColumn.id,
         statusId: firstColumn.statusId,
         priority: body.priority || "MEDIUM",
-        assignee: body.assignee || session?.user?.name || null,
+        assignee: body.assignee,
         reporter: session?.user.name,
       },
       include: {

@@ -37,4 +37,18 @@ export function useProjects() {
     isCreating: createProjectMutation.isPending,
     createError: createProjectMutation.error,
   };
+}
+
+export function useProjectMembers(projectId: string) {
+  const { data: members, isLoading } = useQuery({
+    queryKey: ["project-members", projectId],
+    queryFn: async () => {
+      const response = await axios.get(`/api/projects/${projectId}/members`);
+      return response.data;
+    },
+  });
+
+  return {
+    members: members || [],
+  };
 } 

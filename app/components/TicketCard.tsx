@@ -1,13 +1,11 @@
-import { Ticket } from "../types";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Ticket, ProjectMember } from "../types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useProjectMembers } from "../hooks/useProjects";
+import { User } from "lucide-react";
 
 interface CardProps {
   ticket: Ticket;
@@ -16,6 +14,16 @@ interface CardProps {
 
 const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
   const router = useRouter();
+  const { members = [] } = useProjectMembers(ticket.column.projectId);
+
+  const membersById = members.reduce(
+    (acc: Record<string, ProjectMember>, member: ProjectMember) => {
+      acc[member.id] = member;
+      return acc;
+    },
+    {}
+  );
+
   const {
     attributes,
     listeners,
@@ -35,6 +43,7 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
 
   const isCurrentlyDragging = isDragging || isSortableDragging;
 
+  const assigneeMember = membersById[ticket.assignee as string];
   return (
     <div
       ref={setNodeRef}
@@ -55,7 +64,9 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
           cursor-pointer"
         onClick={(e) => {
           if (!isCurrentlyDragging) {
-            router.push(`/projects/${ticket.column.projectId}/tickets/${ticket.id}`);
+            router.push(
+              `/projects/${ticket.column.projectId}/tickets/${ticket.id}`
+            );
           }
         }}
       >
@@ -80,10 +91,27 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
               {ticket.priority}
             </div>
 
-            {ticket.assignee && (
-              <span className="text-sm text-muted-foreground">
-                {ticket.assignee}
-              </span>
+            {ticket.assignee === "Unassigned" ? (
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                  <User className="h-4 w-4 text-gray-500" />
+                </div>
+              </div>
+            ) : assigneeMember && (
+              <div className="flex items-center gap-2">
+                <Avatar className="w-6 h-6">
+                  <AvatarImage
+                    src={assigneeMember.image?.replace("s96-c", "s400-c")}
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="text-xs">
+                    {assigneeMember.name
+                      ?.split(" ")
+                      .map((n: string) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
             )}
           </div>
         </CardContent>

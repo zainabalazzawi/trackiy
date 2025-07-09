@@ -14,25 +14,39 @@ import Column from "./Column";
 
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { Ticket, Column as ColumnType } from "../types";
+import { Ticket, Column as ColumnType, ProjectMember } from "../types";
 import { useState } from "react";
 import TicketCard from "./TicketCard";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CloudCheck, Check, Plus, X } from "lucide-react";
+import { Check, Plus, X, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
+import { useProjectMembers } from "../hooks/useProjects";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BoardProps {
   projectId: string;
 }
 
 const Board = ({ projectId }: BoardProps) => {
-    const { data: session } = useSession();
-  
+  const { data: session } = useSession();
+  const { members } = useProjectMembers(projectId);
+
+  const membersById = members.reduce((acc: Record<string, ProjectMember>, member: ProjectMember) => {
+    acc[member.id] = member;
+    return acc;
+  }, {});
+
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -40,6 +54,8 @@ const Board = ({ projectId }: BoardProps) => {
   const [newColumnName, setNewColumnName] = useState("");
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
   const [newTicket, setNewTicket] = useState("");
+  const [selectedAssignee, setSelectedAssignee] =
+    useState<string>("Unassigned");
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -118,7 +134,11 @@ const Board = ({ projectId }: BoardProps) => {
   });
 
   const createTicketMutation = useMutation({
-    mutationFn: async (ticket: { title: string; columnId: string }) => {
+    mutationFn: async (ticket: {
+      title: string;
+      columnId: string;
+      assignee?: string;
+    }) => {
       const response = await axios.post(
         `/api/projects/${projectId}/tickets`,
         ticket
@@ -129,6 +149,7 @@ const Board = ({ projectId }: BoardProps) => {
       queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
       setIsCreatingTicket(false);
       setNewTicket("");
+      setSelectedAssignee("Unassigned");
     },
   });
 
@@ -161,6 +182,14 @@ const Board = ({ projectId }: BoardProps) => {
     if (newColumnName.trim()) {
       createColumnMutation.mutate(newColumnName);
     }
+  };
+
+  const handleCreateTicket = (columnId: string) => {
+    createTicketMutation.mutate({
+      title: newTicket,
+      columnId: columnId,
+      assignee: selectedAssignee,
+    });
   };
 
   return (
@@ -205,39 +234,77 @@ const Board = ({ projectId }: BoardProps) => {
                           className="h-32 text-lg"
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && newTicket.trim()) {
-                              createTicketMutation.mutate({
-                                title: newTicket,
-                                columnId: column.id,
-                              });
+                              handleCreateTicket(column.id);
                             } else if (e.key === "Escape") {
                               setIsCreatingTicket(false);
                               setNewTicket("");
+                              setSelectedAssignee("Unassigned");
                             }
                           }}
                           onBlur={() => {
                             setIsCreatingTicket(false);
                             setNewTicket("");
+                            setSelectedAssignee("Unassigned");
                           }}
                         />
                         <span className="absolute right-3 bottom-1.5">
-                          <Avatar>
-                            {session?.user?.image && (
-                              <AvatarImage
-                                src={session?.user?.image?.replace(
-                                  "s96-c",
-                                  "s400-c"
+                          <Select
+                            value={selectedAssignee}
+                            onValueChange={setSelectedAssignee}
+                          >
+                            <SelectTrigger className="w-8 h-8 p-0 border-0 bg-transparent hover:bg-gray-100 rounded-full cursor-pointer" hideArrow>
+                              <SelectValue>
+                                {selectedAssignee !== "Unassigned" ? (
+                                  <Avatar className="w-8 h-8">
+                                    <AvatarImage
+                                      src={membersById[
+                                        selectedAssignee
+                                      ]?.image?.replace("s96-c", "s400-c")}
+                                      className="object-cover"
+                                    />
+                                    <AvatarFallback className="text-xs">
+                                      {membersById[selectedAssignee]?.name
+                                        ?.split(" ")
+                                        .map((n: string) => n[0])
+                                        .join("")}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                ) : (
+                                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <User className="h-4 w-4 text-gray-500" />
+                                  </div>
                                 )}
-                                className="object-cover cursor-pointer"
-                              />
-                            )}
-
-                            <AvatarFallback>
-                              {session?.user?.name
-                                ?.split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>{" "}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="unassigned">
+                                  <User className="h-6 w-6 text-gray-500 mr-2" />
+                                  <span>Unassigned</span>
+                              </SelectItem>
+                              {members.map((member: ProjectMember) => (
+                                <SelectItem key={member.id} value={member.id}>
+                                  <div className="flex items-center gap-2">
+                                    <Avatar className="w-6 h-6">
+                                      <AvatarImage
+                                        src={member.image?.replace(
+                                          "s96-c",
+                                          "s400-c"
+                                        )}
+                                        className="object-cover"
+                                      />
+                                      <AvatarFallback className="text-xs">
+                                        {member.name
+                                          ?.split(" ")
+                                          .map((n: string) => n[0])
+                                          .join("")}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <span>{member.name}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </span>
                       </div>
                     ) : (

@@ -1,6 +1,13 @@
-
 export type Priority = "LOW" | "MEDIUM" | "HIGH";
 export type InvitationStatus = 'pending' | 'accepted';
+
+export interface ProjectMember {
+  id: string;
+  name: string;
+  email: string;
+  image?: string;
+}
+
 export interface Ticket {
   id: string;
   title: string;
