@@ -237,7 +237,7 @@ const Board = ({ projectId }: BoardProps) => {
                           onChange={(e) => setNewTicket(e.target.value)}
                           placeholder="What needs to be done?"
                           autoFocus
-                          className="h-32 text-lg"
+                          className="h-32 text-lg border-ring"
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && newTicket.trim()) {
                               handleCreateTicket(column.id);
