@@ -8,6 +8,15 @@ import PrioritySelect from "@/app/components/PrioritySelect";
 import EditableField from "@/app/components/EditableField";
 import StatusSelect from "@/app/components/StatusSelect";
 import { useProjectMembers } from "@/app/hooks/useProjects";
+import { User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const TicketPage = () => {
   const params = useParams();
@@ -60,8 +69,8 @@ const TicketPage = () => {
     {}
   );
 
-  const assigneeMember = membersById[ticket.assignee as string];
-  console.log(assigneeMember?.name);
+  const assigneeMember = membersById[ticket.assignee as string] || "unassigned";
+
   return (
     <div className="p-6 w-full">
       <div className="flex gap-8">
@@ -111,9 +120,69 @@ const TicketPage = () => {
                 <div className="flex flex-row justify-between">
                   <div className="text-sm text-gray-500">Assignee</div>
                   <div className="text-sm font-medium">
-                    {ticket.assignee === "unassigned" || !assigneeMember
-                      ? "Unassigned"
-                      : assigneeMember.name}
+                    <Select
+                      value={assigneeMember}
+                      onValueChange={(value) => {
+                        const assigneeValue = value === "unassigned" ? "unassigned" : value;
+                        updateTicketMutation.mutate({ assignee: assigneeValue });
+                      }}
+                    >
+                      <SelectTrigger className="w-auto border-0 p-0 h-auto bg-transparent hover:bg-gray-50 rounded">
+                        <SelectValue>
+                          {assigneeMember === "unassigned" ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                                <User className="h-3 w-3 text-gray-500" />
+                              </div>
+                              <span>Unassigned</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <Avatar className="w-6 h-6">
+                                <AvatarImage
+                                  src={assigneeMember?.image?.replace("s96-c", "s400-c")}
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="text-xs">
+                                  {assigneeMember?.name
+                                    ?.split(" ")
+                                    .map((n: string) => n[0])
+                                    .join("")}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span>{assigneeMember?.name}</span>
+                            </div>
+                          )}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">
+                          <div className="flex items-center gap-2">
+                            <User className="h-4 w-4 text-gray-500" />
+                            <span>Unassigned</span>
+                          </div>
+                        </SelectItem>
+                        {members.map((member: ProjectMember) => (
+                          <SelectItem key={member.id} value={member.id}>
+                            <div className="flex items-center gap-2">
+                              <Avatar className="w-4 h-4">
+                                <AvatarImage
+                                  src={member.image?.replace("s96-c", "s400-c")}
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="text-xs">
+                                  {member.name
+                                    ?.split(" ")
+                                    .map((n: string) => n[0])
+                                    .join("")}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span>{member.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 <div className="flex flex-row justify-between">

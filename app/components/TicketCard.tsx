@@ -44,6 +44,7 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
   const isCurrentlyDragging = isDragging || isSortableDragging;
 
   const assigneeMember = membersById[ticket.assignee as string];
+
   return (
     <div
       ref={setNodeRef}
@@ -91,7 +92,7 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
               {ticket.priority}
             </div>
 
-            {ticket.assignee === "Unassigned" ? (
+            {ticket.assignee === "unassigned" ? (
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
                   <User className="h-4 w-4 text-gray-500" />

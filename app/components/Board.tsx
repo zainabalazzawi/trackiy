@@ -274,7 +274,7 @@ const Board = ({ projectId }: BoardProps) => {
                               hideArrow
                             >
                               <SelectValue>
-                                {selectedAssignee !== "Unassigned" ? (
+                                {selectedAssignee !== "unassigned" ? (
                                   <Avatar className="w-8 h-8">
                                     <AvatarImage
                                       src={membersById[
