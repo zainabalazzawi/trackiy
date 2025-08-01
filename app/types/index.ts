@@ -16,7 +16,11 @@ export interface Ticket {
   column: {
     id: string;
     name: string;
-    projectId: string
+    project: {
+      id: string;
+      name: string;
+      key: string;
+    };
   };
   statusId: string;
   status: {

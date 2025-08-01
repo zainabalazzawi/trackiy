@@ -122,7 +122,7 @@ model Column {
   order     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Project   Project? @relation(fields: [projectId], references: [id])
+  project   Project? @relation(fields: [projectId], references: [id])
   projectId String?
 
   @@unique([name, projectId])

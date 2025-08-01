@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SignInDialog from "./SignInDialog";
+import TicketSearch from "./TicketSearch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,6 +60,8 @@ const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {session && <TicketSearch />}
         </div>
 
         <div className="flex items-center">
