@@ -18,7 +18,13 @@ export async function GET(
       },
       include: {
         status: true,
-        column: true,
+        column: {
+          include: {
+            project: {
+              select: { id: true, name: true, key: true }
+            }
+          }
+        },
       },
     });
 
@@ -66,7 +72,16 @@ export async function PATCH(
           })).id
         })
       },
-      include: { status: true, column: true }
+      include: { 
+        status: true, 
+        column: {
+          include: {
+            project: {
+              select: { id: true, name: true, key: true }
+            }
+          }
+        }
+      }
     });
 
     return NextResponse.json(updatedTicket);

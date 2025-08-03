@@ -25,7 +25,13 @@ export async function GET(
       },
       include: {
         status: true,
-        column: true,
+        column: {
+          include: {
+            project: {
+              select: { id: true, name: true, key: true }
+            }
+          }
+        },
       },
     });
 

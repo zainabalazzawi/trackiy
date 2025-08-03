@@ -14,7 +14,7 @@ interface CardProps {
 
 const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
   const router = useRouter();
-  const { members = [] } = useProjectMembers(ticket.column.projectId);
+  const { members = [] } = useProjectMembers(ticket.column.project.id);
 
   const membersById = members.reduce(
     (acc: Record<string, ProjectMember>, member: ProjectMember) => {
@@ -66,7 +66,7 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
         onClick={(e) => {
           if (!isCurrentlyDragging) {
             router.push(
-              `/projects/${ticket.column.projectId}/tickets/${ticket.id}`
+              `/projects/${ticket.column.project.id}/tickets/${ticket.id}`
             );
           }
         }}
