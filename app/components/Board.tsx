@@ -58,7 +58,7 @@ const Board = ({ projectId }: BoardProps) => {
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
   const [newTicket, setNewTicket] = useState("");
   const [selectedAssignee, setSelectedAssignee] =
-    useState<string>("Unassigned");
+    useState<string>("unassigned");
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -154,7 +154,7 @@ const Board = ({ projectId }: BoardProps) => {
       queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
       setIsCreatingTicket(false);
       setNewTicket("");
-      setSelectedAssignee("Unassigned");
+      setSelectedAssignee("unassigned");
     },
   });
 
@@ -244,14 +244,14 @@ const Board = ({ projectId }: BoardProps) => {
                             } else if (e.key === "Escape") {
                               setIsCreatingTicket(false);
                               setNewTicket("");
-                              setSelectedAssignee("Unassigned");
+                              setSelectedAssignee("unassigned");
                             }
                           }}
                           onBlur={() => {
                             if (!isSelectOpen) {
                               setIsCreatingTicket(false);
                               setNewTicket("");
-                              setSelectedAssignee("Unassigned");
+                              setSelectedAssignee("unassigned");
                             }
                           }}
                         />
