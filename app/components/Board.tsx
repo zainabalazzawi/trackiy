@@ -36,9 +36,10 @@ import {
 
 interface BoardProps {
   projectId: string;
+  selectedMemberId?: string | null;
 }
 
-const Board = ({ projectId }: BoardProps) => {
+const Board = ({ projectId, selectedMemberId }: BoardProps) => {
   const { data: session } = useSession();
   const { members } = useProjectMembers(projectId);
 
@@ -206,8 +207,9 @@ const Board = ({ projectId }: BoardProps) => {
       >
         <div className="flex gap-2 pb-4 h-full">
           {columns.map((column, index) => {
-            const columnTickets = tickets.filter(
-              (ticket) => ticket.columnId === column.id
+            const columnTickets = tickets.filter((ticket) => 
+              ticket.columnId === column.id && 
+              (!selectedMemberId || ticket.assignee === selectedMemberId)
             );
 
             return (

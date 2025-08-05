@@ -33,6 +33,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
 
   const [open, setOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   const inviteMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -58,7 +59,12 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
         <div className="mb-6 flex items-center gap-2">
           <h1 className="text-2xl font-bold">{project.name}</h1>
           <div className="flex items-center gap-3">
-            <Members projectId={resolvedParams.id} />
+            <Members 
+              projectId={resolvedParams.id} 
+              selectedMemberId={selectedMemberId}
+              onMemberSelect={setSelectedMemberId}
+            />
+      
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button
@@ -110,7 +116,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
         </div>
         <p className="text-gray-600">Key: {project.key}</p>
       </div>
-      <Board projectId={resolvedParams.id} />
+      <Board projectId={resolvedParams.id} selectedMemberId={selectedMemberId} />
     </div>
   );
 }
