@@ -19,10 +19,15 @@ import { UserPlus } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LoadingState } from "@/app/components/LoadingState";
 
-export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ProjectPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const resolvedParams = use(params);
-  
+
   const { data: project, isLoading } = useQuery<Project>({
     queryKey: ["project", resolvedParams.id],
     queryFn: async () => {
@@ -50,7 +55,14 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
     inviteMutation.mutate(inviteEmail);
   };
 
-  if (isLoading) return <div className="p-6">Loading...</div>;
+  if (isLoading)
+    return (
+        <LoadingState
+          text="Loading project details"
+          iconSize={64}
+          className="animate-spin text-[#649C9E]"
+        />
+    );
   if (!project) return <div className="p-6">Project not found</div>;
 
   return (
@@ -59,12 +71,12 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
         <div className="mb-6 flex items-center gap-2">
           <h1 className="text-2xl font-bold">{project.name}</h1>
           <div className="flex items-center gap-3">
-            <Members 
-              projectId={resolvedParams.id} 
+            <Members
+              projectId={resolvedParams.id}
               selectedMemberId={selectedMemberId}
               onMemberSelect={setSelectedMemberId}
             />
-      
+
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button
@@ -77,19 +89,18 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add people to {project.name} project</DialogTitle>
+                  <DialogTitle>
+                    Add people to {project.name} project
+                  </DialogTitle>
                 </DialogHeader>
-                <form
-                  onSubmit={handleInviteSubmit}
-                  className="space-y-4"
-                >
+                <form onSubmit={handleInviteSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="invite-email">add email</Label>
                     <Input
                       id="invite-email"
                       type="email"
                       value={inviteEmail}
-                      onChange={e => setInviteEmail(e.target.value)}
+                      onChange={(e) => setInviteEmail(e.target.value)}
                       placeholder="Enter email"
                       required
                     />
@@ -111,12 +122,15 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                   </DialogFooter>
                 </form>
               </DialogContent>
-                        </Dialog>
+            </Dialog>
           </div>
         </div>
         <p className="text-gray-600">Key: {project.key}</p>
       </div>
-      <Board projectId={resolvedParams.id} selectedMemberId={selectedMemberId} />
+      <Board
+        projectId={resolvedParams.id}
+        selectedMemberId={selectedMemberId}
+      />
     </div>
   );
 }

@@ -5,16 +5,24 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { Suspense } from "react";
 import InviteHandler from "./InviteHandler";
+import { LoadingState } from "../components/LoadingState";
 
 const ProjectsPage = () => {
   const { projects, isLoading } = useProjects();
 
-  if (isLoading) return <div className="p-6">Loading...</div>;
+  if (isLoading)
+    return (
+        <LoadingState
+          text="Loading projects list"
+          iconSize={64}
+          className="animate-spin text-[#649C9E]"
+        />
+    );
 
   return (
     <div className="container mx-auto py-10">
       <DataTable columns={columns} data={projects || []} />
-      
+
       <Suspense fallback={null}>
         <InviteHandler />
       </Suspense>
@@ -22,4 +30,4 @@ const ProjectsPage = () => {
   );
 };
 
-export default ProjectsPage; 
+export default ProjectsPage;
