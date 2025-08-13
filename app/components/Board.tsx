@@ -14,7 +14,7 @@ import Column from "./Column";
 
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { Ticket, Column as ColumnType, ProjectMember } from "../types";
+import { Ticket, Column as ColumnType, ProjectMember, MemberSelection } from "../types";
 import { useState, useRef } from "react";
 import TicketCard from "./TicketCard";
 import {
@@ -36,7 +36,7 @@ import {
 
 interface BoardProps {
   projectId: string;
-  selectedMemberId?: string | null;
+  selectedMemberId?: MemberSelection;
 }
 
 const Board = ({ projectId, selectedMemberId }: BoardProps) => {
@@ -209,7 +209,10 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
           {columns.map((column, index) => {
             const columnTickets = tickets.filter((ticket) => 
               ticket.columnId === column.id && 
-              (!selectedMemberId || ticket.assignee === selectedMemberId)
+              (!selectedMemberId || 
+               (selectedMemberId === "unassigned" ? 
+                 !ticket.assignee || ticket.assignee === "unassigned" : 
+                 ticket.assignee === selectedMemberId))
             );
 
             return (

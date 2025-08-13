@@ -1,12 +1,13 @@
 import { useProjectMembers } from "@/app/hooks/useProjects";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ProjectMember } from "../types";
+import { ProjectMember, MemberSelection } from "../types";
 import { cn } from "@/lib/utils";
+import { User } from "lucide-react";
 
 interface MemberProps {
   projectId: string;
-  selectedMemberId?: string | null;
-  onMemberSelect?: (memberId: string | null) => void;
+  selectedMemberId?: MemberSelection;
+  onMemberSelect?: (memberId: MemberSelection) => void;
 }
 
 export default function Members({ 
@@ -16,7 +17,7 @@ export default function Members({
 }: MemberProps) {
   const { members } = useProjectMembers(projectId);
 
-  const handleMemberClick = (memberId: string) => {
+  const handleMemberClick = (memberId: MemberSelection) => {
     if (!onMemberSelect) return;
     
     // Toggle selection: if already selected, deselect; otherwise select
@@ -47,6 +48,18 @@ export default function Members({
           </AvatarFallback>
         </Avatar>
       ))}
+      
+      <Avatar 
+        className={cn(
+          "cursor-pointer transition-all hover:scale-105",
+          selectedMemberId === "unassigned" && "ring-2 ring-blue-950"
+        )}
+        onClick={() => handleMemberClick("unassigned")}
+      >
+        <AvatarFallback className="text-xs bg-gray-200 text-gray-600">
+          <User className="h-4 w-4 text-gray-500" />
+        </AvatarFallback>
+      </Avatar>
     </div>
   );
 }

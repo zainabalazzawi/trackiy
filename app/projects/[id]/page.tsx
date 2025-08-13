@@ -5,6 +5,7 @@ import axios from "axios";
 import Board from "@/app/components/Board";
 import Members from "@/app/components/Members";
 import { Project } from "@prisma/client";
+import { MemberSelection } from "../../types";
 import { use } from "react";
 import {
   Dialog,
@@ -38,7 +39,7 @@ export default function ProjectPage({
 
   const [open, setOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [selectedMemberId, setSelectedMemberId] = useState<MemberSelection>(null);
 
   const inviteMutation = useMutation({
     mutationFn: async (email: string) => {

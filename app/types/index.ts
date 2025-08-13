@@ -1,5 +1,6 @@
 export type Priority = "LOW" | "MEDIUM" | "HIGH";
 export type InvitationStatus = 'pending' | 'accepted';
+export type MemberSelection = string | "unassigned" | null;
 
 export interface ProjectMember {
   id: string;
