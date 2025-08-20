@@ -93,3 +93,29 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ ticketId: string; projectId: string }> }
+) {
+  try {
+    const { ticketId, projectId } = await params;
+    
+    await prisma.ticket.delete({
+      where: { 
+        id: ticketId,
+        column: {
+          projectId: projectId
+        }
+      },
+    });
+
+    return NextResponse.json({ message: "Ticket deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting ticket:", error);
+    return NextResponse.json(
+      { error: "Failed to delete ticket" },
+      { status: 500 }
+    );
+  }
+}

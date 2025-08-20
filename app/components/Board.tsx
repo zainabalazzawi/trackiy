@@ -159,6 +159,14 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
     },
   });
 
+  const handleTicketDeleted = (ticketId: string) => {
+    // Optimistically remove the ticket from the local state
+    queryClient.setQueryData(["tickets", projectId], (old: Ticket[]) => {
+      return old.filter((ticket: Ticket) => ticket.id !== ticketId);
+    });
+    
+  };
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
@@ -229,7 +237,11 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                   strategy={verticalListSortingStrategy}
                 >
                   {columnTickets.map((ticket) => (
-                    <TicketCard key={ticket.id} ticket={ticket} />
+                    <TicketCard 
+                      key={ticket.id} 
+                      ticket={ticket} 
+                      onTicketDeleted={handleTicketDeleted}
+                    />
                   ))}
                 </SortableContext>
                 {index === 0 && (
@@ -406,6 +418,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
             <TicketCard
               ticket={tickets.find((t) => t.id === activeId)!}
               isDragging={true}
+              onTicketDeleted={handleTicketDeleted}
             />
           ) : null}
         </DragOverlay>
