@@ -91,6 +91,7 @@ enum InvitationStatus {
 
 model Ticket {
   id          String   @id @default(cuid())
+  ticketNumber String  @unique
   title       String
   description String?
   column      Column   @relation(fields: [columnId], references: [id])

@@ -8,10 +8,17 @@ interface EditableFieldProps {
   value: string;
   onSave: (value: string) => void;
   label?: string;
-  type?: 'input' | 'textarea';
+  type?: "input" | "textarea";
+  titleText?: boolean;
 }
 
-const EditableField = ({ value, onSave, label, type = 'input' }: EditableFieldProps) => {
+const EditableField = ({
+  value,
+  onSave,
+  label,
+  type = "input",
+  titleText,
+}: EditableFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
 
@@ -23,7 +30,7 @@ const EditableField = ({ value, onSave, label, type = 'input' }: EditableFieldPr
   if (isEditing) {
     return (
       <div className="flex items-center gap-2">
-        {type === 'textarea' ? (
+        {type === "textarea" ? (
           <Textarea
             value={editedValue}
             onChange={(e) => setEditedValue(e.target.value)}
@@ -56,7 +63,9 @@ const EditableField = ({ value, onSave, label, type = 'input' }: EditableFieldPr
     <div className="flex flex-col">
       {label && <span className="text-sm">{label}</span>}
       <div className="flex gap-2">
-        <span className="font-medium">{value}</span>
+        <span className={`${titleText ? "font-bold text-lg" : ""}`}>
+          {value}
+        </span>
         <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
           <Pencil className="h-4 w-4" />
         </Button>

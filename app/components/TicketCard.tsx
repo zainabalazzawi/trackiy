@@ -76,6 +76,8 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
+            {ticket.ticketNumber}
+
             <div
               className={`
                 p-1 
@@ -98,21 +100,23 @@ const TicketCard = ({ ticket, isDragging = false }: CardProps) => {
                   <User className="h-4 w-4 text-gray-500" />
                 </div>
               </div>
-            ) : assigneeMember && (
-              <div className="flex items-center gap-2">
-                <Avatar className="w-6 h-6">
-                  <AvatarImage
-                    src={assigneeMember.image?.replace("s96-c", "s400-c")}
-                    className="object-cover"
-                  />
-                  <AvatarFallback className="text-xs">
-                    {assigneeMember.name
-                      ?.split(" ")
-                      .map((n: string) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
+            ) : (
+              assigneeMember && (
+                <div className="flex items-center gap-2">
+                  <Avatar className="w-6 h-6">
+                    <AvatarImage
+                      src={assigneeMember.image?.replace("s96-c", "s400-c")}
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="text-xs">
+                      {assigneeMember.name
+                        ?.split(" ")
+                        .map((n: string) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              )
             )}
           </div>
         </CardContent>

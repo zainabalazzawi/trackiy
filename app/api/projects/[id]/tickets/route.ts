@@ -62,6 +62,16 @@ export async function POST(
       include: { status: true },
     });
 
+    // Get project key for ticket number prefix
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { key: true }
+    });
+
+    // Generate a random 3-4 digit number and combine with project key
+    const randomNumber = Math.floor(Math.random() * 9000) + 1000;
+    const ticketNumber = `${project?.key}-${randomNumber}`;
+
     const ticket = await prisma.ticket.create({
       data: {
         title: body.title,
@@ -71,6 +81,7 @@ export async function POST(
         priority: body.priority || "MEDIUM",
         assignee: body.assignee,
         reporter: session?.user.name,
+        ticketNumber: ticketNumber
       },
       include: {
         status: true,

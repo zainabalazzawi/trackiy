@@ -11,6 +11,7 @@ export interface ProjectMember {
 
 export interface Ticket {
   id: string;
+  ticketNumber: string;
   title: string;
   description?: string;
   columnId: string;

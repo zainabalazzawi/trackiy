@@ -17,6 +17,7 @@ const TicketSearch = () => {
     clearSearch();
   };
 
+  console.log(results.map((result)=> result.ticketNumber))
   return (
     <div className="relative w-90 text-muted-foreground">
       <div>
@@ -43,7 +44,7 @@ const TicketSearch = () => {
                   onClick={() => handleTicketClick(result)}
                   className="p-1 px-3 hover:bg-accent cursor-pointer border-b last:border-b-0"
                 >
-                  <div className="text-[16px] font-normal">{result.title}</div>
+                  <div className="text-[14px] font-normal">  {result.ticketNumber} &nbsp; {result.title}</div>
                     <span className="text-xs text-gray-700 font-medium">
                       {result?.column?.project?.name}
                     </span>

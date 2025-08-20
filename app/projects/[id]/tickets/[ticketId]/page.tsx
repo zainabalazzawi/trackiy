@@ -81,15 +81,17 @@ const TicketPage = () => {
 
   return (
     <div className="p-6 w-full">
+      {ticket.ticketNumber}
       <div className="flex gap-8">
         <div className="w-[70%]">
           <div className="mb-8">
             <EditableField
               value={ticket.title}
               onSave={(value) => updateTicketMutation.mutate({ title: value })}
+              titleText
             />
 
-            <div className="flex items-center gap-60">
+            <div className="flex items-center gap-60 mt-3">
               <span>Priority</span>
               <PrioritySelect
                 value={ticket.priority}
