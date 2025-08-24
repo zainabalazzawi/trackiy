@@ -83,7 +83,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Delete the project (this will cascade delete columns, tickets, and members)
+    // Delete the project (this will cascade delete columns, tickets, statuses, and members)
     await prisma.project.delete({
       where: { id: projectId }
     });
