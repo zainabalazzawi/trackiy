@@ -90,7 +90,7 @@ export async function POST(request: Request) {
       defaultColumns.map(async (columnName) => {
         // Try to find existing status
         const existingStatus = await prisma.status.findFirst({
-          where: { name: columnName }
+          where: { name: columnName, projectId: project.id }
         });
 
         if (existingStatus) {
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 
         // Create new status if it doesn't exist
         return prisma.status.create({
-          data: { name: columnName }
+          data: { name: columnName, projectId: project.id }
         });
       })
     );

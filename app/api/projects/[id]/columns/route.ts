@@ -10,17 +10,14 @@ export async function GET(
   try {
     const { id } = await params;
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const columns = await prisma.column.findMany({
       where: {
-        projectId: id
+        projectId: id,
       },
       include: {
         status: true,
@@ -41,15 +38,14 @@ export async function GET(
   }
 }
 
-
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { id, name,  order } = body;
+    const { id, name, order } = body;
 
     const column = await prisma.column.update({
       where: { id },
-      data: { name , order},
+      data: { name, order },
       include: {
         status: true,
         tickets: true,
@@ -78,14 +74,17 @@ export async function POST(request: Request) {
 
     const highestOrderColumn = await prisma.column.findFirst({
       where: { projectId },
-      orderBy: { order: 'desc' }
+      orderBy: { order: "desc" },
     });
 
     const newOrder = highestOrderColumn ? highestOrderColumn.order + 1 : 0;
 
     // First create the status
     const status = await prisma.status.create({
-      data: { name }
+      data: {
+        name,
+        projectId,
+      },
     });
 
     // Then create the column with the new status
@@ -94,12 +93,12 @@ export async function POST(request: Request) {
         name,
         statusId: status.id,
         order: newOrder,
-        projectId // Add the projectId to associate the column with the project
+        projectId, // Add the projectId to associate the column with the project
       },
       include: {
         status: true,
-        tickets: true
-      }
+        tickets: true,
+      },
     });
 
     return NextResponse.json(column);
@@ -120,7 +119,7 @@ export async function DELETE(request: NextRequest) {
     // Find the column to get its statusId before deleting
     const column = await prisma.column.findUnique({
       where: { id },
-      select: { statusId: true }
+      select: { statusId: true },
     });
 
     if (!column) {
@@ -134,16 +133,16 @@ export async function DELETE(request: NextRequest) {
 
     // Check if any other columns or tickets use this status
     const otherColumns = await prisma.column.count({
-      where: { statusId: column.statusId }
+      where: { statusId: column.statusId },
     });
     const otherTickets = await prisma.ticket.count({
-      where: { statusId: column.statusId }
+      where: { statusId: column.statusId },
     });
 
     // If no other columns or tickets use this status, delete the status
     if (otherColumns === 0 && otherTickets === 0) {
       await prisma.status.delete({
-        where: { id: column.statusId }
+        where: { id: column.statusId },
       });
     }
 

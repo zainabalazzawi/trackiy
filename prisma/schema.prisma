@@ -107,18 +107,19 @@ model Ticket {
 
 model Status {
   id        String   @id @default(cuid())
-  name      String   @unique
-  columns   Column[]
+  name      String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
   tickets   Ticket[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([name, projectId])
 }
 
 model Column {
   id        String   @id @default(cuid())
   name      String
-  status    Status   @relation(fields: [statusId], references: [id])
-  statusId  String
   tickets   Ticket[]
   order     Int
   createdAt DateTime @default(now())
@@ -139,6 +140,7 @@ model Project {
   template    ProjectTemplate 
   category    ProjectCategory
   columns     Column[]
+  statuses    Status[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   createdBy   User        @relation("ProjectCreatedBy", fields: [userId], references: [id])
