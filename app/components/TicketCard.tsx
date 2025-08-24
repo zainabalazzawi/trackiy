@@ -144,7 +144,7 @@ const TicketCard = ({
               {ticket.ticketNumber}
 
               <div title={ticket.priority}>
-                <CircleCircle
+                <Circle
                   size={16}
                   className={`
                     ${
