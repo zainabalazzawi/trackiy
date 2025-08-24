@@ -5,7 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProjectMembers } from "../hooks/useProjects";
-import { User, Trash2, MoreHorizontal } from "lucide-react";
+import { User, Trash2, MoreHorizontal, Circle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -143,20 +143,19 @@ const TicketCard = ({
             <div className="flex items-center justify-between">
               {ticket.ticketNumber}
 
-              <div
-                className={`
-                  p-1 
-                  rounded-b-sm 
-                  ${
-                    ticket.priority === "HIGH"
-                      ? "bg-red-100 text-red-800"
-                      : ticket.priority === "MEDIUM"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-green-100 text-green-800"
-                  }
-                `}
-              >
-                {ticket.priority}
+              <div title={ticket.priority}>
+                <CircleCircle
+                  size={16}
+                  className={`
+                    ${
+                      ticket.priority === "HIGH"
+                        ? "text-red-900 fill-red-900"
+                        : ticket.priority === "MEDIUM"
+                        ? "text-yellow-500 fill-yellow-500"
+                        : "text-green-900 fill-green-900"
+                    }
+                  `}
+                />
               </div>
 
               {ticket.assignee === "unassigned" ? (
