@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SignInDialog from "./SignInDialog";
 import TicketSearch from "./TicketSearch";
+import BreadcrumbNav from "./BreadcrumbNav";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -114,6 +115,7 @@ const Header = () => {
           )}
         </div>
       </div>
+      <BreadcrumbNav />
     </div>
   );
 };
