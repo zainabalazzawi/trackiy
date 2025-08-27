@@ -11,8 +11,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useProject } from "@/app/hooks/useProjects";
+import { useTicket } from "@/app/hooks/useTickets";
 
 const BreadcrumbNav = () => {
   const pathname = usePathname();
@@ -21,23 +21,8 @@ const BreadcrumbNav = () => {
   const projectId = pathname.split('/')[2]; // /projects/[id]/...
   const ticketId = pathname.split('/')[4]; // /projects/[id]/tickets/[ticketId]
   
-  const { data: project } = useQuery({
-    queryKey: ["project", projectId],
-    queryFn: async () => {
-      const response = await axios.get(`/api/projects/${projectId}`);
-      return response.data;
-    },
-    enabled: !!projectId
-  });
-
-  const { data: ticket } = useQuery({
-    queryKey: ["ticket", ticketId],
-    queryFn: async () => {
-      const response = await axios.get(`/api/projects/${projectId}/tickets/${ticketId}`);
-      return response.data;
-    },
-    enabled: !!projectId && !!ticketId
-  });
+  const { project } = useProject(projectId);
+  const { ticket } = useTicket(projectId, ticketId);
 
   const generateBreadcrumbs = () => {
     const breadcrumbs = [];

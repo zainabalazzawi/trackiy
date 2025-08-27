@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { useDeleteTicket } from "@/app/hooks/useTickets";
 
 interface CardProps {
   ticket: Ticket;
@@ -70,20 +69,16 @@ const TicketCard = ({
 
   const assigneeMember = membersById[ticket.assignee as string];
 
-  const deleteTicket = async (ticketId: string) => {
-    const response = await axios.delete(
-      `/api/projects/${ticket.column.project.id}/tickets/${ticketId}`
-    );
-    return response.data;
-  };
+  const { deleteTicket, isDeleting } = useDeleteTicket(ticket.column.project.id);
 
-  const deleteTicketMutation = useMutation({
-    mutationFn: (ticketId: string) => deleteTicket(ticketId),
-    onSuccess: (_, ticketId) => {
-      onTicketDeleted?.(ticketId);
-      setOpen(false);
-    },
-  });
+  const handleDeleteTicket = (ticketId: string) => {
+    deleteTicket(ticketId, {
+      onSuccess: () => {
+        onTicketDeleted?.(ticketId);
+        setOpen(false);
+      },
+    });
+  };
 
   const handleCardClick = (e: React.MouseEvent) => {
       if (!isCurrentlyDragging) {
@@ -203,11 +198,11 @@ const TicketCard = ({
             <Button
               variant="destructive"
               onClick={() => {
-                deleteTicketMutation.mutate(ticket.id);
+                handleDeleteTicket(ticket.id);
               }}
-              disabled={deleteTicketMutation.isPending}
+              disabled={isDeleting}
             >
-              {deleteTicketMutation.isPending ? "Deleting..." : "Delete"}
+              {isDeleting ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>

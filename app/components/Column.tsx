@@ -1,9 +1,9 @@
 import { useDroppable } from '@dnd-kit/core';
 import { Column as ColumnType } from '../types';
-import axios from 'axios';
+
 import { KeyboardEvent, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useUpdateColumn, useDeleteColumn } from '@/app/hooks/useColumns';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from "lucide-react";
 import {
@@ -32,7 +32,7 @@ interface ColumnProps {
 const Column = ({ column, children, projectId }: ColumnProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(column.name);
-  const queryClient = useQueryClient();
+
   const [open, setOpen] = useState(false);
 
   const { setNodeRef, isOver } = useDroppable({
@@ -43,43 +43,19 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
     }
   });
 
-  const updateColumnName = async (id: string, newName: string) => {
-    const response = await axios.patch(`/api/projects/${projectId}/columns`, { 
-      id, 
-      name: newName,
-      status: newName
-    });
-    return response.data;
-  }
+  const { updateColumn, isUpdating } = useUpdateColumn(projectId);
 
-  const updateColumnMutation = useMutation({
-    mutationFn: ({ id, name }: { id: string; name: string }) => 
-      updateColumnName(id, name),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['columns'] });
-      setIsEditing(false);
-    },
-  });
-
-  const deleteColumn = async (id: string) => {
-    const response = await axios.delete(`/api/projects/${projectId}/columns`, {
-      data: { id }
-    });
-    return response.data;
-  };
-
-  const deleteColumnMutation = useMutation({
-    mutationFn: (id: string) => deleteColumn(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['columns'] });
-    },
-  });
+  const { deleteColumn, isDeleting } = useDeleteColumn(projectId);
 
   const handleNameSubmit = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      updateColumnMutation.mutate({ 
+      updateColumn({ 
         id: column.id, 
         name 
+      }, {
+        onSuccess: () => {
+          setIsEditing(false);
+        },
       });
     } else if (e.key === 'Escape') {
       setName(column.name);
@@ -157,10 +133,10 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
             <Button
               variant="destructive"
               onClick={() => {
-                deleteColumnMutation.mutate(column.id);
+                                  deleteColumn(column.id);
                 setOpen(false);
               }}
-              disabled={deleteColumnMutation.isPending}
+                                disabled={isDeleting}
             >
               Delete
             </Button>

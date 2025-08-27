@@ -1,13 +1,13 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { Priority, ProjectMember, Status, Ticket } from "@/app/types";
 import { useParams } from "next/navigation";
 import PrioritySelect from "@/app/components/PrioritySelect";
 import EditableField from "@/app/components/EditableField";
 import StatusSelect from "@/app/components/StatusSelect";
 import { useProjectMembers } from "@/app/hooks/useProjects";
+import { useTicket, useUpdateTicket } from "@/app/hooks/useTickets";
+import { useStatuses } from "@/app/hooks/useStatuses";
 import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -25,39 +25,10 @@ const TicketPage = () => {
     id: string;
     ticketId: string;
   };
-  const queryClient = useQueryClient();
   const { members } = useProjectMembers(projectId);
-
-  const { data: ticket, isLoading } = useQuery<Ticket>({
-    queryKey: ["ticket", ticketId],
-    queryFn: async () => {
-      const response = await axios.get(
-        `/api/projects/${projectId}/tickets/${ticketId}`
-      );
-      return response.data;
-    },
-  });
-
-  const { data: statuses } = useQuery({
-    queryKey: ["statuses", projectId],
-    queryFn: async () => {
-      const response = await axios.get(`/api/projects/${projectId}/statuses`);
-      return response.data;
-    },
-  });
-
-  const updateTicketMutation = useMutation({
-    mutationFn: async (updateData: Partial<Ticket>) => {
-      const response = await axios.patch(
-        `/api/projects/${projectId}/tickets/${ticketId}`,
-        updateData
-      );
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
-    },
-  });
+  const { ticket, isLoading } = useTicket(projectId, ticketId);
+  const { statuses } = useStatuses(projectId);
+  const { updateTicket, isUpdating } = useUpdateTicket(projectId, ticketId);
 
   if (isLoading)
     return (
@@ -87,7 +58,7 @@ const TicketPage = () => {
           <div className="mb-8">
             <EditableField
               value={ticket.title}
-              onSave={(value) => updateTicketMutation.mutate({ title: value })}
+              onSave={(value) => updateTicket({ title: value })}
               titleText
             />
 
@@ -96,7 +67,7 @@ const TicketPage = () => {
               <PrioritySelect
                 value={ticket.priority}
                 onChange={(value) =>
-                  updateTicketMutation.mutate({ priority: value as Priority })
+                  updateTicket({ priority: value as Priority })
                 }
               />
             </div>
@@ -105,7 +76,7 @@ const TicketPage = () => {
           <EditableField
             value={ticket.description ?? ""}
             onSave={(value) =>
-              updateTicketMutation.mutate({ description: value })
+              updateTicket({ description: value })
             }
             label="Description"
             type="textarea"
@@ -118,7 +89,7 @@ const TicketPage = () => {
               statuses={statuses}
               ticket={ticket}
               handleStatusChange={(statusId: string) => {
-                updateTicketMutation.mutate({ status: statusId });
+                updateTicket({ status: statusId });
               }}
             />
           </div>
@@ -135,7 +106,7 @@ const TicketPage = () => {
                     onValueChange={(value) => {
                       const assigneeValue =
                         value === "unassigned" ? "unassigned" : value;
-                      updateTicketMutation.mutate({ assignee: assigneeValue });
+                      updateTicket({ assignee: assigneeValue });
                     }}
                   >
                     <SelectTrigger className="w-auto border-0 p-0 h-auto bg-transparent hover:bg-gray-50 rounded">

@@ -24,9 +24,10 @@ export const useTicketSearch = (): UseTicketSearchReturn => {
   const [query, setQuery] = useState('');
 
   // Use React Query for better caching and state management
-  const { data: results = [], isLoading,  } = useQuery({
+  const { data: results = [], isLoading } = useQuery({
     queryKey: ['tickets', 'search', query],
     queryFn: () => searchTickets(query),
+    enabled: !!query.trim(), // Only run query when there's a search term
   });
 
   const clearSearch = () => {

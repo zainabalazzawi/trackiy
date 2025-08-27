@@ -9,7 +9,7 @@ import {
   PointerSensor,
   DragStartEvent,
 } from "@dnd-kit/core";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import Column from "./Column";
 
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCreateTicket, useTickets } from "../hooks/useTickets";
+import { useColumns, useCreateColumn } from "../hooks/useColumns";
+import { useUpdateTicketStatus } from "../hooks/useStatuses";
 
 interface BoardProps {
   projectId: string;
@@ -42,6 +45,10 @@ interface BoardProps {
 const Board = ({ projectId, selectedMemberId }: BoardProps) => {
   const { data: session } = useSession();
   const { members } = useProjectMembers(projectId);
+  const { tickets } = useTickets(projectId);
+  const { updateTicketStatus } = useUpdateTicketStatus(projectId);
+  const { createTicket, isCreating } = useCreateTicket(projectId);
+
 
   const membersById = members.reduce(
     (acc: Record<string, ProjectMember>, member: ProjectMember) => {
@@ -71,93 +78,10 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
     })
   );
 
-  const getTickets = async (): Promise<Ticket[]> => {
-    const response = await axios.get(`/api/projects/${projectId}/tickets`);
-    return response.data;
-  };
+  const { columns } = useColumns(projectId);
 
-  const getColumns = async (): Promise<ColumnType[]> => {
-    const response = await axios.get(`/api/projects/${projectId}/columns`);
-    return response.data;
-  };
+  const { createColumn, isCreating: isCreatingColumn } = useCreateColumn(projectId);
 
-  const { data: tickets = [] } = useQuery({
-    queryKey: ["tickets", projectId],
-    queryFn: getTickets,
-  });
-
-  const { data: columns = [] } = useQuery({
-    queryKey: ["columns", projectId],
-    queryFn: getColumns,
-  });
-
-  const updateTicketMutation = useMutation({
-    mutationFn: async ({
-      ticketId,
-      columnId,
-    }: {
-      ticketId: string;
-      columnId: string;
-    }) => {
-      const column = columns.find((col) => col.id === columnId);
-      const response = await axios.patch(
-        `/api/projects/${projectId}/tickets/${ticketId}`,
-        {
-          status: column?.statusId,
-          projectId,
-        }
-      );
-      return response.data;
-    },
-    onMutate: ({
-      ticketId,
-      columnId,
-    }: {
-      ticketId: string;
-      columnId: string;
-    }) => {
-      queryClient.setQueryData(["tickets", projectId], (old: Ticket[]) => {
-        return old.map((ticket: Ticket) =>
-          ticket.id === ticketId ? { ...ticket, columnId } : ticket
-        );
-      });
-    },
-  });
-
-  const createColumnMutation = useMutation({
-    mutationFn: async (name: string) => {
-      const response = await axios.post(`/api/projects/${projectId}/columns`, {
-        name,
-        projectId,
-      });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["columns", projectId] });
-      setIsAddingColumn(false);
-      setNewColumnName("");
-    },
-  });
-
-  const createTicketMutation = useMutation({
-    mutationFn: async (ticket: {
-      title: string;
-      columnId: string;
-      assignee?: string;
-    }) => {
-      const response = await axios.post(
-        `/api/projects/${projectId}/tickets`,
-        ticket
-      );
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
-      setIsCreatingTicket(false);
-      setNewTicket("");
-      setSelectedAssignee("unassigned");
-    },
-  });
 
   const handleTicketDeleted = (ticketId: string) => {
     // Optimistically remove the ticket from the local state
@@ -183,9 +107,11 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
       const overTicket = tickets.find((t) => t.id === over.id);
       const targetColumnId = overTicket ? overTicket.columnId : over.id;
 
-      updateTicketMutation.mutate({
+      const column = columns.find((col) => col.id === targetColumnId);
+      updateTicketStatus({
         ticketId: active.id as string,
         columnId: targetColumnId as string,
+        statusId: column?.statusId,
       });
     }
 
@@ -194,15 +120,26 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
 
   const handleAddColumn = () => {
     if (newColumnName.trim()) {
-      createColumnMutation.mutate(newColumnName);
+      createColumn(newColumnName, {
+        onSuccess: () => {
+          setIsAddingColumn(false);
+          setNewColumnName("");
+        },
+      });
     }
   };
 
   const handleCreateTicket = (columnId: string) => {
-    createTicketMutation.mutate({
+    createTicket({
       title: newTicket,
       columnId: columnId,
       assignee: selectedAssignee,
+    }, {
+      onSuccess: () => {
+        setIsCreatingTicket(false);
+        setNewTicket("");
+        setSelectedAssignee("unassigned");
+      },
     });
   };
 
