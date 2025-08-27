@@ -19,9 +19,8 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import Link from "next/link";
+import { useDeleteProject } from "@/app/hooks/useProjects";
 
 export type Project = {
   id: string;
@@ -109,20 +108,15 @@ export const columns: ColumnDef<Project>[] = [
     cell: ({ row }) => {
       const project = row.original;
       const [open, setOpen] = useState(false);
-      const queryClient = useQueryClient();
+      const { deleteProject, isDeleting } = useDeleteProject();
 
-      const deleteProject = async (projectId: string) => {
-        const response = await axios.delete(`/api/projects/${projectId}`);
-        return response.data;
+      const handleDeleteProject = (projectId: string) => {
+        deleteProject(projectId, {
+          onSuccess: () => {
+            setOpen(false);
+          },
+        });
       };
-
-      const deleteProjectMutation = useMutation({
-        mutationFn: (projectId: string) => deleteProject(projectId),
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["projects"] });
-          setOpen(false);
-        },
-      });
 
       return (
         <>
@@ -162,11 +156,11 @@ export const columns: ColumnDef<Project>[] = [
                 <Button
                   variant="destructive"
                   onClick={() => {
-                    deleteProjectMutation.mutate(project.id);
+                    handleDeleteProject(project.id);
                   }}
-                  disabled={deleteProjectMutation.isPending}
+                  disabled={isDeleting}
                 >
-                  {deleteProjectMutation.isPending ? "Deleting..." : "Delete"}
+                  {isDeleting ? "Deleting..." : "Delete"}
                 </Button>
               </DialogFooter>
             </DialogContent>

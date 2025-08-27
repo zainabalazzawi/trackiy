@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import InfoCard from "@/app/components/InfoCard";
-import { useProjects } from "@/app/hooks/useProjects";
+import { useCreateProject } from "@/app/hooks/useProjects";
 
 export type ProjectCategory = "SOFTWARE" | "SERVICE" | null;
 export type TemplateType = "KANBAN" | "CUSTOMER_SERVICE" | null;
@@ -24,7 +24,7 @@ const CreateProject = () => {
   const [projectType, setProjectType] = useState<ProjectType>(null);
   const [projectName, setProjectName] = useState("");
   const [projectKey, setProjectKey] = useState("");
-  const { createProject, isCreating } = useProjects();
+  const { createProject, isCreating } = useCreateProject();
 
   const getTemplateInfo = () => {
     if (selectedTemplate === "KANBAN") {

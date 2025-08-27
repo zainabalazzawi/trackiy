@@ -1,10 +1,9 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import Board from "@/app/components/Board";
 import Members from "@/app/components/Members";
-import { Project } from "@prisma/client";
 import { MemberSelection } from "../../types";
 import { use } from "react";
 import {
@@ -21,6 +20,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingState } from "@/app/components/LoadingState";
+import { useProject } from "@/app/hooks/useProjects";
 
 export default function ProjectPage({
   params,
@@ -29,13 +29,7 @@ export default function ProjectPage({
 }) {
   const resolvedParams = use(params);
 
-  const { data: project, isLoading } = useQuery<Project>({
-    queryKey: ["project", resolvedParams.id],
-    queryFn: async () => {
-      const response = await axios.get(`/api/projects/${resolvedParams.id}`);
-      return response.data;
-    },
-  });
+  const { project, isLoading } = useProject(resolvedParams.id);
 
   const [open, setOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");

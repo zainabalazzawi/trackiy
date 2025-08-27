@@ -1,10 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { Project } from "@prisma/client";
 
-
+// Hook to get all projects
 export function useProjects() {
-  const queryClient = useQueryClient();
-
   const { data: projects, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
@@ -12,6 +11,33 @@ export function useProjects() {
       return response.data;
     },
   });
+
+  return {
+    projects,
+    isLoading,
+  };
+}
+
+// Hook to get a single project by ID
+export function useProject(projectId: string) {
+  const { data: project, isLoading } = useQuery<Project>({
+    queryKey: ["project", projectId],
+    queryFn: async () => {
+      const response = await axios.get(`/api/projects/${projectId}`);
+      return response.data;
+    },
+    enabled: !!projectId,
+  });
+
+  return {
+    project,
+    isLoading,
+  };
+}
+
+// Hook to create a new project
+export function useCreateProject() {
+  const queryClient = useQueryClient();
 
   const createProjectMutation = useMutation({
     mutationFn: async (projectData: {
@@ -31,11 +57,30 @@ export function useProjects() {
   });
 
   return {
-    projects,
-    isLoading,
     createProject: createProjectMutation.mutate,
     isCreating: createProjectMutation.isPending,
     createError: createProjectMutation.error,
+  };
+}
+
+// Hook to delete a project
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+
+  const deleteProjectMutation = useMutation({
+    mutationFn: async (projectId: string) => {
+      const response = await axios.delete(`/api/projects/${projectId}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
+  return {
+    deleteProject: deleteProjectMutation.mutate,
+    isDeleting: deleteProjectMutation.isPending,
+    deleteError: deleteProjectMutation.error,
   };
 }
 
