@@ -32,6 +32,8 @@ export interface Ticket {
   priority: Priority,
   assignee?: string;
   reporter?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Column {

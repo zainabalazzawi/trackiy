@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LoadingState } from "@/app/components/LoadingState";
+import { formatCommentDate } from "@/lib/utils";
 
 const TicketPage = () => {
   const params = useParams();
@@ -75,9 +76,7 @@ const TicketPage = () => {
 
           <EditableField
             value={ticket.description ?? ""}
-            onSave={(value) =>
-              updateTicket({ description: value })
-            }
+            onSave={(value) => updateTicket({ description: value })}
             label="Description"
             type="textarea"
           />
@@ -174,6 +173,14 @@ const TicketPage = () => {
                 <div className="text-sm text-gray-500">Reporter</div>
                 <div className="text-sm font-medium">{ticket?.reporter}</div>
               </div>
+            </div>
+          </div>
+          <div className="mt-5 text-[12px] text-gray-600">
+            <div>
+              Created <span> {formatCommentDate(ticket.createdAt)}</span>
+            </div>
+            <div>
+              Updated <span> {formatCommentDate(ticket.updatedAt)}</span>
             </div>
           </div>
         </div>
