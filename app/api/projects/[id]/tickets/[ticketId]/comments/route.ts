@@ -1,14 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/lib/auth";
+import { authOptions } from "@/app/api/auth/lib/auth";
 
 // GET - Fetch comments for a ticket
-export async function GET(request: Request) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string; ticketId: string }> }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const ticketId = searchParams.get('ticketId') || '';
-    const projectId = searchParams.get('projectId') || '';
+    const { id: projectId, ticketId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -42,9 +43,13 @@ export async function GET(request: Request) {
 }
 
 // POST - Create a new comment
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string; ticketId: string }> }
+) {
   try {
-    const { content, ticketId, projectId } = await request.json();
+    const { id: projectId, ticketId } = await params;
+    const { content } = await request.json();
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -59,7 +64,7 @@ export async function POST(request: Request) {
       data: {
         content: content.trim(),
         ticketId,
-        userId: session.user.id || session.user.email!,
+        userId: session.user.id,
         projectId
       },
       include: {

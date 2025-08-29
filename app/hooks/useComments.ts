@@ -53,7 +53,9 @@ export function useDeleteComment(projectId: string, ticketId: string) {
 
   const deleteCommentMutation = useMutation({
     mutationFn: async (commentId: string) => {
-      const response = await axios.delete(`/api/comments/${commentId}`);
+      const response = await axios.delete(
+        `/api/projects/${projectId}/tickets/${ticketId}/comments/${commentId}`
+      );
       return response.data;
     },
     onSuccess: () => {

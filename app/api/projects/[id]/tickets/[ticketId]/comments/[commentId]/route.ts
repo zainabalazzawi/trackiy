@@ -1,15 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/lib/auth";
+import { authOptions } from "@/app/api/auth/lib/auth";
 
 // DELETE - Delete a comment
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ commentId: string }> }
+  { params }: { params: Promise<{ id: string; ticketId: string; commentId: string }> }
 ) {
   try {
-    const { commentId } = await params;
+    const { id: projectId, ticketId, commentId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -18,10 +18,13 @@ export async function DELETE(
 
     // Get the comment to check ownership
     const comment = await prisma.comment.findUnique({
-      where: { id: commentId },
+      where: { 
+        id: commentId,
+        ticketId,
+        projectId
+      },
       include: { user: true }
     });
-
 
     // Check if user owns the comment
     if (comment?.user.email !== session.user.email) {
