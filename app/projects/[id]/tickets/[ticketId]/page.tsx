@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { LoadingState } from "@/app/components/LoadingState";
 import { formatCommentDate } from "@/lib/utils";
+import Comments from "@/app/components/Comments";
 
 const TicketPage = () => {
   const params = useParams();
@@ -80,6 +81,11 @@ const TicketPage = () => {
             label="Description"
             type="textarea"
           />
+
+          {/* Comments Section */}
+          <div className="mt-8">
+            <Comments projectId={projectId} ticketId={ticketId} />
+          </div>
         </div>
 
         <div className="w-[30%]">

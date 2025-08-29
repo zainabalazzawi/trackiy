@@ -34,6 +34,7 @@ export interface Ticket {
   reporter?: string;
   createdAt: string;
   updatedAt: string;
+  comments?: Comment[];
 }
 
 export interface Column {
@@ -57,4 +58,19 @@ export interface Status {
   name: string;
   column: Column;
   tickets: Ticket[];
+}
+
+export interface Comment {
+  id: string;
+  content: string;
+  ticketId: string;
+  userId: string;
+  projectId: string;
+  user: {
+    id: string;
+    name: string;
+    image?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }

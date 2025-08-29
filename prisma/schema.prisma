@@ -50,6 +50,7 @@ model User {
   sessions      Session[]
   projects      ProjectMember[]
   createdProjects Project[] @relation("ProjectCreatedBy")
+  comments      Comment[]
 }
 
 model VerificationRequest {
@@ -103,6 +104,20 @@ model Ticket {
   reporter    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  comments    Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Status {
@@ -150,6 +165,7 @@ model Project {
   userId      String
   members     ProjectMember[]
   invitations Invitation[]
+  comments    Comment[]
 }
 
 model ProjectMember {
