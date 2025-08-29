@@ -5,12 +5,14 @@ import {
   useComments,
   useCreateComment,
   useDeleteComment,
+  useUpdateComment,
 } from "@/app/hooks/useComments";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatCommentDate } from "@/lib/utils";
-import { MessageSquare, Send, Trash2 } from "lucide-react";
+import { MessageSquare, Send, Trash2, Edit3 } from "lucide-react";
+import EditableField from "@/app/components/EditableField";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +35,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
   const { comments } = useComments(projectId, ticketId);
   const { createComment, isCreating } = useCreateComment(projectId, ticketId);
   const { deleteComment, isDeleting } = useDeleteComment(projectId, ticketId);
+  const { updateComment, isUpdating } = useUpdateComment(projectId, ticketId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +55,10 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
       deleteComment(commentToDelete);
       setDeleteDialogOpen(false);
     }
+  };
+
+  const handleUpdateComment = (commentId: string, content: string) => {
+    updateComment({ commentId, content });
   };
 
   return (
@@ -128,9 +135,13 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
                   </Button>
                 </div>
               </div>
-              <p className="text-sm text-gray-700 whitespace-pre-wrap ml-5">
-                {comment.content}
-              </p>
+              <div className="ml-5">
+                <EditableField
+                  value={comment.content}
+                  onSave={(value) => handleUpdateComment(comment.id, value)}
+                  type="textarea"
+                />
+              </div>
             </div>
           ))
         )}
