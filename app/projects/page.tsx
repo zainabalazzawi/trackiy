@@ -20,7 +20,7 @@ const ProjectsPage = () => {
     );
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="px-5 py-10">
       <DataTable columns={columns} data={projects || []} />
 
       <Suspense fallback={null}>
