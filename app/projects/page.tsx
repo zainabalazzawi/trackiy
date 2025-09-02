@@ -1,14 +1,24 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useProjects } from "@/app/hooks/useProjects";
-import { columns } from "./columns";
+import { columns, Project } from "./columns";
 import { DataTable } from "./data-table";
 import { Suspense } from "react";
 import InviteHandler from "./InviteHandler";
 import { LoadingState } from "../components/LoadingState";
+import SearchInput from "../components/SearchInput";
 
 const ProjectsPage = () => {
   const { projects, isLoading } = useProjects();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredProjects = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+    return projects?.filter((project: Project) => 
+      project.name.toLowerCase().includes(query)
+    );
+  }, [projects, searchQuery]);
 
   if (isLoading)
     return (
@@ -21,7 +31,15 @@ const ProjectsPage = () => {
 
   return (
     <div className="px-5 py-10">
-      <DataTable columns={columns} data={projects || []} />
+      <div className="mb-6">
+        <SearchInput
+          placeholder="Search projects..."
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
+      </div>
+      
+      <DataTable columns={columns} data={filteredProjects || []} />
 
       <Suspense fallback={null}>
         <InviteHandler />
