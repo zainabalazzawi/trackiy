@@ -8,17 +8,42 @@ import { Suspense } from "react";
 import InviteHandler from "./InviteHandler";
 import { LoadingState } from "../components/LoadingState";
 import SearchInput from "../components/SearchInput";
+import { Label } from "@/components/ui/label";
+import {
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectGroup,
+  MultiSelectItem,
+  MultiSelectTrigger,
+  MultiSelectValue,
+} from "@/components/ui/multi-select";
 
 const ProjectsPage = () => {
   const { projects, isLoading } = useProjects();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 
+  // Filter projects by search query and type
   const filteredProjects = useMemo(() => {
-    const query = searchQuery.toLowerCase();
-    return projects?.filter((project: Project) => 
-      project.name.toLowerCase().includes(query)
-    );
-  }, [projects, searchQuery]);
+    let filtered = projects || [];
+    
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((project: Project) => 
+        project.name.toLowerCase().includes(query)
+      );
+    }
+    
+    // Filter by type
+    if (selectedTypes.length > 0) {
+      filtered = filtered.filter((project: Project) => 
+        selectedTypes.includes(project.type)
+      );
+    }
+    
+    return filtered;
+  }, [projects, searchQuery, selectedTypes]);
 
   if (isLoading)
     return (
@@ -31,12 +56,23 @@ const ProjectsPage = () => {
 
   return (
     <div className="px-5 py-10">
-      <div className="mb-6">
-        <SearchInput
-          placeholder="Search projects..."
-          value={searchQuery}
-          onChange={setSearchQuery}
-        />
+      <div className="mb-6 flex gap-6">
+          <SearchInput
+            placeholder="Search projects..."
+            value={searchQuery}
+            onChange={setSearchQuery}
+          />
+          <MultiSelect onValuesChange={setSelectedTypes} values={selectedTypes}>
+            <MultiSelectTrigger className="w-[30%]">
+              <MultiSelectValue placeholder="Select project types..." />
+            </MultiSelectTrigger>
+            <MultiSelectContent>
+              <MultiSelectGroup>
+                <MultiSelectItem value="TEAM_MANAGED">Team-managed</MultiSelectItem>
+                <MultiSelectItem value="COMPANY_MANAGED">Service-management</MultiSelectItem>
+              </MultiSelectGroup>
+            </MultiSelectContent>
+          </MultiSelect>
       </div>
       
       <DataTable columns={columns} data={filteredProjects || []} />
