@@ -64,7 +64,7 @@ const ProjectsPage = () => {
           />
           <MultiSelect onValuesChange={setSelectedTypes} values={selectedTypes}>
             <MultiSelectTrigger className="w-[30%]">
-              <MultiSelectValue placeholder="Select project types..." />
+              <MultiSelectValue placeholder="Filter by project types" />
             </MultiSelectTrigger>
             <MultiSelectContent>
               <MultiSelectGroup>
