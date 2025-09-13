@@ -67,3 +67,17 @@ export function useUpdateTicketStatus(projectId: string) {
     updateStatusError: updateTicketStatusMutation.error,
   };
 }
+export const useAllStatuses = () => {
+  const { data: allStatuses = [], isLoading } = useQuery<Status[]>({
+    queryKey: ["all-statuses"],
+    queryFn: async () => {
+      const response = await axios.get(`/api/statuses`);
+      return response.data;
+    },
+  });
+
+  return {
+    allStatuses,
+    isLoading,
+  };
+};

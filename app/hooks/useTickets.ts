@@ -19,6 +19,22 @@ export function useTickets(projectId: string) {
   };
 }
 
+// Hook to get all tickets across all projects
+export function useAllTickets() {
+  const { data: tickets = [], isLoading } = useQuery<Ticket[]>({
+    queryKey: ["all-tickets"],
+    queryFn: async () => {
+      const response = await axios.get(`/api/tickets`);
+      return response.data;
+    },
+  });
+
+  return {
+    tickets,
+    isLoading,
+  };
+}
+
 // Hook to get a single ticket by ID
 export function useTicket(projectId: string, ticketId: string) {
   const { data: ticket, isLoading } = useQuery<Ticket>({

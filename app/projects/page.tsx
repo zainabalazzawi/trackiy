@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { useProjects } from "@/app/hooks/useProjects";
-import { columns, Project } from "./columns";
+import { columns } from "./columns";
+import { Project } from "@/app/types";
 import { DataTable } from "./data-table";
 import { Suspense } from "react";
 import InviteHandler from "./InviteHandler";

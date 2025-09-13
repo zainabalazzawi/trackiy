@@ -21,20 +21,7 @@ import {
 import { useState } from "react";
 import Link from "next/link";
 import { useDeleteProject } from "@/app/hooks/useProjects";
-
-export type Project = {
-  id: string;
-  name: string;
-  key: string;
-  type: "TEAM_MANAGED" | "COMPANY_MANAGED";
-  createdBy: {
-    id: string;
-    name: string | null;
-    email: string | null;
-    image: string | null;
-  };
-  lead: string | null;
-};
+import { Project } from "@/app/types";
 
 export const columns: ColumnDef<Project>[] = [
   {

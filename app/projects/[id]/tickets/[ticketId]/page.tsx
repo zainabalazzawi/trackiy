@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LoadingState } from "@/app/components/LoadingState";
-import { formatCommentDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import Comments from "@/app/components/Comments";
 
 const TicketPage = () => {
@@ -183,10 +183,10 @@ const TicketPage = () => {
           </div>
           <div className="mt-5 text-[12px] text-gray-600">
             <div>
-              Created <span> {formatCommentDate(ticket.createdAt)}</span>
+              Created <span> {formatDate(ticket.createdAt)}</span>
             </div>
             <div>
-              Updated <span> {formatCommentDate(ticket.updatedAt)}</span>
+              Updated <span> {formatDate(ticket.updatedAt)}</span>
             </div>
           </div>
         </div>

@@ -2,6 +2,20 @@ export type Priority = "LOW" | "MEDIUM" | "HIGH";
 export type InvitationStatus = 'pending' | 'accepted';
 export type MemberSelection = string | "unassigned" | null;
 
+export interface Project {
+  id: string;
+  name: string;
+  key: string;
+  type: "TEAM_MANAGED" | "COMPANY_MANAGED";
+  createdBy: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+  };
+  lead: string | null;
+}
+
 export interface ProjectMember {
   id: string;
   name: string;

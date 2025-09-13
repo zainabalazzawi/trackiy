@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { formatCommentDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { MessageSquare, Send, Trash2, Edit3 } from "lucide-react";
 import EditableField from "@/app/components/EditableField";
 import {
@@ -120,7 +120,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
                     {comment.user.name}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {formatCommentDate(comment.createdAt)}
+                    {formatDate(comment.createdAt)}
                   </span>
                 </div>
                 <div>
