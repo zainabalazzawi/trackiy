@@ -62,11 +62,11 @@ export async function PATCH(
         title: body.title,
         priority: body.priority,
         assignee: body.assignee,
-        ...(body.status && {
-          statusId: body.status,
+        ...(body.statusId && {
+          statusId: body.statusId,
           columnId: (await prisma.column.findFirstOrThrow({
             where: { 
-              statusId: body.status,
+              statusId: body.statusId,
               projectId: projectId 
             },
           })).id

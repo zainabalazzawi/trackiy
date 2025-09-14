@@ -42,7 +42,7 @@ export interface Ticket {
   status: {
     id: string;
     name: string;
-  } | string;
+  } 
   priority: Priority,
   assignee?: string;
   reporter?: string;

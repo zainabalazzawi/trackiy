@@ -94,7 +94,7 @@ const TicketPage = () => {
               statuses={statuses}
               ticket={ticket}
               handleStatusChange={(statusId: string) => {
-                updateTicket({ status: statusId });
+                updateTicket({ statusId: statusId });
               }}
             />
           </div>

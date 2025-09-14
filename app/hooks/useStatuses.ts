@@ -36,7 +36,7 @@ export function useUpdateTicketStatus(projectId: string) {
       const response = await axios.patch(
         `/api/projects/${projectId}/tickets/${ticketId}`,
         {
-          status: statusId,
+          statusId: statusId,
           projectId,
         }
       );
