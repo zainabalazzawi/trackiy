@@ -157,17 +157,17 @@ const TicketPage = () => {
                           <div className="flex items-center gap-2">
                             <Avatar className="w-4 h-4">
                               <AvatarImage
-                                src={member.image?.replace("s96-c", "s400-c")}
+                                src={member.user.image?.replace("s96-c", "s400-c")}
                                 className="object-cover"
                               />
                               <AvatarFallback className="text-xs">
-                                {member.name
+                                {member.user.name
                                   ?.split(" ")
                                   .map((n: string) => n[0])
                                   .join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <span>{member.name}</span>
+                            <span>{member.user.name}</span>
                           </div>
                         </SelectItem>
                       ))}

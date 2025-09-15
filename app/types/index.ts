@@ -14,13 +14,17 @@ export interface Project {
     image: string | null;
   };
   lead: string | null;
+  members?: ProjectMember[];
 }
 
 export interface ProjectMember {
   id: string;
-  name: string;
-  email: string;
-  image?: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+  };
 }
 
 export interface Ticket {

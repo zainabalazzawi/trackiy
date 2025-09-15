@@ -37,11 +37,11 @@ export default function Members({
           onClick={() => handleMemberClick(member.id)}
         >
           <AvatarImage
-            src={member.image?.replace("s96-c", "s400-c")}
+            src={member.user.image?.replace("s96-c", "s400-c")}
             className="object-cover"
           />
           <AvatarFallback className="text-xs bg-gray-200 text-gray-600">
-            {member.name
+            {member.user.name
               ?.split(" ")
               .map((n: string) => n[0])
               .join("")}
