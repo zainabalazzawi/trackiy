@@ -1,5 +1,5 @@
 export type Priority = "LOW" | "MEDIUM" | "HIGH";
-export type InvitationStatus = 'pending' | 'accepted';
+export type InvitationStatus = "pending" | "accepted";
 export type MemberSelection = string | "unassigned" | null;
 
 export interface Project {
@@ -19,12 +19,10 @@ export interface Project {
 
 export interface ProjectMember {
   id: string;
-  user: {
-    id: string;
-    name: string | null;
-    email: string | null;
-    image: string | null;
-  };
+  userId: string;
+  name: string | null;
+  email: string | null;
+  image: string | null;
 }
 
 export interface Ticket {
@@ -46,8 +44,8 @@ export interface Ticket {
   status: {
     id: string;
     name: string;
-  } 
-  priority: Priority,
+  };
+  priority: Priority;
   assignee?: string;
   reporter?: string;
   createdAt: string;

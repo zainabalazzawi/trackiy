@@ -71,6 +71,7 @@ export function FilterBar({
         </MultiSelectContent>
       </MultiSelect>
 
+{/* chkeck how to pass the name  */}
       {/* Assignee Filter */}
       <MultiSelect
         onValuesChange={onAssigneesChange}

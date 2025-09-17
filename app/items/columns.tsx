@@ -7,15 +7,13 @@ import { useProjects } from "@/app/hooks/useProjects";
 // Simple component to get user name from assignee
 const AssigneeName = ({ assignee }: { assignee: string }) => {
   const { projects } = useProjects();
-  
-  // Use reduce to find user name across all projects
-  const userName = projects?.reduce((foundName: string, project: Project) => {
-    if (foundName) return foundName; 
-    const member = project.members?.find((m: ProjectMember) => m.user.id === assignee);
-    return member?.user.name || "";
-  }, "");
-  
-  return userName || "Unassigned";
+
+  // Find user name across all projects
+  const userName = projects
+    ?.flatMap((project: Project) => project.members || [])
+    .find((member: ProjectMember) => member?.userId === assignee);
+
+  return userName?.user.name || "Unassigned";
 };
 
 export const columns: ColumnDef<Ticket>[] = [
@@ -80,7 +78,7 @@ export const columns: ColumnDef<Ticket>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const ticket = row.original; 
+      const ticket = row.original;
       const statusName = ticket.status.name;
       return (
         <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
