@@ -6,6 +6,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProjectMembers } from "../hooks/useProjects";
 import { User, Trash2, MoreHorizontal, Circle } from "lucide-react";
+import { findMemberById } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,13 +41,6 @@ const TicketCard = ({
   const { members = [] } = useProjectMembers(ticket.column.project.id);
   const [open, setOpen] = useState(false);
 
-  const membersById = members.reduce(
-    (acc: Record<string, ProjectMember>, member: ProjectMember) => {
-      acc[member.id] = member;
-      return acc;
-    },
-    {}
-  );
 
   const {
     attributes,
@@ -67,7 +61,7 @@ const TicketCard = ({
 
   const isCurrentlyDragging = isDragging || isSortableDragging;
 
-  const assigneeMember = membersById[ticket.assignee as string];
+  const assigneeMember = findMemberById(members, ticket.assignee as string);
 
   const { deleteTicket, isDeleting } = useDeleteTicket(ticket.column.project.id);
 
@@ -164,11 +158,11 @@ const TicketCard = ({
                   <div className="flex items-center gap-2">
                     <Avatar className="w-6 h-6">
                       <AvatarImage
-                        src={assigneeMember.image?.replace("s96-c", "s400-c")}
+                        src={assigneeMember.user.image?.replace("s96-c", "s400-c")}
                         className="object-cover"
                       />
                       <AvatarFallback className="text-xs">
-                        {assigneeMember.name
+                        {assigneeMember.user.name
                           ?.split(" ")
                           .map((n: string) => n[0])
                           .join("")}

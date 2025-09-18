@@ -36,6 +36,7 @@ import {
 import { useCreateTicket, useTickets } from "../hooks/useTickets";
 import { useColumns, useCreateColumn } from "../hooks/useColumns";
 import { useUpdateTicketStatus } from "../hooks/useStatuses";
+import { findMemberById } from "@/lib/utils";
 
 interface BoardProps {
   projectId: string;
@@ -50,13 +51,6 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
   const { createTicket, isCreating } = useCreateTicket(projectId);
 
 
-  const membersById = members.reduce(
-    (acc: Record<string, ProjectMember>, member: ProjectMember) => {
-      acc[member.id] = member;
-      return acc;
-    },
-    {}
-  );
 
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -231,13 +225,11 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                                 {selectedAssignee !== "unassigned" ? (
                                   <Avatar className="w-8 h-8">
                                     <AvatarImage
-                                      src={membersById[
-                                        selectedAssignee
-                                      ]?.image?.replace("s96-c", "s400-c")}
+                                      src={findMemberById(members, selectedAssignee)?.user.image?.replace("s96-c", "s400-c")}
                                       className="object-cover"
                                     />
                                     <AvatarFallback className="text-xs">
-                                      {membersById[selectedAssignee]?.name
+                                      {findMemberById(members, selectedAssignee)?.user.name
                                         ?.split(" ")
                                         .map((n: string) => n[0])
                                         .join("")}
@@ -256,24 +248,24 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                                 <span>Unassigned</span>
                               </SelectItem>
                               {members.map((member: ProjectMember) => (
-                                <SelectItem key={member.id} value={member.id}>
+                                <SelectItem key={member.id} value={member.user.id}>
                                   <div className="flex items-center gap-2">
                                     <Avatar className="w-6 h-6">
                                       <AvatarImage
-                                        src={member?.image?.replace(
+                                        src={member?.user.image?.replace(
                                           "s96-c",
                                           "s400-c"
                                         )}
                                         className="object-cover"
                                       />
                                       <AvatarFallback className="text-xs">
-                                        {member?.name
+                                        {member?.user.name
                                           ?.split(" ")
                                           .map((n: string) => n[0])
                                           .join("")}
                                       </AvatarFallback>
                                     </Avatar>
-                                    <span>{member?.name}</span>
+                                    <span>{member?.user.name}</span>
                                   </div>
                                 </SelectItem>
                               ))}

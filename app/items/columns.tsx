@@ -11,7 +11,7 @@ const AssigneeName = ({ assignee }: { assignee: string }) => {
   // Find user name across all projects
   const userName = projects
     ?.flatMap((project: Project) => project.members || [])
-    .find((member: ProjectMember) => member?.userId === assignee);
+    .find((member: ProjectMember) => member?.user.id === assignee);
 
   return userName?.user.name || "Unassigned";
 };

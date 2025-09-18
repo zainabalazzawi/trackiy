@@ -18,11 +18,13 @@ export interface Project {
 }
 
 export interface ProjectMember {
-  id: string;
-  userId: string;
-  name: string | null;
-  email: string | null;
-  image: string | null;
+  id: string; // ProjectMember record ID (for React keys)
+  user: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+  };
 }
 
 export interface Ticket {

@@ -19,10 +19,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     });
 
     const members = projectMembers.map((member) => ({
-      id: member.user.id,
-      name: member.user.name,
-      email: member.user.email,
-      image: member.user.image,
+      id: member.id, // ProjectMember record ID (for React keys)
+      user: {
+        id: member.user.id,
+        name: member.user.name,
+        email: member.user.email,
+        image: member.user.image,
+      },
     }));
 
     return NextResponse.json(members);
@@ -67,10 +70,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     );
 
     const members = projectMembers.map((member) => ({
-      id: member.user.id,
-      name: member.user.name,
-      email: member.user.email,
-      image: member.user.image,
+      id: member.id, // ProjectMember record ID (for React keys)
+      user: {
+        id: member.user.id,
+        name: member.user.name,
+        email: member.user.email,
+        image: member.user.image,
+      },
     }));
 
     return NextResponse.json(members);

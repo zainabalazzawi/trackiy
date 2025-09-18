@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LoadingState } from "@/app/components/LoadingState";
-import { formatDate } from "@/lib/utils";
+import { findMemberById, formatDate } from "@/lib/utils";
 import Comments from "@/app/components/Comments";
 
 const TicketPage = () => {
@@ -42,15 +42,7 @@ const TicketPage = () => {
     );
   if (!ticket) return <div className="p-6">Ticket not found</div>;
 
-  const membersById = members.reduce(
-    (acc: Record<string, ProjectMember>, member: ProjectMember) => {
-      acc[member.id] = member;
-      return acc;
-    },
-    {}
-  );
-
-  const assigneeMember = membersById[ticket.assignee as string] || "unassigned";
+  const assigneeMember = findMemberById(members, ticket.assignee as string) || "unassigned";
 
   return (
     <div className="p-6 w-full">
@@ -127,20 +119,20 @@ const TicketPage = () => {
                           <div className="flex items-center gap-2">
                             <Avatar className="w-6 h-6">
                               <AvatarImage
-                                src={assigneeMember?.image?.replace(
+                                src={assigneeMember?.user?.image?.replace(
                                   "s96-c",
                                   "s400-c"
                                 )}
                                 className="object-cover"
                               />
                               <AvatarFallback className="text-xs">
-                                {assigneeMember?.name
+                                {assigneeMember?.user?.name
                                   ?.split(" ")
                                   .map((n: string) => n[0])
                                   .join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <span>{assigneeMember?.name}</span>
+                            <span>{assigneeMember?.user.name}</span>
                           </div>
                         )}
                       </SelectValue>
@@ -153,21 +145,21 @@ const TicketPage = () => {
                         </div>
                       </SelectItem>
                       {members.map((member: ProjectMember) => (
-                        <SelectItem key={member.id} value={member.id}>
+                        <SelectItem key={member.id} value={member.user.id}>
                           <div className="flex items-center gap-2">
                             <Avatar className="w-4 h-4">
                               <AvatarImage
-                                src={member?.image?.replace("s96-c", "s400-c")}
+                                src={member.user.image?.replace("s96-c", "s400-c")}
                                 className="object-cover"
                               />
                               <AvatarFallback className="text-xs">
-                                {member?.name
+                                {member.user.name
                                   ?.split(" ")
                                   .map((n: string) => n[0])
                                   .join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <span>{member?.name}</span>
+                            <span>{member.user.name}</span>
                           </div>
                         </SelectItem>
                       ))}

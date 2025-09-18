@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { ProjectMember } from "@/app/types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -17,4 +18,9 @@ export const formatDate = (dateString: string) => {
     minute: '2-digit',
     hour12: false
   }).format(date).replace(',', '');
+};
+
+// Utility function to find a member by user ID from an array of members
+export const findMemberById = (members: ProjectMember[], userId: string): ProjectMember | undefined => {
+  return members.find((member: ProjectMember) => member?.user.id === userId);
 };
