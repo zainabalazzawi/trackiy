@@ -8,7 +8,7 @@ import { DataTable } from "@/app/projects/data-table";
 import { LoadingState } from "@/app/components/LoadingState";
 import { FilterBar } from "@/app/components/FilterBar";
 import { Star } from "lucide-react";
-import { Ticket } from "@/app/types";
+import { Ticket, PRIORITIES } from "@/app/types";
 import { useAllStatuses } from "../hooks/useStatuses";
 import { getAssigneeName } from "@/lib/utils";
 
@@ -16,7 +16,6 @@ const ItemsPage = () => {
   const { tickets, isLoading: ticketsLoading } = useAllTickets();
   const { projects, isLoading: projectsLoading } = useProjects();
   const { allStatuses, isLoading: statusesLoading } = useAllStatuses();
-  const priorities = ["HIGH", "MEDIUM", "LOW"]; // check if it's the better way!
 
   // Remove duplicates using Set
   const uniqueNames = [...new Set(allStatuses.map((s) => s.name))];
@@ -121,7 +120,7 @@ const ItemsPage = () => {
         statuses={statuses}
         selectedStatuses={selectedStatuses}
         onStatusesChange={setSelectedStatuses}
-        priorities={priorities}
+        priorities={PRIORITIES}
         selectedPriorities={selectedPriorities}
         onPrioritiesChange={setSelectedPriorities}
       />

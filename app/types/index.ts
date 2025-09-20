@@ -2,6 +2,9 @@ export type Priority = "LOW" | "MEDIUM" | "HIGH";
 export type InvitationStatus = "pending" | "accepted";
 export type MemberSelection = string | "unassigned" | null;
 
+// Simple constants
+export const PRIORITIES: Priority[] = ["LOW", "MEDIUM", "HIGH"];
+
 export interface Project {
   id: string;
   name: string;

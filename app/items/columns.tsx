@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Ticket, ProjectMember, Project } from "@/app/types";
+import { Ticket, Priority } from "@/app/types";
 import Link from "next/link";
 import { formatDate, getAssigneeName } from "@/lib/utils";
 import { useProjects } from "@/app/hooks/useProjects";
@@ -49,9 +49,8 @@ export const columns: ColumnDef<Ticket>[] = [
     accessorKey: "priority",
     header: "Priority",
     cell: ({ row }) => {
-      const priority = row.getValue("priority") as string;
+      const priority = row.getValue("priority") as Priority;
       const priorityColors = {
-        //check the priority
         LOW: "bg-green-100 text-green-800",
         MEDIUM: "bg-yellow-100 text-yellow-800",
         HIGH: "bg-red-100 text-red-800",
@@ -59,8 +58,7 @@ export const columns: ColumnDef<Ticket>[] = [
       return (
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${
-            priorityColors[priority as keyof typeof priorityColors] ||
-            "bg-gray-100 text-gray-800"
+            priorityColors[priority] || "bg-gray-100 text-gray-800"
           }`}
         >
           {priority}
