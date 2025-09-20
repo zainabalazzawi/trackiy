@@ -8,8 +8,9 @@ import { DataTable } from "@/app/projects/data-table";
 import { LoadingState } from "@/app/components/LoadingState";
 import { FilterBar } from "@/app/components/FilterBar";
 import { Star } from "lucide-react";
-import { Ticket, Project, Status } from "@/app/types";
+import { Ticket } from "@/app/types";
 import { useAllStatuses } from "../hooks/useStatuses";
+import { getAssigneeName } from "@/lib/utils";
 
 const ItemsPage = () => {
   const { tickets, isLoading: ticketsLoading } = useAllTickets();
@@ -22,14 +23,14 @@ const ItemsPage = () => {
   const statuses = uniqueNames.map(
     (name) => allStatuses.find((s) => s.name === name)!
   );
-
+  // Simple assignees - get unique assignee IDs and convert to names
   const assignees = [
     ...new Set(
-      tickets?.flatMap((ticket) => (ticket.assignee ? [ticket.assignee] : []))
+      tickets?.flatMap((ticket) => ticket.assignee)
     ),
-  ].sort();
+  ].map(assigneeId => getAssigneeName(assigneeId, projects || [])) 
+   .sort();
 
-  console.log(tickets)
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
@@ -59,10 +60,10 @@ const ItemsPage = () => {
 
     // Assignee filter
     if (selectedAssignees.length > 0) {
-      filtered = filtered.filter(
-        (ticket: Ticket) =>
-          ticket.assignee && selectedAssignees.includes(ticket.assignee)
-      );
+      filtered = filtered.filter((ticket: Ticket) => {
+        const assigneeName = getAssigneeName(ticket.assignee, projects || []);
+        return selectedAssignees.includes(assigneeName);
+      });
     }
 
     // Status filter
@@ -97,6 +98,8 @@ const ItemsPage = () => {
     return <LoadingState text="Loading work items" iconSize={64} />;
   }
 
+
+  console.log('selectedAssignees',selectedAssignees)
   return (
     <div className="px-5 py-10">
       {/* Header */}

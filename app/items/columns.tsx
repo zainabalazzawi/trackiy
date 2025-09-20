@@ -1,19 +1,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Ticket, ProjectMember, Project } from "@/app/types";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getAssigneeName } from "@/lib/utils";
 import { useProjects } from "@/app/hooks/useProjects";
 
 // Simple component to get user name from assignee
 const AssigneeName = ({ assignee }: { assignee: string }) => {
   const { projects } = useProjects();
-
-  // Find user name across all projects
-  const userName = projects
-    ?.flatMap((project: Project) => project.members || [])
-    .find((member: ProjectMember) => member?.user.id === assignee);
-
-  return userName?.user.name || "Unassigned";
+  return getAssigneeName(assignee, projects || []);
 };
 
 export const columns: ColumnDef<Ticket>[] = [
