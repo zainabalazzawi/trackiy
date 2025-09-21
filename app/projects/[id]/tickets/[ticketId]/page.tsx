@@ -42,7 +42,8 @@ const TicketPage = () => {
     );
   if (!ticket) return <div className="p-6">Ticket not found</div>;
 
-  const assigneeMember = findMemberById(members, ticket.assignee as string) || "unassigned";
+  const assigneeMember =
+    findMemberById(members, ticket.assignee as string) || "unassigned";
 
   return (
     <div className="p-6 w-full">
@@ -99,7 +100,11 @@ const TicketPage = () => {
                 <div className="text-sm text-gray-500">Assignee</div>
                 <div className="text-sm font-medium">
                   <Select
-                    value={assigneeMember}
+                    value={
+                      assigneeMember && assigneeMember !== "unassigned"
+                        ? assigneeMember.user.id
+                        : "unassigned"
+                    }
                     onValueChange={(value) => {
                       const assigneeValue =
                         value === "unassigned" ? "unassigned" : value;
@@ -149,7 +154,10 @@ const TicketPage = () => {
                           <div className="flex items-center gap-2">
                             <Avatar className="w-4 h-4">
                               <AvatarImage
-                                src={member.user.image?.replace("s96-c", "s400-c")}
+                                src={member.user.image?.replace(
+                                  "s96-c",
+                                  "s400-c"
+                                )}
                                 className="object-cover"
                               />
                               <AvatarFallback className="text-xs">
