@@ -65,9 +65,9 @@ export const columns: ColumnDef<Ticket>[] = [
       const ticket = row.original;
       const statusName = ticket.status.name;
       return (
-        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+        <Badge className="bg-blue-100 text-blue-800 border-blue-200">
           {statusName}
-        </span>
+        </Badge>
       );
     },
   },
