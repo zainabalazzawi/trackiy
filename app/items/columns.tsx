@@ -1,8 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Ticket, Priority } from "@/app/types";
 import Link from "next/link";
-import { formatDate, getAssigneeName } from "@/lib/utils";
+import { formatDate, getAssigneeName, getPriorityClasses } from "@/lib/utils";
 import { useProjects } from "@/app/hooks/useProjects";
+import { Badge } from "@/components/ui/badge";
 
 // Simple component to get user name from assignee
 const AssigneeName = ({ assignee }: { assignee: string }) => {
@@ -50,19 +51,10 @@ export const columns: ColumnDef<Ticket>[] = [
     header: "Priority",
     cell: ({ row }) => {
       const priority = row.getValue("priority") as Priority;
-      const priorityColors = {
-        LOW: "bg-green-100 text-green-800",
-        MEDIUM: "bg-yellow-100 text-yellow-800",
-        HIGH: "bg-red-100 text-red-800",
-      };
       return (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            priorityColors[priority] || "bg-gray-100 text-gray-800"
-          }`}
-        >
+        <Badge className={getPriorityClasses(priority)}>
           {priority}
-        </span>
+        </Badge>
       );
     },
   },

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { ProjectMember, Project } from "@/app/types"
+import { ProjectMember, Project, Priority } from "@/app/types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -33,4 +33,14 @@ export const getAssigneeName = (assigneeId: string | undefined, projects: Projec
     .find((member: ProjectMember) => member?.user.id === assigneeId);
   
   return userName?.user.name || "Unassigned";
+};
+
+// Utility function to get priority badge classes
+export const getPriorityClasses = (priority: Priority): string => {
+  const priorityColors = {
+    LOW: "bg-green-100 text-green-800 border-green-200",
+    MEDIUM: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    HIGH: "bg-red-100 text-red-800 border-red-200",
+  };
+  return priorityColors[priority]
 };
