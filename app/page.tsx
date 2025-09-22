@@ -1,6 +1,6 @@
 
 const Home = () => {
-  return <div className="min-h-screen bg-gray-100">project</div>;
+  return <div className="min-h-screen"></div>;
 };
 
 export default Home;
