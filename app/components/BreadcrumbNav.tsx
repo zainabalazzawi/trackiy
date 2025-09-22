@@ -27,19 +27,18 @@ const BreadcrumbNav = () => {
   const generateBreadcrumbs = () => {
     const breadcrumbs = [];
     
-    // Always add home
-    breadcrumbs.push({
-      label: "Home",
-      href: "/",
-      isActive: pathname === "/",
-    });
+    // // Always add home
+    // breadcrumbs.push({
+    //   label: "Home",
+    //   href: "/",
+    //   isActive: pathname === "/",
+    // });
 
-    // Add projects if we're in the projects section
-    if (pathname.startsWith('/projects')) {
+    if (pathname.startsWith('/')) {
       breadcrumbs.push({
-        label: "Projects",
-        href: "/projects",
-        isActive: pathname === "/projects",
+        label: "Home",
+        href: "/",
+        isActive: pathname === "/",
       });
 
       // Add specific project if we have a project ID
