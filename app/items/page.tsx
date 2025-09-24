@@ -7,10 +7,12 @@ import { columns } from "./columns";
 import { DataTable } from "@/app/projects/data-table";
 import { LoadingState } from "@/app/components/LoadingState";
 import { FilterBar } from "@/app/components/FilterBar";
-import { Star } from "lucide-react";
+import { Star, ArrowLeft } from "lucide-react";
 import { Ticket, PRIORITIES } from "@/app/types";
 import { useAllStatuses } from "../hooks/useStatuses";
 import { getAssigneeName } from "@/lib/utils";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const ItemsPage = () => {
   const { tickets, isLoading: ticketsLoading } = useAllTickets();
@@ -100,10 +102,16 @@ const ItemsPage = () => {
 
   console.log('selectedAssignees',selectedAssignees)
   return (
-    <div className="px-5 py-10">
-      {/* Header */}
+    <>
+       <Button variant="outline" asChild className="mt-4">
+          <Link href="/" className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back to project page
+          </Link>
+        </Button>
+    <div className="px-5 py-4">
       <div className="mb-6 flex items-center gap-2">
-        <h1 className="text-2xl font-bold">All work items</h1>
+        <h1 className="text-2xl font-medium">All work items</h1>
         <Star className="h-5 w-5 text-gray-400 cursor-pointer hover:text-yellow-500" />
       </div>
 
@@ -127,6 +135,7 @@ const ItemsPage = () => {
       {/* Data Table */}
       <DataTable columns={columns} data={filteredItems} />
     </div>
+    </>
   );
 };
 
