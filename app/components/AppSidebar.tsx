@@ -44,7 +44,7 @@ export function AppSidebar() {
       title: "Recent",
       url: "#",
       icon: Clock,
-      onClick: () => setIsRecentCardOpen(true),
+      onClick: () => setIsRecentCardOpen(!isRecentCardOpen),
     },
     {
       title: "Filter",
