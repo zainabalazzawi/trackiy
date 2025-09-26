@@ -5,7 +5,7 @@ import axios from "axios";
 import Board from "@/app/components/Board";
 import Members from "@/app/components/Members";
 import { MemberSelection } from "../../types";
-import { use } from "react";
+import { use, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingState } from "@/app/components/LoadingState";
 import { useProject } from "@/app/hooks/useProjects";
+import useRecentProjectsStore from "@/app/stores/recentProjectsStore";
 
 export default function ProjectPage({
   params,
@@ -30,10 +31,18 @@ export default function ProjectPage({
   const resolvedParams = use(params);
 
   const { project, isLoading } = useProject(resolvedParams.id);
+  const addProject = useRecentProjectsStore((state) => state.addProject);
 
   const [open, setOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [selectedMemberId, setSelectedMemberId] = useState<MemberSelection>(null);
+
+  // Track project visit for recent projects
+  useEffect(() => {
+    if (project) {
+      addProject(project);
+    }
+  }, [project, addProject]);
 
   const inviteMutation = useMutation({
     mutationFn: async (email: string) => {

@@ -47,10 +47,6 @@ const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
-              <DropdownMenuItem onClick={() => router.push('/projects/recent')}>
-                <Clock className="mr-2 h-4 w-4" />
-                Recent projects
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push('/projects')}>
                 <Layout className="mr-2 h-4 w-4" />
                 View all projects

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Project } from "@prisma/client";
+import { Project } from "@/app/types";
 
 // Hook to get all projects
 export function useProjects() {
