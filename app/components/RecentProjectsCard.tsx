@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useRecentProjectsStore from "@/app/stores/recentProjectsStore";
@@ -42,19 +43,18 @@ const RecentProjectsCard = ({ isOpen, onClose }: RecentProjectsCardProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="absolute left-64 top-20 w-80 bg-white shadow-lg">
-      <div className="flex flex-col">
-        <div className="p-4 border-b flex items-center justify-between">
-          <h2 className="text-[14px] font-semibold">Recent</h2>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
+    <Card className="absolute left-[15.5rem] top-20 w-80 p-0 gap-0">
+      <CardHeader className="flex flex-row items-center justify-between p-2 py-0">
+        <CardTitle className="text-[14px] font-semibold">Recent</CardTitle>
+        <Button variant="ghost" size="sm" onClick={onClose}>
+          <X className="h-4 w-4" />
+        </Button>
+      </CardHeader>
+      <CardContent className="p-0">
         {recentProjects.map((project: RecentProject) => (
           <div
             key={project.id}
-            className="flex items-center justify-between p-4 text-gray-500 text-xs hover:bg-gray-50 rounded cursor-pointer"
+            className="flex items-center justify-between p-2 text-gray-500 text-xs hover:bg-gray-50 cursor-pointer"
             onClick={() => handleProjectClick(project)}
           >
             <div>
@@ -64,8 +64,8 @@ const RecentProjectsCard = ({ isOpen, onClose }: RecentProjectsCardProps) => {
             <span>{formatTimeAgo(project.lastViewed)}</span>
           </div>
         ))}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
