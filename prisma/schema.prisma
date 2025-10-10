@@ -102,6 +102,7 @@ model Ticket {
   priority    Priority @default(MEDIUM)
   assignee    String?
   reporter    String?
+  labels      String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   comments    Comment[]

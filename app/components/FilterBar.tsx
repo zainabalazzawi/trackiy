@@ -25,6 +25,9 @@ interface FilterBarProps {
   priorities: string[];
   selectedPriorities: string[];
   onPrioritiesChange: (priorities: string[]) => void;
+  labels: string[];
+  selectedLabels: string[];
+  onLabelsChange: (labels: string[]) => void;
 }
 
 export function FilterBar({
@@ -42,6 +45,9 @@ export function FilterBar({
   priorities,
   selectedPriorities,
   onPrioritiesChange,
+  labels,
+  selectedLabels,
+  onLabelsChange,
 }: FilterBarProps) {
   return (
     <div className="mb-6 flex gap-4">
@@ -123,6 +129,25 @@ export function FilterBar({
             {priorities.map((priority) => (
               <MultiSelectItem key={priority} value={priority}>
                 {priority}
+              </MultiSelectItem>
+            ))}
+          </MultiSelectGroup>
+        </MultiSelectContent>
+      </MultiSelect>
+
+      {/* Label Filter */}
+      <MultiSelect
+        onValuesChange={onLabelsChange}
+        values={selectedLabels}
+      >
+        <MultiSelectTrigger>
+          <MultiSelectValue placeholder="Label" />
+        </MultiSelectTrigger>
+        <MultiSelectContent>
+          <MultiSelectGroup>
+            {labels?.map((label) => (
+              <MultiSelectItem key={label} value={label}>
+                {label}
               </MultiSelectItem>
             ))}
           </MultiSelectGroup>

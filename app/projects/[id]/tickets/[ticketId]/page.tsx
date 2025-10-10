@@ -6,10 +6,22 @@ import PrioritySelect from "@/app/components/PrioritySelect";
 import EditableField from "@/app/components/EditableField";
 import StatusSelect from "@/app/components/StatusSelect";
 import { useProjectMembers } from "@/app/hooks/useProjects";
-import { useTicket, useUpdateTicket } from "@/app/hooks/useTickets";
+import {
+  useTicket,
+  useUpdateTicket,
+  useAllTickets,
+} from "@/app/hooks/useTickets";
 import { useStatuses } from "@/app/hooks/useStatuses";
 import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectGroup,
+  MultiSelectItem,
+  MultiSelectTrigger,
+  MultiSelectValue,
+} from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -31,7 +43,16 @@ const TicketPage = () => {
   const { ticket, isLoading } = useTicket(projectId, ticketId);
   const { statuses } = useStatuses(projectId);
   const { updateTicket, isUpdating } = useUpdateTicket(projectId, ticketId);
+  const { tickets } = useAllTickets();
 
+  // Get unique labels from all tickets
+  const labels = [
+    ...new Set(
+      tickets?.flatMap((ticket) => ticket.labels || [])
+    ),
+  ].sort();
+
+  
   if (isLoading)
     return (
       <LoadingState
@@ -178,6 +199,30 @@ const TicketPage = () => {
               <div className="flex flex-row justify-between">
                 <div className="text-sm text-gray-500">Reporter</div>
                 <div className="text-sm font-medium">{ticket?.reporter}</div>
+              </div>
+              <div className="flex flex-row justify-between">
+                <div className="text-sm text-gray-500">Label</div>
+                <div className="w-[80%]">
+                  <MultiSelect
+                    onValuesChange={(values) => {
+                      updateTicket({ labels: values });
+                    }}
+                    values={ticket?.labels || []}
+                  >
+                    <MultiSelectTrigger allowTyping>
+                      <MultiSelectValue placeholder="Add label" />
+                    </MultiSelectTrigger>
+                    <MultiSelectContent>
+                      <MultiSelectGroup>
+                        {labels.map((label) => (
+                          <MultiSelectItem key={label} value={label}>
+                            {label}
+                          </MultiSelectItem>
+                        ))}
+                      </MultiSelectGroup>
+                    </MultiSelectContent>
+                  </MultiSelect>
+                </div>
               </div>
             </div>
           </div>

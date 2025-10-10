@@ -53,6 +53,7 @@ export interface Ticket {
   priority: Priority;
   assignee?: string;
   reporter?: string;
+  labels?: string[];
   createdAt: string;
   updatedAt: string;
   comments?: Comment[];

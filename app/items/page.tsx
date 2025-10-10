@@ -32,11 +32,20 @@ const ItemsPage = () => {
   ].map(assigneeId => getAssigneeName(assigneeId, projects || [])) 
    .sort();
 
+  // Get unique labels from tickets
+  const labels = [
+    ...new Set(
+      tickets?.flatMap((ticket) => ticket.labels || [])
+    ),
+  ].sort();
+
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
   // Simple filtering without excessive useMemo
   const filteredItems = useMemo(() => {
@@ -85,6 +94,13 @@ const ItemsPage = () => {
       );
     }
 
+    // Label filter
+    if (selectedLabels.length > 0) {
+      filtered = filtered.filter((ticket: Ticket) =>
+        ticket.labels && ticket.labels.some(label => selectedLabels.includes(label))
+      );
+    }
+
     return filtered;
   }, [
     tickets,
@@ -93,6 +109,7 @@ const ItemsPage = () => {
     selectedAssignees,
     selectedStatuses,
     selectedPriorities,
+    selectedLabels,
   ]);
 
   if (ticketsLoading || projectsLoading || statusesLoading) {
@@ -131,6 +148,9 @@ const ItemsPage = () => {
         priorities={PRIORITIES}
         selectedPriorities={selectedPriorities}
         onPrioritiesChange={setSelectedPriorities}
+        labels={labels || []}
+        selectedLabels={selectedLabels}
+        onLabelsChange={setSelectedLabels}
       />
       {/* Data Table */}
       <DataTable columns={columns} data={filteredItems} />

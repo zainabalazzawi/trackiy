@@ -81,6 +81,7 @@ export async function POST(
         priority: body.priority || "MEDIUM",
         assignee: body.assignee,
         reporter: session?.user.name,
+        labels: body.labels || [],
         ticketNumber: ticketNumber
       },
       include: {

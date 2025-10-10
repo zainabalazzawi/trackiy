@@ -62,6 +62,7 @@ export async function PATCH(
         title: body.title,
         priority: body.priority,
         assignee: body.assignee,
+        labels: body.labels,
         ...(body.statusId && {
           statusId: body.statusId,
           columnId: (await prisma.column.findFirstOrThrow({

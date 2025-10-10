@@ -23,6 +23,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { useDeleteTicket } from "@/app/hooks/useTickets";
 
@@ -129,47 +130,58 @@ const TicketCard = ({
             </div>
           </CardHeader>
           <CardContent className="px-3">
-            <div className="flex items-center justify-between">
-              {ticket.ticketNumber}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                {ticket.ticketNumber}
 
-              <div title={ticket.priority}>
-                <Circle
-                  size={16}
-                  className={`
-                    ${
-                      ticket.priority === "HIGH"
-                        ? "text-red-900 fill-red-900"
-                        : ticket.priority === "MEDIUM"
-                        ? "text-yellow-500 fill-yellow-500"
-                        : "text-green-900 fill-green-900"
-                    }
-                  `}
-                />
-              </div>
-
-              {ticket.assignee === "unassigned" ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
-                    <User className="h-4 w-4 text-gray-500" />
-                  </div>
+                <div title={ticket.priority}>
+                  <Circle
+                    size={16}
+                    className={`
+                      ${
+                        ticket.priority === "HIGH"
+                          ? "text-red-900 fill-red-900"
+                          : ticket.priority === "MEDIUM"
+                          ? "text-yellow-500 fill-yellow-500"
+                          : "text-green-900 fill-green-900"
+                      }
+                    `}
+                  />
                 </div>
-              ) : (
-                assigneeMember && (
+
+                {ticket.assignee === "unassigned" ? (
                   <div className="flex items-center gap-2">
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage
-                        src={assigneeMember.user.image?.replace("s96-c", "s400-c")}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="text-xs">
-                        {assigneeMember.user.name
-                          ?.split(" ")
-                          .map((n: string) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User className="h-4 w-4 text-gray-500" />
+                    </div>
                   </div>
-                )
+                ) : (
+                  assigneeMember && (
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-6 h-6">
+                        <AvatarImage
+                          src={assigneeMember.user.image?.replace("s96-c", "s400-c")}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="text-xs">
+                          {assigneeMember.user.name
+                            ?.split(" ")
+                            .map((n: string) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                  )
+                )}
+              </div>
+              {ticket.labels && ticket.labels.length > 0 && (
+                <div className="flex justify-start gap-1">
+                  {ticket.labels.map((label) => (
+                    <Badge key={label} variant="secondary" className="text-xs">
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
               )}
             </div>
           </CardContent>

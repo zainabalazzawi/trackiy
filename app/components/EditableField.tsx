@@ -60,7 +60,7 @@ const EditableField = ({
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-row items-center">
       {label && <span className="text-sm">{label}</span>}
       <div className="flex gap-2">
         <span className={`${titleText ? "font-bold text-lg" : ""}`}>
