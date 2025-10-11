@@ -152,7 +152,7 @@ export function MultiSelectTrigger({
           <div>{children}</div>
           <Input
             type="text"
-            className="outline-none bg-transparent border-none text-sm h-6"
+            className="outline-none bg-transparent border-none text-sm h-6 focus-visible:ring-0"
             onKeyDown={handleKeyDown}
             onClick={(e) => e.stopPropagation()}
           />
