@@ -35,12 +35,14 @@ import {
   type ReactNode,
 } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 type MultiSelectContextType = {
   open: boolean;
   setOpen: (open: boolean) => void;
   selectedValues: Set<string>;
   toggleValue: (value: string) => void;
+  addValue: (value: string) => void;
   items: Map<string, ReactNode>;
   onItemAdded: (value: string, label: ReactNode) => void;
 };
@@ -77,6 +79,13 @@ export function MultiSelect({
     onValuesChange?.([...getNewSet(selectedValues)]);
   }
 
+  const addValue = (value: string) => {
+    if (!selectedValues.has(value)) {
+      const newValues = [...(values || []), value];
+      onValuesChange?.(newValues);
+    }
+  };
+
   const onItemAdded = useCallback((value: string, label: ReactNode) => {
     setItems((prev) => {
       if (prev.get(value) === label) return prev;
@@ -91,6 +100,7 @@ export function MultiSelect({
         setOpen,
         selectedValues: values ? new Set(values) : selectedValues,
         toggleValue,
+        addValue,
         items,
         onItemAdded,
       }}
@@ -105,12 +115,52 @@ export function MultiSelect({
 export function MultiSelectTrigger({
   className,
   children,
+  allowTyping = false,
   ...props
 }: {
   className?: string;
   children?: ReactNode;
+  allowTyping?: boolean;
 } & ComponentPropsWithoutRef<typeof Button>) {
-  const { open } = useMultiSelectContext();
+  const { open, addValue } = useMultiSelectContext();
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+
+    if (e.key !== "Enter") return;
+
+    e.preventDefault();
+    const input = e.target as HTMLInputElement;
+    const label = input.value.trim();
+
+    if (!label) return;
+
+    addValue(label);
+    input.value = "";
+    input.blur();
+  };
+
+  if (allowTyping) {
+    return (
+      <PopoverTrigger asChild className="">
+        <div
+          className={cn(
+            "flex flex-row items-center gap-2 overflow-hidden rounded-md border border-input px-3 py-1.5 text-sm shadow-xs",
+            className
+          )}
+        >
+          <div>{children}</div>
+          <Input
+            type="text"
+            className="outline-none bg-transparent border-none text-sm h-6"
+            onKeyDown={handleKeyDown}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <ChevronsUpDownIcon className="h-4 w-4 shrink-0 opacity-50" />
+        </div>
+      </PopoverTrigger>
+    );
+  }
 
   return (
     <PopoverTrigger asChild>
@@ -135,64 +185,12 @@ export function MultiSelectValue({
   placeholder,
   clickToRemove = true,
   className,
-  overflowBehavior = "wrap-when-open",
   ...props
 }: {
   placeholder?: string;
   clickToRemove?: boolean;
-  overflowBehavior?: "wrap" | "wrap-when-open" | "cutoff";
 } & Omit<ComponentPropsWithoutRef<"div">, "children">) {
-  const { selectedValues, toggleValue, items, open } = useMultiSelectContext();
-  const [overflowAmount, setOverflowAmount] = useState(0);
-  const valueRef = useRef<HTMLDivElement>(null);
-  const overflowRef = useRef<HTMLDivElement>(null);
-
-  const shouldWrap =
-    overflowBehavior === "wrap" ||
-    (overflowBehavior === "wrap-when-open" && open);
-
-  const checkOverflow = useCallback(() => {
-    if (valueRef.current == null) return;
-
-    const containerElement = valueRef.current;
-    const overflowElement = overflowRef.current;
-    const items = containerElement.querySelectorAll<HTMLElement>(
-      "[data-selected-item]"
-    );
-
-    if (overflowElement != null) overflowElement.style.display = "none";
-    items.forEach((child) => child.style.removeProperty("display"));
-    let amount = 0;
-    for (let i = items.length - 1; i >= 0; i--) {
-      const child = items[i];
-      if (containerElement.scrollWidth <= containerElement.clientWidth) {
-        break;
-      }
-      amount = items.length - i;
-      child.style.display = "none";
-      overflowElement?.style.removeProperty("display");
-    }
-    setOverflowAmount(amount);
-  }, []);
-
-  useLayoutEffect(() => {
-    checkOverflow();
-  }, [selectedValues, checkOverflow, shouldWrap]);
-
-  const handleResize = useCallback(
-    (node: HTMLDivElement) => {
-      valueRef.current = node;
-
-      const observer = new ResizeObserver(checkOverflow);
-      observer.observe(node);
-
-      return () => {
-        observer.disconnect();
-        valueRef.current = null;
-      };
-    },
-    [checkOverflow]
-  );
+  const { selectedValues, toggleValue, items } = useMultiSelectContext();
 
   if (selectedValues.size === 0 && placeholder) {
     return (
@@ -205,15 +203,14 @@ export function MultiSelectValue({
   return (
     <div
       {...props}
-      ref={handleResize}
       className={cn(
         "flex w-full gap-1.5 overflow-hidden",
-        shouldWrap && "h-full flex-wrap",
         className
       )}
     >
       {[...selectedValues]
         .filter((value) => items.has(value))
+        .slice(0, 2)
         .map((value) => (
           <Badge
             variant="outline"
@@ -235,15 +232,11 @@ export function MultiSelectValue({
             )}
           </Badge>
         ))}
-      <Badge
-        style={{
-          display: overflowAmount > 0 && !shouldWrap ? "block" : "none",
-        }}
-        variant="outline"
-        ref={overflowRef}
-      >
-        +{overflowAmount}
-      </Badge>
+      {[...selectedValues].filter((value) => items.has(value)).length > 2 && (
+        <Badge variant="outline">
+          +{[...selectedValues].filter((value) => items.has(value)).length - 2}
+        </Badge>
+      )}
     </div>
   );
 }
@@ -318,7 +311,10 @@ export function MultiSelectItem({
     >
       <SquareIcon className="relative" />
       <CheckIcon
-        className={cn("size-3 absolute ml-0.5", isSelected ? "opacity-100" : "opacity-0")}
+        className={cn(
+          "size-3 absolute ml-0.5",
+          isSelected ? "opacity-100" : "opacity-0"
+        )}
       />
       {children}
     </CommandItem>
