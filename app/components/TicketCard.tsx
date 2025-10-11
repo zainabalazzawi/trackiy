@@ -176,11 +176,16 @@ const TicketCard = ({
               </div>
               {ticket.labels && ticket.labels.length > 0 && (
                 <div className="flex justify-start gap-1">
-                  {ticket.labels.map((label) => (
+                  {ticket.labels.slice(0, 2).map((label) => (
                     <Badge key={label} variant="secondary" className="text-xs">
                       {label}
                     </Badge>
                   ))}
+                  {ticket.labels.length > 2 && (
+                    <Badge variant="secondary" className="text-xs">
+                      +{ticket.labels.length - 2}
+                    </Badge>
+                  )}
                 </div>
               )}
             </div>
