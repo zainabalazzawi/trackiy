@@ -22,12 +22,12 @@ export async function POST(
       );
     }
 
-    // Step 1: Find a valid, pending invitation.
+    // Step 1: Find the invitation by token (regardless of status).
     const invitation = await prisma.invitation.findUnique({
-      where: { token, status: "pending" },
+      where: { token },
     });
 
-    // If no valid invite is found, stop here.
+    // If no invitation is found, stop here.
     if (!invitation) {
       return NextResponse.json(
         { error: "This invitation is invalid or has expired." },
@@ -43,14 +43,21 @@ export async function POST(
       },
     });
 
-    // Step 3: If they are a new user, add them to the project.
-    if (!isAlreadyMember) {
+    // If user is already a member, just return success
+    if (isAlreadyMember) {
+      return NextResponse.json(invitation);
+    }
+
+    // Step 3: Add the user to the project.
+    try {
       await prisma.projectMember.create({
         data: {
           projectId: invitation.projectId,
           userId: session.user.id,
         },
       });
+    } catch (error) {
+      console.error("Error creating project member:", error);
     }
 
     // Step 4: Mark the invitation as accepted. This happens for both
