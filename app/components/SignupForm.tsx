@@ -27,7 +27,7 @@ const signupSchema = z.object({
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
-const SignupForm = ({ onSuccess }: { onSuccess?: () => void }) => {
+const SignupForm = ({ onSuccess, redirectUrl }: { onSuccess?: () => void; redirectUrl?: string }) => {
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -68,9 +68,8 @@ const SignupForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   const handleGoogleSignUp = () => {
     signIn("google", {
-      callbackUrl: "/"
+      callbackUrl: redirectUrl || "/"
     })
-  
   };
 console.log(mutation.error)
   return (

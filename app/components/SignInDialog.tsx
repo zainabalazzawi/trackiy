@@ -56,14 +56,14 @@ const SignInDialog = ({
 
         {!isSignUp ? (
           <>
-            <LoginForm onSuccess={handleLoginSuccess} />
+            <LoginForm onSuccess={handleLoginSuccess} redirectUrl={redirectUrl} />
             <Button variant="outline" onClick={() => setIsSignUp(true)}>
               Create an account
             </Button>
           </>
         ) : (
           <>
-            <SignupForm onSuccess={() => setIsSignUp(false)} />
+            <SignupForm onSuccess={() => setIsSignUp(false)} redirectUrl={redirectUrl} />
             <Button variant="outline" onClick={() => setIsSignUp(false)}>
               Back to sign in
             </Button>

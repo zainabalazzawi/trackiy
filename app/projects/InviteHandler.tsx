@@ -53,6 +53,7 @@ const InviteHandler = () => {
       open={showSignInDialog}
       onOpenChange={setShowSignInDialog}
       signInDescription="Please sign in to accept your project invitation."
+      redirectUrl={`/projects?invite=${searchParams.get('invite')}`}
     />
   );
 };

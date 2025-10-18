@@ -11,7 +11,7 @@ export type LoginFormData = {
   password: string;
 };
 
-const LoginForm = ({ onSuccess }: { onSuccess?: () => void }) => {
+const LoginForm = ({ onSuccess, redirectUrl }: { onSuccess?: () => void; redirectUrl?: string }) => {
   const form = useForm<LoginFormData>({
     defaultValues: {
       email: "",
@@ -47,9 +47,8 @@ const LoginForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   const handleGoogleSignIn = () => {
     signIn("google", {
-      callbackUrl: "/"
+      callbackUrl: redirectUrl || "/"
     })
-
   };
 
   const onHandleSubmit = (data: LoginFormData) => {
