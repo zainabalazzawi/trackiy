@@ -37,7 +37,7 @@ export function useAllTickets() {
 
 // Hook to get a single ticket by ID
 export function useTicket(projectId: string, ticketId: string) {
-  const { data: ticket, isLoading, isFetching } = useQuery<Ticket>({
+  const { data: ticket, isLoading } = useQuery<Ticket>({
     queryKey: ["ticket", ticketId],
     queryFn: async () => {
       const response = await axios.get(
@@ -46,13 +46,13 @@ export function useTicket(projectId: string, ticketId: string) {
       return response.data;
     },
     enabled: !!projectId && !!ticketId,
-    refetchInterval: 30000, // Refresh every 30 seconds to catch updates from other users
+
   });
 
   return {
     ticket,
     isLoading,
-    isRefreshing: isFetching && !isLoading,
+
   };
 }
 
