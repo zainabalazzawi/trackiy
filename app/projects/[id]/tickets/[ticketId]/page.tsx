@@ -40,7 +40,7 @@ const TicketPage = () => {
     ticketId: string;
   };
   const { members } = useProjectMembers(projectId);
-  const { ticket, isLoading } = useTicket(projectId, ticketId);
+  const { ticket, isLoading, isRefreshing } = useTicket(projectId, ticketId);
   const { statuses } = useStatuses(projectId);
   const { updateTicket, isUpdating } = useUpdateTicket(projectId, ticketId);
   const { tickets } = useAllTickets();
@@ -76,6 +76,7 @@ const TicketPage = () => {
               value={ticket.title}
               onSave={(value) => updateTicket({ title: value })}
               titleText
+              isRefreshing={isRefreshing}
             />
 
             <div className="flex items-center gap-60 mt-3">
@@ -94,6 +95,7 @@ const TicketPage = () => {
             onSave={(value) => updateTicket({ description: value })}
             label="Description"
             type="textarea"
+            isRefreshing={isRefreshing}
           />
 
           {/* Comments Section */}

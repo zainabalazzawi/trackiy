@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +10,7 @@ interface EditableFieldProps {
   label?: string;
   type?: "input" | "textarea";
   titleText?: boolean;
+  isRefreshing?: boolean;
 }
 
 const EditableField = ({
@@ -18,13 +19,25 @@ const EditableField = ({
   label,
   type = "input",
   titleText,
+  isRefreshing = false,
 }: EditableFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
 
+  // Update editedValue when value prop changes (when data refreshes)
+  useEffect(() => {
+    setEditedValue(value);
+  }, [value]);
+
   const handleSave = () => {
     onSave(editedValue);
     setIsEditing(false);
+  };
+
+  const handleStartEditing = () => {
+    // Always use the latest value when starting to edit
+    setEditedValue(value);
+    setIsEditing(true);
   };
 
   if (isEditing) {
@@ -63,10 +76,15 @@ const EditableField = ({
     <div className="flex flex-row items-center">
       {label && <span className="text-sm">{label}</span>}
       <div className="flex gap-2">
-        <span className={`${titleText ? "font-bold text-lg" : ""}`}>
+        <span className={`${titleText ? "font-bold text-lg" : ""} ${isRefreshing ? "opacity-50" : ""}`}>
           {value}
         </span>
-        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={handleStartEditing}
+          disabled={isRefreshing}
+        >
           <Pencil className="h-4 w-4" />
         </Button>
       </div>
