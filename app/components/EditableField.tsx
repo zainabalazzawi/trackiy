@@ -44,7 +44,7 @@ const EditableField = ({
 
 
 
-
+console.log("externalIsEditing:", externalIsEditing);
 
 
   if (isEditing || externalIsEditing) {
