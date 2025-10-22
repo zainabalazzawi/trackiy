@@ -32,6 +32,7 @@ import {
 import { LoadingState } from "@/app/components/LoadingState";
 import { findMemberById, formatDate } from "@/lib/utils";
 import Comments from "@/app/components/Comments";
+import { AlertCircle } from "lucide-react";
 
 const TicketPage = () => {
   const params = useParams();
@@ -68,6 +69,14 @@ const TicketPage = () => {
 
   return (
     <div className="p-6 w-full">
+      {/* Simple warning about concurrent edits */}
+      <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2 text-sm text-yellow-800">
+        <AlertCircle className="h-4 w-4" />
+        <span>
+          <strong>Note:</strong> If multiple users edit the same field simultaneously, the last save will overwrite previous changes.
+        </span>
+      </div>
+      
       {ticket.ticketNumber}
       <div className="flex gap-8">
         <div className="w-[70%]">

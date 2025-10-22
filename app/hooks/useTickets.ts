@@ -103,6 +103,12 @@ export function useUpdateTicket(projectId: string, ticketId?: string) {
         queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
       }
       queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
+      
+      // Simple success notification
+      console.log("✅ Ticket updated successfully");
+    },
+    onError: (error) => {
+      console.error("❌ Failed to update ticket:", error);
     },
   });
 

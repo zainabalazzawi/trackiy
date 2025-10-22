@@ -10,7 +10,8 @@ interface EditableFieldProps {
   label?: string;
   type?: "input" | "textarea";
   titleText?: boolean;
-
+  isEditing?: boolean;
+  onEditStart?: () => void;
 }
 
 const EditableField = ({
@@ -19,10 +20,16 @@ const EditableField = ({
   label,
   type = "input",
   titleText,
-
+  isEditing: externalIsEditing = false,
+  onEditStart,
 }: EditableFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
+
+  const handleEditStart = () => {
+    setIsEditing(true);
+    onEditStart?.();
+  };
 
 
 
@@ -40,23 +47,30 @@ const EditableField = ({
 
 
 
-  if (isEditing) {
+  if (isEditing || externalIsEditing) {
     return (
       <div className="flex items-center gap-2">
+        {externalIsEditing && !isEditing && (
+          <div className="text-sm text-orange-600 bg-orange-100 px-2 py-1 rounded">
+            Someone else is editing this field
+          </div>
+        )}
         {type === "textarea" ? (
           <Textarea
             value={editedValue}
             onChange={(e) => setEditedValue(e.target.value)}
             autoFocus
+            disabled={externalIsEditing && !isEditing}
           />
         ) : (
           <Input
             value={editedValue}
             onChange={(e) => setEditedValue(e.target.value)}
             autoFocus
+            disabled={externalIsEditing && !isEditing}
           />
         )}
-        <Button size="sm" onClick={handleSave}>
+        <Button size="sm" onClick={handleSave} disabled={externalIsEditing && !isEditing}>
           Save
         </Button>
         <Button
@@ -79,7 +93,7 @@ const EditableField = ({
         <span className={`${titleText ? "font-bold text-lg" : ""}`}>
           {value}
         </span>
-        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+        <Button variant="ghost" size="sm" onClick={handleEditStart}>
 
 
 
