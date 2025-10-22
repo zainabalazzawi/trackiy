@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
+import { prisma } from "../../../../lib/prisma"
 import bcrypt from "bcrypt"
 
 declare module "next-auth" {
@@ -15,9 +15,7 @@ declare module "next-auth" {
       image?: string | null;
     };
   }
-} 
-
-const prisma = new PrismaClient()
+}
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
