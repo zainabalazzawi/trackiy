@@ -24,14 +24,14 @@ const EditableField = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
   const [typingUser, setTypingUser] = useState<string | null>(null);
-
+console.log("typingUser", typingUser)
   // Check for other users typing
   useEffect(() => {
     const check = () => {
       const data = localStorage.getItem(`typing_${fieldId}`);
       if (data) {
         const { user, time } = JSON.parse(data);
-        const currentUser = localStorage.getItem('user') || 'User1';
+        const currentUser = localStorage.getItem('user') || `User${Math.random().toString(36).substr(2, 9)}`;
         
         // If someone else is typing and it's recent (3 seconds)
         if (user !== currentUser && Date.now() - time < 3000) {
@@ -50,7 +50,8 @@ const EditableField = ({
   }, [fieldId]);
 
   const handleTyping = () => {
-    const currentUser = localStorage.getItem('user') || 'User1';
+    const currentUser = localStorage.getItem('user') || `User${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('user', currentUser); // Save the user for this session
     localStorage.setItem(`typing_${fieldId}`, JSON.stringify({
       user: currentUser,
       time: Date.now()
