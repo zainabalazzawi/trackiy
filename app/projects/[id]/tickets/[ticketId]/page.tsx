@@ -250,3 +250,4 @@ const TicketPage = () => {
     </div>
   );
 };
+export default TicketPage;
