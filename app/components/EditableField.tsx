@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +10,6 @@ interface EditableFieldProps {
   label?: string;
   type?: "input" | "textarea";
   titleText?: boolean;
-  fieldId?: string;
 }
 
 const EditableField = ({
@@ -19,95 +18,43 @@ const EditableField = ({
   label,
   type = "input",
   titleText,
-  fieldId = "default",
 }: EditableFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
-  const [typingUser, setTypingUser] = useState<string | null>(null);
-console.log("typingUser", typingUser)
-  // Check for other users typing
-  useEffect(() => {
-    const check = () => {
-      const data = localStorage.getItem(`typing_${fieldId}`);
-      if (data) {
-        const { user, time } = JSON.parse(data);
-        const currentUser = localStorage.getItem('user') || `User${Math.random().toString(36).substr(2, 9)}`;
-        
-        // If someone else is typing and it's recent (3 seconds)
-        if (user !== currentUser && Date.now() - time < 3000) {
-          setTypingUser(user);
-        } else {
-          setTypingUser(null);
-        }
-      } else {
-        setTypingUser(null);
-      }
-    };
-
-    check();
-    const interval = setInterval(check, 500);
-    return () => clearInterval(interval);
-  }, [fieldId]);
-
-  const handleTyping = () => {
-    const currentUser = localStorage.getItem('user') || `User${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem('user', currentUser); // Save the user for this session
-    localStorage.setItem(`typing_${fieldId}`, JSON.stringify({
-      user: currentUser,
-      time: Date.now()
-    }));
-  };
 
   const handleSave = () => {
     onSave(editedValue);
     setIsEditing(false);
-    localStorage.removeItem(`typing_${fieldId}`);
   };
 
   if (isEditing) {
     return (
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          {type === "textarea" ? (
-            <Textarea
-              value={editedValue}
-              onChange={(e) => {
-                setEditedValue(e.target.value);
-                handleTyping();
-              }}
-              autoFocus
-            />
-          ) : (
-            <Input
-              value={editedValue}
-              onChange={(e) => {
-                setEditedValue(e.target.value);
-                handleTyping();
-              }}
-              autoFocus
-            />
-          )}
-          <Button size="sm" onClick={handleSave}>
-            Save
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setIsEditing(false);
-              localStorage.removeItem(`typing_${fieldId}`);
-            }}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        {/* Show typing indicator */}
-        {typingUser && (
-          <div className="text-sm text-gray-600 italic">
-            {typingUser} is typing...
-          </div>
+      <div className="flex items-center gap-2">
+        {type === "textarea" ? (
+          <Textarea
+            value={editedValue}
+            onChange={(e) => setEditedValue(e.target.value)}
+            autoFocus
+          />
+        ) : (
+          <Input
+            value={editedValue}
+            onChange={(e) => setEditedValue(e.target.value)}
+            autoFocus
+          />
         )}
+        <Button size="sm" onClick={handleSave}>
+          Save
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            setIsEditing(false);
+          }}
+        >
+          <X className="h-4 w-4" />
+        </Button>
       </div>
     );
   }

@@ -69,6 +69,14 @@ const TicketPage = () => {
 
   return (
     <div className="p-6 w-full">
+
+
+
+
+
+
+
+
       {ticket.ticketNumber}
       <div className="flex gap-8">
         <div className="w-[70%]">
@@ -77,7 +85,7 @@ const TicketPage = () => {
               value={ticket.title}
               onSave={(value) => updateTicket({ title: value })}
               titleText
-              fieldId="title"
+
             />
 
             <div className="flex items-center gap-60 mt-3">
@@ -96,7 +104,7 @@ const TicketPage = () => {
             onSave={(value) => updateTicket({ description: value })}
             label="Description"
             type="textarea"
-            fieldId="description"
+
           />
 
           {/* Comments Section */}
