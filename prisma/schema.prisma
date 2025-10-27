@@ -51,6 +51,7 @@ model User {
   projects      ProjectMember[]
   createdProjects Project[] @relation("ProjectCreatedBy")
   comments      Comment[]
+  typingIndicators TypingIndicator[]
 }
 
  model VerificationToken {
@@ -187,4 +188,16 @@ model Invitation {
   token     String   @unique
   status    InvitationStatus @default(pending)
   createdAt DateTime @default(now())
+}
+
+model TypingIndicator {
+  id        String   @id @default(cuid())
+  ticketId  String
+  fieldId   String   // "title", "description", etc.
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastActivity DateTime @default(now())
+  
+  @@unique([ticketId, fieldId, userId], name: "uniqueKey")
+  @@map("typing_indicators")
 }

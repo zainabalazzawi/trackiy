@@ -44,3 +44,19 @@ export const getPriorityClasses = (priority: Priority): string => {
   };
   return priorityColors[priority]
 };
+
+// Utility function to format typing message
+export const formatTypingMessage = (users: string[]): string | null => {
+  const typingUsers = users.filter(Boolean);
+  
+  switch (typingUsers.length) {
+    case 0:
+      return null;
+    case 1:
+      return `${typingUsers[0]} is typing...`;
+    case 2:
+      return `${typingUsers[0]} and ${typingUsers[1]} are typing...`;
+    default:
+      return `${typingUsers[0]} and ${typingUsers.length - 1} others are typing...`;
+  }
+};

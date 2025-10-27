@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Pencil, X } from "lucide-react";
+import { useTypingIndicator } from "@/app/hooks/useTypingIndicator";
 
 interface EditableFieldProps {
   value: string;
@@ -10,6 +11,8 @@ interface EditableFieldProps {
   label?: string;
   type?: "input" | "textarea";
   titleText?: boolean;
+  ticketId?: string;
+  fieldId?: string;
 }
 
 const EditableField = ({
@@ -18,9 +21,27 @@ const EditableField = ({
   label,
   type = "input",
   titleText,
+  ticketId,
+  fieldId,
 }: EditableFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
+  
+  // Use typing indicator if ticketId and fieldId are provided
+  const { typingMessage, startTyping, stopTyping } = useTypingIndicator(
+    ticketId || "",
+    fieldId || ""
+  );
+
+  // Start/stop typing indicator when editing
+  useEffect(() => {
+    if (isEditing && ticketId && fieldId) {
+      startTyping();
+      return () => {
+        stopTyping();
+      };
+    }
+  }, [isEditing, ticketId, fieldId, startTyping, stopTyping]);
 
   const handleSave = () => {
     onSave(editedValue);
@@ -29,32 +50,37 @@ const EditableField = ({
 
   if (isEditing) {
     return (
-      <div className="flex items-center gap-2">
-        {type === "textarea" ? (
-          <Textarea
-            value={editedValue}
-            onChange={(e) => setEditedValue(e.target.value)}
-            autoFocus
-          />
-        ) : (
-          <Input
-            value={editedValue}
-            onChange={(e) => setEditedValue(e.target.value)}
-            autoFocus
-          />
+      <div>
+        <div className="flex items-center gap-2">
+          {type === "textarea" ? (
+            <Textarea
+              value={editedValue}
+              onChange={(e) => setEditedValue(e.target.value)}
+              autoFocus
+            />
+          ) : (
+            <Input
+              value={editedValue}
+              onChange={(e) => setEditedValue(e.target.value)}
+              autoFocus
+            />
+          )}
+          <Button size="sm" onClick={handleSave}>
+            Save
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setIsEditing(false);
+            }}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        {typingMessage && (
+          <p className="text-sm text-gray-500 mt-1">{typingMessage}</p>
         )}
-        <Button size="sm" onClick={handleSave}>
-          Save
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            setIsEditing(false);
-          }}
-        >
-          <X className="h-4 w-4" />
-        </Button>
       </div>
     );
   }
