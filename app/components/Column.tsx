@@ -43,7 +43,7 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
     }
   });
 
-  const { updateColumn, isUpdating } = useUpdateColumn(projectId);
+  const { updateColumn } = useUpdateColumn(projectId);
 
   const { deleteColumn, isDeleting } = useDeleteColumn(projectId);
 

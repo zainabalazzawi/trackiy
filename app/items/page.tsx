@@ -104,6 +104,7 @@ const ItemsPage = () => {
     return filtered;
   }, [
     tickets,
+    projects,
     searchQuery,
     selectedProjects,
     selectedAssignees,

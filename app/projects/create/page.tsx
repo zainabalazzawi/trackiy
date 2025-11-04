@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, X } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import InfoCard from "@/app/components/InfoCard";
@@ -24,7 +23,7 @@ const CreateProject = () => {
   const [projectType, setProjectType] = useState<ProjectType>(null);
   const [projectName, setProjectName] = useState("");
   const [projectKey, setProjectKey] = useState("");
-  const { createProject, isCreating } = useCreateProject();
+  const { createProject } = useCreateProject();
 
   const getTemplateInfo = () => {
     if (selectedTemplate === "KANBAN") {
@@ -90,7 +89,7 @@ const CreateProject = () => {
           <div className="p-6">
             <h1 className="text-2xl font-semibold mb-2">Add project details</h1>
             <p className="text-gray-500 mb-8">
-              Explore what's possible when you collaborate with your team. Edit
+              Explore what&apos;s possible when you collaborate with your team. Edit
               project details anytime in project settings.
             </p>
 
@@ -328,8 +327,7 @@ const CreateProject = () => {
                     }`}
                     onClick={() => setSelectedTemplate("CUSTOMER_SERVICE")}
                     title="Customer service management"
-                    description="Deliver great service experiences fast with a template
-                          designed to help your external customers."
+                    description="Deliver great service experiences fast with a template designed to help your external customers."
                   />
                 </>
               )}

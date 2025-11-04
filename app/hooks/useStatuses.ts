@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Status } from "@/app/types";
+import { Status, Ticket } from "@/app/types";
 
 // Hook to get statuses for a project
 export function useStatuses(projectId: string) {
@@ -26,7 +26,7 @@ export function useUpdateTicketStatus(projectId: string) {
   const updateTicketStatusMutation = useMutation({
     mutationFn: async ({
       ticketId,
-      columnId,
+      columnId: _columnId,
       statusId,
     }: {
       ticketId: string;
@@ -50,8 +50,8 @@ export function useUpdateTicketStatus(projectId: string) {
       columnId: string;
     }) => {
       // Optimistic update
-      queryClient.setQueryData(["tickets", projectId], (old: any[]) => {
-        return old?.map((ticket: any) =>
+      queryClient.setQueryData(["tickets", projectId], (old: Ticket[] | undefined) => {
+        return old?.map((ticket: Ticket) =>
           ticket.id === ticketId ? { ...ticket, columnId } : ticket
         );
       });

@@ -9,7 +9,6 @@ import { Suspense } from "react";
 import InviteHandler from "./InviteHandler";
 import { LoadingState } from "../components/LoadingState";
 import SearchInput from "../components/SearchInput";
-import { Label } from "@/components/ui/label";
 import {
   MultiSelect,
   MultiSelectContent,

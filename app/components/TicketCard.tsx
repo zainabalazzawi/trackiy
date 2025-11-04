@@ -1,4 +1,4 @@
-import { Ticket, ProjectMember } from "../types";
+import { Ticket } from "../types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
@@ -75,7 +75,7 @@ const TicketCard = ({
     });
   };
 
-  const handleCardClick = (e: React.MouseEvent) => {
+  const handleCardClick = () => {
       if (!isCurrentlyDragging) {
             router.push(
               `/projects/${ticket.column.project.id}/tickets/${ticket.id}`
@@ -198,7 +198,7 @@ const TicketCard = ({
           <DialogHeader>
             <DialogTitle>Delete Ticket?</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{ticket.title}"? This action
+              Are you sure you want to delete &quot;{ticket.title}&quot;? This action
               cannot be undone.
             </DialogDescription>
           </DialogHeader>

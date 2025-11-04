@@ -85,7 +85,7 @@ export function useDeleteProject() {
 }
 
 export function useProjectMembers(projectId: string) {
-  const { data: members, isLoading } = useQuery({
+  const { data: members } = useQuery({
     queryKey: ["project-members", projectId],
     queryFn: async () => {
       const response = await axios.get(`/api/projects/${projectId}/members`);

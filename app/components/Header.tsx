@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronUp, Plus, Clock, Layout } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Layout } from "lucide-react";
 import Link from "next/link";
 
 import { useState } from "react";

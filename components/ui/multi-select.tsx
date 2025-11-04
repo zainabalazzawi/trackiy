@@ -2,7 +2,6 @@
 
 import {
   CheckIcon,
-  CheckSquareIcon,
   ChevronsUpDownIcon,
   SquareIcon,
   XIcon,
@@ -28,8 +27,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
-  useRef,
   useState,
   type ComponentPropsWithoutRef,
   type ReactNode,

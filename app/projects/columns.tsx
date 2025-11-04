@@ -18,10 +18,74 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-import { useState } from "react";
 import Link from "next/link";
 import { useDeleteProject } from "@/app/hooks/useProjects";
 import { Project } from "@/app/types";
+import { useState } from "react";
+
+// Component for Actions cell to properly use hooks
+function ActionsCell({ project }: { project: Project }) {
+  const [open, setOpen] = useState(false);
+  const { deleteProject, isDeleting } = useDeleteProject();
+
+  const handleDeleteProject = (projectId: string) => {
+    deleteProject(projectId, {
+      onSuccess: () => {
+        setOpen(false);
+      },
+    });
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setOpen(true);
+            }}
+            className="text-red-800"
+          >
+            <Trash2 className="mr-2 text-red-800" size={16} />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Ticket?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete &quot;{project.name}&quot;? This action
+              cannot be undone and will delete all columns, tickets, and
+              members.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                handleDeleteProject(project.id);
+              }}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
 
 export const columns: ColumnDef<Project>[] = [
   {
@@ -93,67 +157,7 @@ export const columns: ColumnDef<Project>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const project = row.original;
-      const [open, setOpen] = useState(false);
-      const { deleteProject, isDeleting } = useDeleteProject();
-
-      const handleDeleteProject = (projectId: string) => {
-        deleteProject(projectId, {
-          onSuccess: () => {
-            setOpen(false);
-          },
-        });
-      };
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  setOpen(true);
-                }}
-                className="text-red-800"
-              >
-                <Trash2 className="mr-2 text-red-800" size={16} />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Delete Ticket?</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to delete "{project.name}"? This action
-                  cannot be undone and will delete all columns, tickets, and
-                  members.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    handleDeleteProject(project.id);
-                  }}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </>
-      );
+      return <ActionsCell project={row.original} />;
     },
   },
 ];

@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDate } from "@/lib/utils";
-import { MessageSquare, Send, Trash2, Edit3 } from "lucide-react";
+import { MessageSquare, Send, Trash2 } from "lucide-react";
 import EditableField from "@/app/components/EditableField";
 import {
   Dialog,
@@ -35,7 +35,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
   const { comments } = useComments(projectId, ticketId);
   const { createComment, isCreating } = useCreateComment(projectId, ticketId);
   const { deleteComment, isDeleting } = useDeleteComment(projectId, ticketId);
-  const { updateComment, isUpdating } = useUpdateComment(projectId, ticketId);
+  const { updateComment } = useUpdateComment(projectId, ticketId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

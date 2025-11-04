@@ -1,6 +1,6 @@
 "use client";
 
-import { Priority, ProjectMember, Status, Ticket } from "@/app/types";
+import { Priority, ProjectMember } from "@/app/types";
 import { useParams } from "next/navigation";
 import PrioritySelect from "@/app/components/PrioritySelect";
 import EditableField from "@/app/components/EditableField";
@@ -43,7 +43,7 @@ const TicketPage = () => {
   const { members } = useProjectMembers(projectId);
   const { ticket, isLoading } = useTicket(projectId, ticketId);
   const { statuses } = useStatuses(projectId);
-  const { updateTicket, isUpdating } = useUpdateTicket(projectId, ticketId);
+  const { updateTicket } = useUpdateTicket(projectId, ticketId);
   const { tickets } = useAllTickets();
 
   // Get unique labels from all tickets

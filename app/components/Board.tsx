@@ -13,8 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Column from "./Column";
 
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { Ticket, Column as ColumnType, ProjectMember, MemberSelection } from "../types";
+import { Ticket, ProjectMember, MemberSelection } from "../types";
 import { useState, useRef } from "react";
 import TicketCard from "./TicketCard";
 import {
@@ -24,7 +23,6 @@ import {
 import { Check, Plus, X, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useSession } from "next-auth/react";
 import { useProjectMembers } from "../hooks/useProjects";
 import {
   Select,
@@ -44,15 +42,10 @@ interface BoardProps {
 }
 
 const Board = ({ projectId, selectedMemberId }: BoardProps) => {
-  const { data: session } = useSession();
   const { members } = useProjectMembers(projectId);
   const { tickets } = useTickets(projectId);
   const { updateTicketStatus } = useUpdateTicketStatus(projectId);
-  const { createTicket, isCreating } = useCreateTicket(projectId);
-
-
-
-  const [isOpen, setIsOpen] = useState(false);
+  const { createTicket } = useCreateTicket(projectId);
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isAddingColumn, setIsAddingColumn] = useState(false);
@@ -74,7 +67,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
 
   const { columns } = useColumns(projectId);
 
-  const { createColumn, isCreating: isCreatingColumn } = useCreateColumn(projectId);
+  const { createColumn } = useCreateColumn(projectId);
 
 
   const handleTicketDeleted = (ticketId: string) => {
