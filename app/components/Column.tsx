@@ -67,13 +67,13 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
     <div 
       ref={setNodeRef}
       className={`
-        py-4
+        py-3 sm:py-4
         rounded-md
-        w-full
+        w-[60%] shrink-0 sm:shrink-1
         ${isOver ? 'bg-gray-300' : 'bg-gray-200'}
       `}
     >
-      <div className="mb-4 flex justify-between items-center px-2 h-[3%]">
+      <div className="mb-3 sm:mb-4 flex justify-between items-center px-2">
         {/* edit col name */}
         {isEditing ? (
           <Input
@@ -85,11 +85,11 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
               setIsEditing(false);
             }}
             autoFocus
-            className='bg-gray-100'
+            className='bg-gray-100 text-sm sm:text-base'
           />
         ) : (
           <h2 
-            className="text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-100 hover:w-full rounded-md pl-2 py-1"
+            className="text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-100 hover:w-full rounded-md pl-2 py-1 text-sm sm:text-base truncate flex-1 min-w-0"
             onClick={() => setIsEditing(true)}
           >
             {column.name}
@@ -97,8 +97,8 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
         )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreVertical size={20} />
+            <Button variant="ghost" size="icon" className="flex-shrink-0">
+              <MoreVertical size={18} className="sm:w-5 sm:h-5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className='w-48'>

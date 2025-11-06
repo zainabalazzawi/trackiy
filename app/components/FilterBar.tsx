@@ -50,109 +50,111 @@ export function FilterBar({
   onLabelsChange,
 }: FilterBarProps) {
   return (
-    <div className="mb-6 flex gap-4">
+    <div className="mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
       {/* Search */}
       <SearchInput
         placeholder="Search work"
         value={searchQuery}
         onChange={onSearchChange}
+        className="w-full sm:max-w-md"
       />
 
-      {/* Project Filter */}
-      <MultiSelect
-        onValuesChange={onProjectsChange}
-        values={selectedProjects}
-      >
-        <MultiSelectTrigger>
-          <MultiSelectValue placeholder="Project" />
-        </MultiSelectTrigger>
-        <MultiSelectContent>
-          <MultiSelectGroup>
-            {projects?.map((project: Project) => (
-              <MultiSelectItem key={project.id} value={project.id}>
-                {project.name}
-              </MultiSelectItem>
-            ))}
-          </MultiSelectGroup>
-        </MultiSelectContent>
-      </MultiSelect>
+      <div className="flex flex-wrap gap-3 sm:gap-4">
+        {/* Project Filter */}
+        <MultiSelect
+          onValuesChange={onProjectsChange}
+          values={selectedProjects}
+        >
+          <MultiSelectTrigger className="w-full sm:w-[8.75rem]">
+            <MultiSelectValue placeholder="Project" />
+          </MultiSelectTrigger>
+          <MultiSelectContent>
+            <MultiSelectGroup>
+              {projects?.map((project: Project) => (
+                <MultiSelectItem key={project.id} value={project.id}>
+                  {project.name}
+                </MultiSelectItem>
+              ))}
+            </MultiSelectGroup>
+          </MultiSelectContent>
+        </MultiSelect>
 
-{/* chkeck how to pass the name  */}
-      {/* Assignee Filter */}
-      <MultiSelect
-        onValuesChange={onAssigneesChange}
-        values={selectedAssignees}
-      >
-        <MultiSelectTrigger>
-          <MultiSelectValue placeholder="Assignee" />
-        </MultiSelectTrigger>
-        <MultiSelectContent>
-          <MultiSelectGroup>
-            {assignees.map((assignee) => (
-              <MultiSelectItem key={assignee} value={assignee}>
-                {assignee}
-              </MultiSelectItem>
-            ))}
-          </MultiSelectGroup>
-        </MultiSelectContent>
-      </MultiSelect>
+        {/* Assignee Filter */}
+        <MultiSelect
+          onValuesChange={onAssigneesChange}
+          values={selectedAssignees}
+        >
+          <MultiSelectTrigger className="w-full sm:w-[8.75rem]">
+            <MultiSelectValue placeholder="Assignee" />
+          </MultiSelectTrigger>
+          <MultiSelectContent>
+            <MultiSelectGroup>
+              {assignees.map((assignee) => (
+                <MultiSelectItem key={assignee} value={assignee}>
+                  {assignee}
+                </MultiSelectItem>
+              ))}
+            </MultiSelectGroup>
+          </MultiSelectContent>
+        </MultiSelect>
 
-      {/* Status Filter */}
-      <MultiSelect
-        onValuesChange={onStatusesChange}
-        values={selectedStatuses}
-      >
-        <MultiSelectTrigger>
-          <MultiSelectValue placeholder="Status" />
-        </MultiSelectTrigger>
-        <MultiSelectContent>
-          <MultiSelectGroup>
-            {statuses.map((status) => (
-              <MultiSelectItem key={status.id} value={status.name}>
-                {status.name}
-              </MultiSelectItem>
-            ))}
-          </MultiSelectGroup>
-        </MultiSelectContent>
-      </MultiSelect>
+        {/* Status Filter */}
+        <MultiSelect
+          onValuesChange={onStatusesChange}
+          values={selectedStatuses}
+        >
+          <MultiSelectTrigger className="w-full sm:w-[8.75rem]">
+            <MultiSelectValue placeholder="Status" />
+          </MultiSelectTrigger>
+          <MultiSelectContent>
+            <MultiSelectGroup>
+              {statuses.map((status) => (
+                <MultiSelectItem key={status.id} value={status.name}>
+                  {status.name}
+                </MultiSelectItem>
+              ))}
+            </MultiSelectGroup>
+          </MultiSelectContent>
+        </MultiSelect>
 
-      {/* Priority Filter */}
-      <MultiSelect
-        onValuesChange={onPrioritiesChange}
-        values={selectedPriorities}
-      >
-        <MultiSelectTrigger>
-          <MultiSelectValue placeholder="Priority" />
-        </MultiSelectTrigger>
-        <MultiSelectContent>
-          <MultiSelectGroup>
-            {priorities.map((priority) => (
-              <MultiSelectItem key={priority} value={priority}>
-                {priority}
-              </MultiSelectItem>
-            ))}
-          </MultiSelectGroup>
-        </MultiSelectContent>
-      </MultiSelect>
+        {/* Priority Filter */}
+        <MultiSelect
+          onValuesChange={onPrioritiesChange}
+          values={selectedPriorities}
+        >
+          <MultiSelectTrigger className="w-full sm:w-[8.75rem]">
+            <MultiSelectValue placeholder="Priority" />
+          </MultiSelectTrigger>
+          <MultiSelectContent>
+            <MultiSelectGroup>
+              {priorities.map((priority) => (
+                <MultiSelectItem key={priority} value={priority}>
+                  {priority}
+                </MultiSelectItem>
+              ))}
+            </MultiSelectGroup>
+          </MultiSelectContent>
+        </MultiSelect>
 
-      {/* Label Filter */}
-      <MultiSelect
-        onValuesChange={onLabelsChange}
-        values={selectedLabels}
-      >
-        <MultiSelectTrigger>
-          <MultiSelectValue placeholder="Label" />
-        </MultiSelectTrigger>
-        <MultiSelectContent>
-          <MultiSelectGroup>
-            {labels?.map((label) => (
-              <MultiSelectItem key={label} value={label}>
-                {label}
-              </MultiSelectItem>
-            ))}
-          </MultiSelectGroup>
-        </MultiSelectContent>
-      </MultiSelect>
+        {/* Label Filter */}
+        <MultiSelect
+          onValuesChange={onLabelsChange}
+          values={selectedLabels}
+        >
+          <MultiSelectTrigger className="w-full sm:w-[8.75rem]">
+            <MultiSelectValue placeholder="Label" />
+          </MultiSelectTrigger>
+          <MultiSelectContent>
+            <MultiSelectGroup>
+              {labels?.map((label) => (
+                <MultiSelectItem key={label} value={label}>
+                  {label}
+                </MultiSelectItem>
+              ))}
+            </MultiSelectGroup>
+          </MultiSelectContent>
+        </MultiSelect>
+      </div>
     </div>
   );
 }

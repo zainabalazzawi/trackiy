@@ -18,7 +18,7 @@ const StatusSelect = ({
         defaultValue={ticket?.statusId}
         onValueChange={handleStatusChange}
       >
-        <SelectTrigger className="w-[55%] mb-3 rounded">
+        <SelectTrigger className="w-full mb-3 rounded">
           <SelectValue placeholder={ticket?.statusId} />
         </SelectTrigger>
         <SelectContent>

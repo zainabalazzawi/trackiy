@@ -18,7 +18,7 @@ const TicketSearch = () => {
   console.log(results.map((result) => result.ticketNumber));
   
   return (
-    <div className="relative w-90 text-muted-foreground">
+    <div className="relative sm:w-90 text-muted-foreground">
       <SearchInput
         placeholder="Search tickets..."
         value={query}
@@ -29,7 +29,7 @@ const TicketSearch = () => {
         <Card className="absolute w-full py-0 z-10">
           <CardContent className="p-0">
             {isLoading ? (
-              <div className="p-4 text-center">
+              <div className="p-4 text-center text-sm">
                 Searching...
               </div>
             ) : results.length > 0 ? (
@@ -37,9 +37,9 @@ const TicketSearch = () => {
                 <div
                   key={result.id}
                   onClick={() => handleTicketClick(result)}
-                  className="p-1 px-3 hover:bg-accent cursor-pointer border-b last:border-b-0"
+                  className="p-2 px-3 hover:bg-accent cursor-pointer border-b last:border-b-0"
                 >
-                  <div className="text-[14px] font-normal">
+                  <div className="text-xs sm:text-sm font-normal">
                     {result.ticketNumber} &nbsp; {result.title}
                   </div>
                   <span className="text-xs text-gray-700 font-medium">
@@ -48,7 +48,7 @@ const TicketSearch = () => {
                 </div>
               ))
             ) : (
-              <div className="p-4 text-center">
+              <div className="p-4 text-center text-sm">
                 No tickets found
               </div>
             )}

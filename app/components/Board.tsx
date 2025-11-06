@@ -137,7 +137,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-2 pb-4 h-full">
+        <div className="flex gap-2 pb-4 h-full overflow-x-auto">
           {columns.map((column, index) => {
             const columnTickets = tickets.filter((ticket) => 
               ticket.columnId === column.id && 
@@ -178,7 +178,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                           onChange={(e) => setNewTicket(e.target.value)}
                           placeholder="What needs to be done?"
                           autoFocus
-                          className="h-32 text-lg border-ring"
+                          className="h-24 sm:h-32 text-sm sm:text-lg border-ring"
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && newTicket.trim()) {
                               handleCreateTicket(column.id);
@@ -269,10 +269,10 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                     ) : (
                       <Button
                         variant="ghost"
-                        className="flex items-center justify-start gap-2 text-gray-600 text-base font-medium hover:text-gray-800 transition-colors focus:outline-none w-full rounded-sm"
+                        className="flex items-center justify-start gap-2 text-gray-600 text-sm sm:text-base font-medium hover:text-gray-800 transition-colors focus:outline-none w-full rounded-sm"
                         onClick={() => setIsCreatingTicket(true)}
                       >
-                        <Plus className="h-5 w-5" />
+                        <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
                         Create
                       </Button>
                     )}
@@ -284,13 +284,13 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
           {/* add new col */}
           <div className={`${isAddingColumn ? "w-full" : ""}`}>
             {isAddingColumn ? (
-              <div className="p-4 rounded-lg bg-gray-200">
+              <div className="p-3 sm:p-4 rounded-lg bg-gray-200 min-w-[200px]">
                 <div className="flex flex-col gap-2">
                   <Input
                     value={newColumnName}
                     onChange={(e) => setNewColumnName(e.target.value)}
                     placeholder="Enter column name"
-                    className="bg-white w-full"
+                    className="bg-white w-full text-sm sm:text-base"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -306,7 +306,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                       size="icon"
                       variant="ghost"
                       onClick={handleAddColumn}
-                      className="h-6 w-6"
+                      className="h-6 w-6 sm:h-8 sm:w-8"
                     >
                       <Check className="h-4 w-4" />
                     </Button>
@@ -317,7 +317,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                         setIsAddingColumn(false);
                         setNewColumnName("");
                       }}
-                      className="h-6 w-6"
+                      className="h-6 w-6 sm:h-8 sm:w-8"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -327,7 +327,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
             ) : (
               <button
                 onClick={() => setIsAddingColumn(true)}
-                className="rounded-lg  cursor-pointer border-2 border-dashed border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                className="rounded-lg cursor-pointer border-2 border-dashed border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
                 <Plus className="h-6 w-6 text-gray-400" />
               </button>

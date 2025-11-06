@@ -56,15 +56,15 @@ const ProjectsPage = () => {
     );
 
   return (
-    <div className="px-5 py-10">
-      <div className="mb-6 flex gap-6">
+      <div className="px-5 py-10">
+      <div className="mb-6 flex flex-col sm:flex-row gap-4">
           <SearchInput
             placeholder="Search projects..."
             value={searchQuery}
             onChange={setSearchQuery}
           />
           <MultiSelect onValuesChange={setSelectedTypes} values={selectedTypes}>
-            <MultiSelectTrigger className="w-[30%]">
+            <MultiSelectTrigger className="w-full sm:w-[30%]">
               <MultiSelectValue placeholder="Filter by project types" />
             </MultiSelectTrigger>
             <MultiSelectContent>

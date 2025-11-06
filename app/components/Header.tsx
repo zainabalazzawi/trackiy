@@ -26,23 +26,23 @@ const Header = () => {
 
   return (
     <div className="bg-background border-b">
-      <div className="mx-auto px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="font-semibold text-xl">
+      <div className="mx-auto px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-6 w-full">
+          <Link href="/" className="font-semibold text-xl flex-shrink-0">
           <Image
             src="/Trackiy.svg"
             alt="Logo"
             width={100}
             height={100}
-            className="cursor-pointer"
+            className="cursor-pointer w-20 sm:w-[100px]"
             onClick={() => router.push("/")}
           />
           </Link>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2">
-                Projects
+              <Button variant="ghost" className="flex items-center gap-2 text-sm sm:text-base">
+            Projects
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -57,15 +57,18 @@ const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {session && <TicketSearch />}
+          {session && <div className="hidden sm:block"><TicketSearch /></div>}
         </div>
 
-        <div className="flex items-center">
-          {session && <div className="mr-3">Welcome {session.user?.name}</div>}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {session && (
+            <div className="hidden sm:block mr-1 sm:mr-3 text-xs sm:text-lg whitespace-nowrap">
+              Welcome {session.user?.name}
+            </div>
+          )}
           {!session ? (
             <SignInDialog>
-              <Button variant="outline" className="mr-4">
+              <Button variant="outline" className="mr-2 sm:mr-4 text-sm sm:text-base">
                 Sign in
               </Button>
             </SignInDialog>
@@ -74,7 +77,7 @@ const Header = () => {
               <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
                   <div className="flex flex-row items-center">
-                    <Avatar>
+                    <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
                       {session?.user?.image && (
                         <AvatarImage
                           src={session?.user?.image?.replace("s96-c", "s400-c")}
@@ -82,18 +85,18 @@ const Header = () => {
                         />
                       )}
 
-                      <AvatarFallback>
+                      <AvatarFallback className="text-xs sm:text-sm">
                         {session?.user?.name
                           ?.split(" ")
                           .map((n) => n[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    {isOpen ? (
+                     {isOpen ? (
                       <ChevronUp size={25} className="ml-1 text-slate-400" />
                     ) : (
                       <ChevronDown size={25} className="ml-1 text-slate-400" />
-                    )}{" "}
+                    )}
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -110,6 +113,10 @@ const Header = () => {
             </div>
           )}
         </div>
+
+      </div>
+      <div className="m-2.5 sm:hidden">
+      {session && <TicketSearch />}
       </div>
       <BreadcrumbNav />
     </div>

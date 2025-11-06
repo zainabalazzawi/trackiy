@@ -33,7 +33,6 @@ import { LoadingState } from "@/app/components/LoadingState";
 import { findMemberById, formatDate } from "@/lib/utils";
 import Comments from "@/app/components/Comments";
 
-
 const TicketPage = () => {
   const params = useParams();
   const { id: projectId, ticketId } = params as {
@@ -48,11 +47,8 @@ const TicketPage = () => {
 
   // Get unique labels from all tickets
   const labels = [
-    ...new Set(
-      tickets?.flatMap((ticket) => ticket.labels || [])
-    ),
+    ...new Set(tickets?.flatMap((ticket) => ticket.labels || [])),
   ].sort();
-
 
   if (isLoading)
     return (
@@ -68,19 +64,15 @@ const TicketPage = () => {
     findMemberById(members, ticket.assignee as string) || "unassigned";
 
   return (
-    <div className="p-6 w-full">
-
-
-
-
-
-
-
-
-      {ticket.ticketNumber}
-      <div className="flex gap-8">
-        <div className="w-[70%]">
-          <div className="mb-8">
+    <div className="p-3 sm:p-6 w-full">
+      <div className="mb-4 sm:mb-6">
+        <span className="text-sm sm:text-base text-gray-600">
+          {ticket.ticketNumber}
+        </span>
+      </div>
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        <div className="w-full lg:w-[70%]">
+          <div className="mb-6 sm:mb-8 bg-">
             <EditableField
               value={ticket.title}
               onSave={(value) => updateTicket({ title: value })}
@@ -88,35 +80,29 @@ const TicketPage = () => {
               ticketId={ticketId}
               fieldId="title"
             />
-
-            <div className="flex items-center gap-60 mt-3">
-              <span>Priority</span>
-              <PrioritySelect
-                value={ticket.priority}
-                onChange={(value) =>
-                  updateTicket({ priority: value as Priority })
-                }
-              />
-            </div>
-          </div>
-
-          <EditableField
-            value={ticket.description ?? ""}
-            onSave={(value) => updateTicket({ description: value })}
-            label="Description"
-            type="textarea"
-            ticketId={ticketId}
-            fieldId="description"
-          />
-
-          {/* Comments Section */}
-          <div className="mt-8">
-            <Comments projectId={projectId} ticketId={ticketId} />
+            <EditableField
+              value={ticket.description ?? ""}
+              onSave={(value) => updateTicket({ description: value })}
+              label="Description"
+              type="textarea"
+              ticketId={ticketId}
+              fieldId="description"
+            />
           </div>
         </div>
 
-        <div className="w-[30%]">
-          <div>
+        <div className="w-full sm:w-[30%]">
+          <div className="">
+            <span className="text-sm sm:text-base">Priority</span>
+            <PrioritySelect
+              value={ticket.priority}
+              onChange={(value) =>
+                updateTicket({ priority: value as Priority })
+              }
+            />
+          </div>
+          <div className="my-4">
+            <span className="text-sm sm:text-base">Statuses</span>
             <StatusSelect
               statuses={statuses}
               ticket={ticket}
@@ -126,13 +112,13 @@ const TicketPage = () => {
             />
           </div>
           <div className="rounded border">
-            <h3 className="text-lg font-medium text-gray-500 border-b mb-2 p-2">
+            <h3 className="text-base sm:text-lg font-medium text-gray-500 border-b mb-2 p-2">
               Details
             </h3>
             <div className="space-y-4 p-3">
-              <div className="flex flex-row justify-between">
-                <div className="text-sm text-gray-500">Assignee</div>
-                <div className="text-sm font-medium">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
+                <div className="text-xs sm:text-sm text-gray-500">Assignee</div>
+                <div className="text-xs sm:text-sm font-medium">
                   <Select
                     value={
                       assigneeMember && assigneeMember !== "unassigned"
@@ -145,7 +131,7 @@ const TicketPage = () => {
                       updateTicket({ assignee: assigneeValue });
                     }}
                   >
-                    <SelectTrigger className="w-auto border-0 p-0 h-auto bg-transparent hover:bg-gray-50 rounded">
+                    <SelectTrigger className="w-full sm:w-auto border-0 p-0 h-auto bg-transparent hover:bg-gray-50 rounded">
                       <SelectValue>
                         {assigneeMember === "unassigned" ? (
                           <div className="flex items-center gap-2">
@@ -209,9 +195,11 @@ const TicketPage = () => {
                   </Select>
                 </div>
               </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-sm text-gray-500">Reporter</div>
-                <div className="text-sm font-medium">{ticket?.reporter}</div>
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
+                <div className="text-xs sm:text-sm text-gray-500">Reporter</div>
+                <div className="text-xs sm:text-sm font-medium">
+                  {ticket?.reporter}
+                </div>
               </div>
               <div className="flex flex-row justify-between">
                 <div className="text-sm text-gray-500">Label</div>
@@ -223,7 +211,7 @@ const TicketPage = () => {
                     values={ticket?.labels || []}
                   >
                     <MultiSelectTrigger allowTyping>
-                      <MultiSelectValue placeholder="Add label" />
+                      <MultiSelectValue  />
                     </MultiSelectTrigger>
                     <MultiSelectContent>
                       <MultiSelectGroup>
@@ -239,7 +227,7 @@ const TicketPage = () => {
               </div>
             </div>
           </div>
-          <div className="mt-5 text-[12px] text-gray-600">
+          <div className="mt-4 sm:mt-5 text-xs sm:text-sm text-gray-600">
             <div>
               Created <span> {formatDate(ticket.createdAt)}</span>
             </div>
@@ -248,6 +236,10 @@ const TicketPage = () => {
             </div>
           </div>
         </div>
+      </div>
+      {/* Comments Section */}
+      <div className="mt-6 sm:mt-8">
+        <Comments projectId={projectId} ticketId={ticketId} />
       </div>
     </div>
   );

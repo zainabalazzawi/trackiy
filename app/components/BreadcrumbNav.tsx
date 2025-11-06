@@ -79,17 +79,21 @@ const BreadcrumbNav = () => {
   }
 
   return (
-    <div className="px-6 py-2 bg-muted/30 border-b">
+    <div className="px-3 sm:px-6 py-2 bg-muted/30 border-b overflow-x-auto">
       <Breadcrumb>
         <BreadcrumbList>
           {breadcrumbs.map((breadcrumb, index) => (
             <React.Fragment key={breadcrumb.href}>
               <BreadcrumbItem>
                 {breadcrumb.isActive ? (
-                  <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
+                  <BreadcrumbPage className="text-sm sm:text-base">
+                    {breadcrumb.label}
+                  </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link href={breadcrumb.href}>{breadcrumb.label}</Link>
+                    <Link href={breadcrumb.href} className="text-sm sm:text-base">
+                      {breadcrumb.label}
+                    </Link>
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>

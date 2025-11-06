@@ -70,11 +70,11 @@ export default function ProjectPage({
   if (!project) return <div className="p-6">Project not found</div>;
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <div className="mb-6 flex items-center gap-2">
-          <h1 className="text-2xl font-bold">{project.name}</h1>
-          <div className="flex items-center gap-3">
+    <div className="p-3 sm:p-6">
+      <div className="mb-4 sm:mb-6">
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold truncate">{project.name}</h1>
+          <div className="flex items-center gap-2 sm:gap-3">
             <Members
               projectId={resolvedParams.id}
               selectedMemberId={selectedMemberId}
@@ -85,21 +85,21 @@ export default function ProjectPage({
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
-                  className="rounded-full p-4"
+                  className="rounded-full p-3 sm:p-4"
                   size="icon"
                 >
-                  <UserPlus className="w-5 h-5" />
+                  <UserPlus className="w-4 h-4 sm:w-5 sm:h-5 cursor-pointer " />
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle>
+                  <DialogTitle className="text-base sm:text-lg">
                     Add people to {project.name} project
                   </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleInviteSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="invite-email">add email</Label>
+                    <Label htmlFor="invite-email" className="text-sm sm:text-base">add email</Label>
                     <Input
                       id="invite-email"
                       type="email"
@@ -107,17 +107,18 @@ export default function ProjectPage({
                       onChange={(e) => setInviteEmail(e.target.value)}
                       placeholder="Enter email"
                       required
+                      className="text-sm sm:text-base"
                     />
                   </div>
-                  <DialogFooter>
+                  <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
                     <Button
-                      className="bg-[#f4f4f5] text-[#27272a] hover:bg-[#e4e4e7] cursor-pointer"
+                      className="bg-[#f4f4f5] text-[#27272a] hover:bg-[#e4e4e7] cursor-pointer w-full sm:w-auto"
                       onClick={() => setOpen(false)}
                     >
                       Cancel
                     </Button>
                     <Button
-                      className="bg-[#2563eb] text-white hover:bg-[#1d4ed8] cursor-pointer"
+                      className="bg-[#2563eb] text-white hover:bg-[#1d4ed8] cursor-pointer w-full sm:w-auto"
                       disabled={inviteMutation.isPending || !inviteEmail}
                       type="submit"
                     >
@@ -129,7 +130,7 @@ export default function ProjectPage({
             </Dialog>
           </div>
         </div>
-        <p className="text-gray-600">Key: {project.key}</p>
+        <p className="text-sm sm:text-base text-gray-600">Key: {project.key}</p>
       </div>
       <Board
         projectId={resolvedParams.id}

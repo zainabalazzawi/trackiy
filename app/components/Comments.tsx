@@ -62,7 +62,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
   };
 
   return (
-    <div className="space-y-3 w-[65%]">
+    <div className="space-y-3  w-full sm:w-[65%]">
       <div className="flex items-center gap-2 text-gray-500">
         <MessageSquare className="h-5 w-5" />
         <h3 className="text-lg font-medium">Comments</h3>
