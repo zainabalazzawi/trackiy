@@ -36,13 +36,13 @@ export default function RootLayout({
       >
         <ClientLayout>
           <SidebarProvider defaultOpen={false}>
-            <AppSidebar />
             <SidebarInset>
               <Header />
               <main>
                 {children}
               </main>
             </SidebarInset>
+            <AppSidebar />
           </SidebarProvider>
         </ClientLayout>
       </body>

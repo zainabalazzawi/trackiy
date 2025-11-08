@@ -68,7 +68,7 @@ const Header = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center justify-end gap-2 sm:gap-3">
           {session && (
             <div className="hidden sm:block mr-1 sm:mr-3 text-xs sm:text-lg whitespace-nowrap">
               Welcome {session.user?.name}

@@ -64,7 +64,7 @@ export function AppSidebar() {
     },
   ];
   return (
-    <Sidebar>
+    <Sidebar side="right">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Ttackiy</SidebarGroupLabel>
