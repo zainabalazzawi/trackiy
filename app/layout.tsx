@@ -6,7 +6,6 @@ import ClientLayout from "./client-layout";
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./components/AppSidebar";
 
@@ -41,7 +40,6 @@ export default function RootLayout({
             <SidebarInset>
               <Header />
               <main>
-                <SidebarTrigger />
                 {children}
               </main>
             </SidebarInset>

@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import Image from "next/image";
 
 const Header = () => {
@@ -29,35 +30,42 @@ const Header = () => {
       <div className="mx-auto px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
         <div className="flex items-center gap-2 sm:gap-6 w-full">
           <Link href="/" className="font-semibold text-xl flex-shrink-0">
-          <Image
-            src="/Trackiy.svg"
-            alt="Logo"
-            width={100}
-            height={100}
-            className="cursor-pointer w-20 sm:w-[100px]"
-            onClick={() => router.push("/")}
-          />
+            <Image
+              src="/Trackiy.svg"
+              alt="Logo"
+              width={100}
+              height={100}
+              className="cursor-pointer w-20 sm:w-[100px]"
+              onClick={() => router.push("/")}
+            />
           </Link>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 text-sm sm:text-base">
-            Projects
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 text-sm sm:text-base"
+              >
+                Projects
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
-              <DropdownMenuItem onClick={() => router.push('/projects')}>
+              <DropdownMenuItem onClick={() => router.push("/projects")}>
                 <Layout className="mr-2 h-4 w-4" />
                 View all projects
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/projects/create')}>
+              <DropdownMenuItem onClick={() => router.push("/projects/create")}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create project
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {session && <div className="hidden sm:block"><TicketSearch /></div>}
+          {session && (
+            <div className="hidden sm:block">
+              <TicketSearch />
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -68,7 +76,10 @@ const Header = () => {
           )}
           {!session ? (
             <SignInDialog>
-              <Button variant="outline" className="mr-2 sm:mr-4 text-sm sm:text-base">
+              <Button
+                variant="outline"
+                className="mr-2 sm:mr-4 text-sm sm:text-base"
+              >
                 Sign in
               </Button>
             </SignInDialog>
@@ -92,7 +103,7 @@ const Header = () => {
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                     {isOpen ? (
+                    {isOpen ? (
                       <ChevronUp size={25} className="ml-1 text-slate-400" />
                     ) : (
                       <ChevronDown size={25} className="ml-1 text-slate-400" />
@@ -112,12 +123,10 @@ const Header = () => {
               </DropdownMenu>
             </div>
           )}
+          <SidebarTrigger />
         </div>
-
       </div>
-      <div className="m-2.5 sm:hidden">
-      {session && <TicketSearch />}
-      </div>
+      <div className="m-2.5 sm:hidden">{session && <TicketSearch />}</div>
       <BreadcrumbNav />
     </div>
   );
