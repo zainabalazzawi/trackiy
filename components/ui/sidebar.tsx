@@ -260,6 +260,11 @@ function SidebarTrigger({
 }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar, open } = useSidebar();
 
+  // Hide the trigger when sidebar is open
+  if (open) {
+    return null;
+  }
+
   return (
     <Button
       data-sidebar="trigger"
