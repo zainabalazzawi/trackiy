@@ -70,6 +70,8 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
         py-4
         rounded-md
         w-full
+        flex
+        flex-col
         ${isOver ? 'bg-gray-300' : 'bg-gray-200'}
       `}
     >
@@ -113,7 +115,7 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
         </DropdownMenu>
       </div>
       <div className='border-gray-50 border-1 mb-1'/>
-      <div className='px-1'>
+      <div className='px-1 overflow-y-auto'>
         {children}
       </div>
 
