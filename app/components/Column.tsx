@@ -69,7 +69,8 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
       className={`
         py-4
         rounded-md
-        w-full
+        w-60 sm:w-full
+        flex-shrink-0 sm:flex-shrink
         flex
         flex-col
         ${isOver ? 'bg-gray-300' : 'bg-gray-200'}
