@@ -14,7 +14,7 @@ export default function LandingPage() {
 
   return (
     <div className="flex items-center justify-center p-8">
-      <Card className="max-w-4xl">
+      <Card className="max-w-4xl mt-16">
         <CardContent className="p-12 text-center space-y-8">
           <Image
             src="/Trackiy.svg"

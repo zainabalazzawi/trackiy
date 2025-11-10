@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { ChevronDown, ChevronUp, Plus, Layout } from "lucide-react";
 import Link from "next/link";
 
@@ -23,7 +23,13 @@ import Image from "next/image";
 const Header = () => {
   const { data: session } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+
+  // Don't render header on landing page
+  if (pathname === "/") {
+    return null;
+  }
 
   return (
     <div className="bg-background border-b">
