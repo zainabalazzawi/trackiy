@@ -178,7 +178,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                           onChange={(e) => setNewTicket(e.target.value)}
                           placeholder="What needs to be done?"
                           autoFocus
-                          className="h-24 sm:h-32 text-sm sm:text-lg border-ring"
+                          className="h-24 sm:h-32 text-sm sm:text-lg border-slate-300 bg-white shadow-sm rounded-lg"
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && newTicket.trim()) {
                               handleCreateTicket(column.id);
@@ -269,11 +269,11 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                     ) : (
                       <Button
                         variant="ghost"
-                        className="flex items-center justify-start gap-2 text-gray-600 text-sm sm:text-base font-medium hover:text-gray-800 transition-colors focus:outline-none w-full rounded-sm"
+                        className="flex items-center justify-start gap-2 text-slate-600 text-sm sm:text-base font-medium hover:text-[#649C9E] hover:bg-white/60 transition-all focus:outline-none w-full rounded-lg"
                         onClick={() => setIsCreatingTicket(true)}
                       >
                         <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-                        Create
+                        Create Ticket
                       </Button>
                     )}
                   </div>
@@ -284,13 +284,13 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
           {/* add new col */}
           <div className={`${isAddingColumn ? "w-full" : ""}`}>
             {isAddingColumn ? (
-              <div className="p-3 sm:p-4 rounded-lg bg-gray-200 min-w-[200px]">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-slate-100 via-slate-50 to-white border border-slate-200 shadow-lg min-w-[200px]">
                 <div className="flex flex-col gap-2">
                   <Input
                     value={newColumnName}
                     onChange={(e) => setNewColumnName(e.target.value)}
                     placeholder="Enter column name"
-                    className="bg-white w-full text-sm sm:text-base"
+                    className="bg-white w-full text-sm sm:text-base border-slate-300"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -306,7 +306,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                       size="icon"
                       variant="ghost"
                       onClick={handleAddColumn}
-                      className="h-6 w-6 sm:h-8 sm:w-8"
+                      className="h-8 w-8 hover:bg-[#649C9E] hover:text-white bg-white border border-slate-300"
                     >
                       <Check className="h-4 w-4" />
                     </Button>
@@ -317,7 +317,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                         setIsAddingColumn(false);
                         setNewColumnName("");
                       }}
-                      className="h-6 w-6 sm:h-8 sm:w-8"
+                      className="h-8 w-8 hover:bg-red-100 hover:text-red-600 bg-white border border-slate-300"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -325,12 +325,15 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                 </div>
               </div>
             ) : (
-              <button
+              <Button
                 onClick={() => setIsAddingColumn(true)}
-                className="rounded-lg cursor-pointer border-2 border-dashed border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                size='icon'
+                className="cursor-pointer border-2 border-dashed border-slate-300 flex items-center justify-center hover:border-[#649C9E] hover:bg-gradient-to-br hover:from-[#649C9E]/5 hover:to-slate-50 transition-all duration-300 shadow-sm hover:shadow-md"
               >
-                <Plus className="h-6 w-6 text-gray-400" />
-              </button>
+                  <div className="rounded-full bg-gradient-to-br from-slate-100 to-slate-50 shadow-sm">
+                    <Plus className="h-3 w-3 text-slate-500" />
+                  </div>
+              </Button>
             )}
           </div>
         </div>

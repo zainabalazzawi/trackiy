@@ -92,37 +92,45 @@ const TicketCard = ({
         {...listeners}
         className={`
           touch-none 
-          transition-opacity
-          pb-1
-          ${isCurrentlyDragging ? "opacity-50" : "opacity-100"}
+          transition-all
+          duration-200
+          ${isCurrentlyDragging ? "opacity-50 scale-95" : "opacity-100 scale-100"}
         `}
       >
         <Card
           className="
-            hover:shadow-md 
+            hover:shadow-xl 
+            hover:scale-[1.03]
+            hover:border-[#649C9E]/50
+            hover:shadow-primary
             transition-all
+            duration-300
             cursor-pointer
-            py-2 px-0"
+            py-2 px-0
+            bg-gradient-to-br from-white to-slate-50/30
+            border-slate-200
+            shadow-md
+            backdrop-blur-sm"
           onClick={handleCardClick}
         >
           <CardHeader className="pb-2 px-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">{ticket.title}</CardTitle>
+              <CardTitle className="text-base font-semibold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent line-clamp-2">{ticket.title}</CardTitle>
               <DropdownMenu >
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="pt-0">
-                    <MoreHorizontal size={20} />
+                  <Button variant="ghost" size="icon" className="pt-0 hover:bg-slate-100 rounded-lg h-8 w-8">
+                    <MoreHorizontal size={18} className="text-slate-600" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end" className="w-48 shadow-lg border-slate-200">
                   <DropdownMenuItem
                     onClick={(e) => {
                       e.stopPropagation();
                       setOpen(true);
                     }}
-                    className="text-red-800"
+                    className="text-red-600 hover:bg-red-50 cursor-pointer"
                   >
-                    <Trash2 className="mr-2 text-red-800" size={16} />
+                    <Trash2 className="mr-2 text-red-600" size={16} />
                     Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -130,20 +138,22 @@ const TicketCard = ({
             </div>
           </CardHeader>
           <CardContent className="px-3">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                {ticket.ticketNumber}
+                <Badge variant="secondary" className="text-xs font-medium text-slate-600">
+                  {ticket.ticketNumber}
+                </Badge>
 
-                <div title={ticket.priority}>
+                <div title={ticket.priority} className="flex items-center gap-1">
                   <Circle
-                    size={16}
+                    size={14}
                     className={`
                       ${
                         ticket.priority === "HIGH"
-                          ? "text-red-900 fill-red-900"
+                          ? "text-red-500 fill-red-500"
                           : ticket.priority === "MEDIUM"
-                          ? "text-yellow-500 fill-yellow-500"
-                          : "text-green-900 fill-green-900"
+                          ? "text-amber-500 fill-amber-500"
+                          : "text-emerald-500 fill-emerald-500"
                       }
                     `}
                   />
@@ -151,19 +161,19 @@ const TicketCard = ({
 
                 {ticket.assignee === "unassigned" ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
-                      <User className="h-4 w-4 text-gray-500" />
+                    <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center shadow-sm">
+                      <User className="h-4 w-4 text-slate-500" />
                     </div>
                   </div>
                 ) : (
                   assigneeMember && (
                     <div className="flex items-center gap-2">
-                      <Avatar className="w-6 h-6">
+                      <Avatar className="w-7 h-7 border-2 border-white shadow-sm">
                         <AvatarImage
                           src={assigneeMember.user.image?.replace("s96-c", "s400-c")}
                           className="object-cover"
                         />
-                        <AvatarFallback className="text-xs">
+                        <AvatarFallback className="text-xs bg-gradient-to-br from-[#649C9E] to-[#527f81] text-white">
                           {assigneeMember.user.name
                             ?.split(" ")
                             .map((n: string) => n[0])
@@ -175,14 +185,14 @@ const TicketCard = ({
                 )}
               </div>
               {ticket.labels && ticket.labels.length > 0 && (
-                <div className="flex justify-start gap-1">
+                <div className="flex justify-start gap-1.5 flex-wrap">
                   {ticket.labels.slice(0, 2).map((label) => (
-                    <Badge key={label} variant="secondary" className="text-xs">
+                    <Badge key={label} variant="secondary" className="text-xs bg-gradient-to-r from-[#649C9E]/15 to-[#527f81]/10 text-[#649C9E] hover:from-[#649C9E]/25 hover:to-[#527f81]/20 border border-[#649C9E]/30 shadow-sm transition-all">
                       {label}
                     </Badge>
                   ))}
                   {ticket.labels.length > 2 && (
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge variant="secondary" className="text-xs bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200 shadow-sm">
                       +{ticket.labels.length - 2}
                     </Badge>
                   )}

@@ -64,61 +64,64 @@ const TicketPage = () => {
     findMemberById(members, ticket.assignee as string) || "unassigned";
 
   return (
-    <div className="p-3 sm:p-6 w-full">
-      <div className="mb-4 sm:mb-6">
-        <span className="text-sm sm:text-base text-gray-600">
-          {ticket.ticketNumber}
-        </span>
-      </div>
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-        <div className="w-full lg:w-[70%]">
-          <div className="mb-6 sm:mb-8 bg-">
-            <EditableField
-              value={ticket.title}
-              onSave={(value) => updateTicket({ title: value })}
-              titleText
-              ticketId={ticketId}
-              fieldId="title"
-            />
-            <EditableField
-              value={ticket.description ?? ""}
-              onSave={(value) => updateTicket({ description: value })}
-              label="Description"
-              type="textarea"
-              ticketId={ticketId}
-              fieldId="description"
-            />
-          </div>
+    <div className="p-3 sm:p-6 w-full bg-gradient-to-br from-slate-50 to-white min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-4 sm:mb-6 bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl shadow-md border border-slate-200/80">
+          <span className="text-sm sm:text-base font-semibold text-slate-700 bg-gradient-to-r from-slate-100 to-slate-50 px-3 py-1.5 rounded-lg inline-block shadow-sm border border-slate-200/50">
+            {ticket.ticketNumber}
+          </span>
         </div>
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          <div className="w-full lg:w-[70%]">
+            <div className="mb-6 sm:mb-8 bg-gradient-to-br from-white to-slate-50/30 p-6 rounded-xl shadow-lg border border-slate-200/80">
+              <EditableField
+                value={ticket.title}
+                onSave={(value) => updateTicket({ title: value })}
+                titleText
+                ticketId={ticketId}
+                fieldId="title"
+              />
+              <div className="mt-6">
+                <EditableField
+                  value={ticket.description ?? ""}
+                  onSave={(value) => updateTicket({ description: value })}
+                  label="Description"
+                  type="textarea"
+                  ticketId={ticketId}
+                  fieldId="description"
+                />
+              </div>
+            </div>
+          </div>
 
-        <div className="w-full sm:w-[30%]">
-          <div className="">
-            <span className="text-sm sm:text-base">Priority</span>
-            <PrioritySelect
-              value={ticket.priority}
-              onChange={(value) =>
-                updateTicket({ priority: value as Priority })
-              }
-            />
-          </div>
-          <div className="my-4">
-            <span className="text-sm sm:text-base">Statuses</span>
-            <StatusSelect
-              statuses={statuses}
-              ticket={ticket}
-              handleStatusChange={(statusId: string) => {
-                updateTicket({ statusId: statusId });
-              }}
-            />
-          </div>
-          <div className="rounded border">
-            <h3 className="text-base sm:text-lg font-medium text-gray-500 border-b mb-2 p-2">
-              Details
-            </h3>
-            <div className="space-y-4 p-3">
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
-                <div className="text-xs sm:text-sm text-gray-500">Assignee</div>
-                <div className="text-xs sm:text-sm font-medium">
+          <div className="w-full lg:w-[30%] space-y-4">
+            <div className="bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl shadow-lg border border-slate-200/80">
+              <span className="text-sm sm:text-base font-semibold text-slate-800 block mb-2">Priority</span>
+              <PrioritySelect
+                value={ticket.priority}
+                onChange={(value) =>
+                  updateTicket({ priority: value as Priority })
+                }
+              />
+            </div>
+            <div className="bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl shadow-lg border border-slate-200/80">
+              <span className="text-sm sm:text-base font-semibold text-slate-800 block mb-2">Status</span>
+              <StatusSelect
+                statuses={statuses}
+                ticket={ticket}
+                handleStatusChange={(statusId: string) => {
+                  updateTicket({ statusId: statusId });
+                }}
+              />
+            </div>
+            <div className="bg-gradient-to-br from-white to-slate-50/30 rounded-xl shadow-lg border border-slate-200/80 overflow-hidden">
+              <h3 className="text-base sm:text-lg font-bold text-slate-800 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 border-b border-slate-200/80 p-4">
+                Details
+              </h3>
+              <div className="space-y-4 p-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4">
+                <div className="text-xs sm:text-sm text-slate-600 font-medium">Assignee</div>
+                <div className="text-xs sm:text-sm font-medium flex-1 sm:max-w-[60%]">
                   <Select
                     value={
                       assigneeMember && assigneeMember !== "unassigned"
@@ -195,15 +198,15 @@ const TicketPage = () => {
                   </Select>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
-                <div className="text-xs sm:text-sm text-gray-500">Reporter</div>
-                <div className="text-xs sm:text-sm font-medium">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4">
+                <div className="text-xs sm:text-sm text-slate-600 font-medium">Reporter</div>
+                <div className="text-xs sm:text-sm font-medium text-slate-700">
                   {ticket?.reporter}
                 </div>
               </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-sm text-gray-500">Label</div>
-                <div className="w-[80%]">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4">
+                <div className="text-sm text-slate-600 font-medium">Labels</div>
+                <div className="flex-1 sm:max-w-[60%]">
                   <MultiSelect
                     onValuesChange={(values) => {
                       updateTicket({ labels: values });
@@ -227,19 +230,24 @@ const TicketPage = () => {
               </div>
             </div>
           </div>
-          <div className="mt-4 sm:mt-5 text-xs sm:text-sm text-gray-600">
-            <div>
-              Created <span> {formatDate(ticket.createdAt)}</span>
-            </div>
-            <div>
-              Updated <span> {formatDate(ticket.updatedAt)}</span>
+          <div className="mt-4 bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl shadow-lg border border-slate-200/80">
+            <div className="text-xs sm:text-sm text-slate-600 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Created:</span>
+                <span className="text-slate-700">{formatDate(ticket.createdAt)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Updated:</span>
+                <span className="text-slate-700">{formatDate(ticket.updatedAt)}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
       {/* Comments Section */}
-      <div className="mt-6 sm:mt-8">
+      <div className="mt-6 sm:mt-8 bg-gradient-to-br from-white to-slate-50/30 p-6 rounded-xl shadow-lg border border-slate-200/80">
         <Comments projectId={projectId} ticketId={ticketId} />
+      </div>
       </div>
     </div>
   );

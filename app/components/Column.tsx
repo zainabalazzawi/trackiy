@@ -68,15 +68,20 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
       ref={setNodeRef}
       className={`
         py-4
-        rounded-md
+        rounded-xl
         w-60 sm:w-full
         flex-shrink-0 sm:flex-shrink
         flex
         flex-col
-        ${isOver ? 'bg-gray-300' : 'bg-gray-200'}
+        shadow-md
+        border
+        transition-all
+        duration-300
+        backdrop-blur-sm
+        ${isOver ? 'bg-gradient-to-b from-[#649C9E]/25 via-[#649C9E]/15 to-[#649C9E]/10 border-[#649C9E] shadow-xl shadow-primary scale-[1.03]' : 'bg-gradient-to-br from-slate-100 via-slate-50 to-white border-slate-200/80 hover:border-slate-300'}
       `}
     >
-      <div className="mb-4 flex justify-between items-center px-2 h-[3%]">
+      <div className="mb-3 flex justify-between items-center px-3 h-[3%]">
         {/* edit col name */}
         {isEditing ? (
           <Input
@@ -88,11 +93,11 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
               setIsEditing(false);
             }}
             autoFocus
-            className='bg-gray-100'
+            className='bg-white border-slate-300'
           />
         ) : (
           <h2 
-            className="text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-100 hover:w-full rounded-md pl-2 py-1 text-sm"
+            className="text-slate-700 font-semibold cursor-pointer py-2 text-sm"
             onClick={() => setIsEditing(true)}
           >
             {column.name}
@@ -100,38 +105,38 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
         )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreVertical size={20} />
+            <Button variant="ghost" size="icon" className="hover:bg-white/60 rounded-lg">
+              <MoreVertical size={18} className="text-slate-600" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className='w-48'>
+          <DropdownMenuContent align="end" className='w-48 shadow-lg border-slate-200'>
             <DropdownMenuItem
               onClick={() => setOpen(true)}
-              className="text-red-800"
+              className="text-red-600 hover:bg-red-50 cursor-pointer"
             >
-              <Trash2 className="mr-2 text-red-800" size={16} />
+              <Trash2 className="mr-2 text-red-600" size={16} />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className='border-gray-50 border-1 mb-1'/>
-      <div className='px-1 overflow-y-auto'>
+      <div className='border-slate-300/60 border-t mb-2 mx-2 shadow-sm'/>
+      <div className='px-2 overflow-y-auto flex-1 space-y-2'>
         {children}
       </div>
 
       {/* delete col */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="shadow-2xl border-slate-200">
           <DialogHeader>
-            <DialogTitle>Delete column?</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl font-bold text-slate-800">Delete column?</DialogTitle>
+            <DialogDescription className="text-slate-600">
               Are you sure you want to delete this column? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" className="border-slate-300 hover:bg-slate-100">Cancel</Button>
             </DialogClose>
             <Button
               variant="destructive"
@@ -140,8 +145,9 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
                 setOpen(false);
               }}
                                 disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
             >
-              Delete
+              {isDeleting ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>

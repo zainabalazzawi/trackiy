@@ -32,14 +32,14 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="border overflow-x-auto">
+    <div className="overflow-x-auto">
       <Table>
-      <TableHeader className="bg-gray-100">
+      <TableHeader className="bg-gradient-to-r from-slate-50 to-slate-100 border-b-2 border-slate-200">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="border-r-1 last:border-r-0 whitespace-nowrap text-xs sm:text-sm">
+                    <TableHead key={header.id} className="border-r-1 last:border-r-0 whitespace-nowrap text-xs sm:text-sm font-semibold text-slate-700 py-4">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -54,13 +54,16 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={`hover:bg-slate-50 transition-colors border-b border-slate-100 ${
+                    index % 2 === 0 ? "bg-white" : "bg-slate-50/30"
+                  }`}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="border-r-1 last:border-r-0 text-xs sm:text-sm whitespace-nowrap">
+                    <TableCell key={cell.id} className="border-r-1 last:border-r-0 text-xs sm:text-sm whitespace-nowrap py-4">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -73,9 +76,12 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-sm sm:text-base"
+                  className="h-32 text-center text-sm sm:text-base text-slate-500"
                 >
-                  No results.
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="font-medium">No projects found</p>
+                    <p className="text-xs text-slate-400">Create your first project to get started</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

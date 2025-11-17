@@ -70,67 +70,68 @@ export default function ProjectPage({
   if (!project) return <div className="p-6">Project not found</div>;
 
   return (
-    <div className="p-3 sm:p-6">
-      <div className="mb-4 sm:mb-6">
-        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-2">
-          <h1 className="text-xl sm:text-2xl font-bold truncate">{project.name}</h1>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Members
-              projectId={resolvedParams.id}
-              selectedMemberId={selectedMemberId}
-              onMemberSelect={setSelectedMemberId}
-            />
-
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="rounded-full p-3 sm:p-4"
-                  size="icon"
-                >
-                  <UserPlus className="w-4 h-4 sm:w-5 sm:h-5 cursor-pointer " />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="text-base sm:text-lg">
-                    Add people to {project.name} project
-                  </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleInviteSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="invite-email" className="text-sm sm:text-base">add email</Label>
-                    <Input
-                      id="invite-email"
-                      type="email"
-                      value={inviteEmail}
-                      onChange={(e) => setInviteEmail(e.target.value)}
-                      placeholder="Enter email"
-                      required
-                      className="text-sm sm:text-base"
-                    />
-                  </div>
-                  <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
-                    <Button
-                      className="bg-[#f4f4f5] text-[#27272a] hover:bg-[#e4e4e7] cursor-pointer w-full sm:w-auto"
-                      onClick={() => setOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      className="bg-[#2563eb] text-white hover:bg-[#1d4ed8] cursor-pointer w-full sm:w-auto"
-                      disabled={inviteMutation.isPending || !inviteEmail}
-                      type="submit"
-                    >
-                      {inviteMutation.isPending ? "adding..." : "add"}
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </div>
+    <div className="p-3 sm:p-6 bg-gradient-to-br from-slate-50 to-white min-h-screen">
+      <div className="mb-4 sm:mb-6 max-w-full flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 bg-gradient-to-br from-white via-slate-50/30 to-white p-3 rounded-xl shadow-lg border border-slate-200/80 backdrop-blur-sm">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-semibold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent">{project.name}</h1>
+          <p className="text-sm sm:text-base text-slate-600 mt-1">Key: <span className="font-semibold text-[#649C9E]">{project.key}</span></p>
         </div>
-        <p className="text-sm sm:text-base text-gray-600">Key: {project.key}</p>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Members
+            projectId={resolvedParams.id}
+            selectedMemberId={selectedMemberId}
+            onMemberSelect={setSelectedMemberId}
+          />
+
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="rounded-full p-3 sm:p-4 border-[#649C9E] hover:bg-gradient-to-r hover:from-[#649C9E] hover:to-[#527f81] hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
+                size="icon"
+              >
+                <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md shadow-2xl border-slate-200/80 bg-gradient-to-br from-white to-slate-50/30">
+              <DialogHeader>
+                <DialogTitle className="text-lg sm:text-xl font-bold text-slate-800">
+                  Add people to {project.name} project
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleInviteSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="invite-email" className="text-sm sm:text-base font-medium">Email Address</Label>
+                  <Input
+                    id="invite-email"
+                    type="email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    placeholder="Enter email address"
+                    required
+                    className="text-sm sm:text-base border-slate-300"
+                  />
+                </div>
+                <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+                  <Button
+                    className="bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 hover:from-slate-200 hover:to-slate-100 cursor-pointer w-full sm:w-auto border border-slate-300 transition-all duration-200"
+                    onClick={() => setOpen(false)}
+                    type="button"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="bg-gradient-to-r from-[#649C9E] to-[#527f81] text-white hover:from-[#527f81] hover:to-[#3d6061] cursor-pointer w-full sm:w-auto shadow-md hover:shadow-lg transition-all duration-300"
+                    disabled={inviteMutation.isPending || !inviteEmail}
+                    type="submit"
+                  >
+                    {inviteMutation.isPending ? "Adding..." : "Add Member"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       <Board
         projectId={resolvedParams.id}

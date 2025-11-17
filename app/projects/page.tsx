@@ -55,27 +55,29 @@ const ProjectsPage = () => {
     );
 
   return (
-    <div className="px-5 py-10">
-      <div className="mb-6 flex gap-6">
-          <SearchInput
-            placeholder="Search projects..."
-            value={searchQuery}
-            onChange={setSearchQuery}
-          />
-          <MultiSelect onValuesChange={setSelectedTypes} values={selectedTypes}>
-            <MultiSelectTrigger className="w-[30%]">
-              <MultiSelectValue placeholder="Filter by project types" />
-            </MultiSelectTrigger>
-            <MultiSelectContent>
-              <MultiSelectGroup>
-                <MultiSelectItem value="TEAM_MANAGED">Team-managed</MultiSelectItem>
-                <MultiSelectItem value="COMPANY_MANAGED">Service-management</MultiSelectItem>
-              </MultiSelectGroup>
-            </MultiSelectContent>
-          </MultiSelect>
+    <div className="px-4 sm:px-6 lg:px-8 py-8 mx-auto space-y-6 bg-gradient-to-br from-slate-50 to-white min-h-screen">
+      <div className="flex flex-col sm:flex-row gap-4 bg-gradient-to-br from-white to-slate-50/50 p-5  shadow-md border border-slate-200/80">
+        <SearchInput
+          placeholder="Search projects..."
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
+        <MultiSelect onValuesChange={setSelectedTypes} values={selectedTypes}>
+          <MultiSelectTrigger className="sm:w-[280px] border-slate-300 hover:border-[#649C9E] transition-colors">
+            <MultiSelectValue placeholder="Filter by project types" />
+          </MultiSelectTrigger>
+          <MultiSelectContent className="shadow-lg">
+            <MultiSelectGroup>
+              <MultiSelectItem value="TEAM_MANAGED">Team-managed</MultiSelectItem>
+              <MultiSelectItem value="COMPANY_MANAGED">Service-management</MultiSelectItem>
+            </MultiSelectGroup>
+          </MultiSelectContent>
+        </MultiSelect>
       </div>
       
-      <DataTable columns={columns} data={filteredProjects || []} />
+      <div className="bg-gradient-to-br from-white to-slate-50/30  shadow-lg border border-slate-200/80 overflow-hidden">
+        <DataTable columns={columns} data={filteredProjects || []} />
+      </div>
 
       <Suspense fallback={null}>
         <InviteHandler />

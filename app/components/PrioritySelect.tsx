@@ -13,7 +13,7 @@ interface PrioritySelectProps {
 
 const PrioritySelect = ({ value, onChange }: PrioritySelectProps) => {
   return (
-    <div className="w-full]">
+    <div className="w-full">
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger>
           <SelectValue />
