@@ -66,14 +66,14 @@ const TicketPage = () => {
   return (
     <div className="p-3 sm:p-6 w-full bg-gradient-to-br from-slate-50 to-white min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-4 sm:mb-6 bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl shadow-md border border-slate-200/80">
-          <span className="text-sm sm:text-base font-semibold text-slate-700 bg-gradient-to-r from-slate-100 to-slate-50 px-3 py-1.5 rounded-lg inline-block shadow-sm border border-slate-200/50">
+        <div className="mb-4 sm:mb-6 bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl border border-slate-200/80">
+          <span className="text-sm sm:text-base font-semibold text-slate-700 bg-gradient-to-r from-slate-100 to-slate-50 px-3 py-1.5 rounded-lg inline-block border border-slate-200/50">
             {ticket.ticketNumber}
           </span>
         </div>
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           <div className="w-full lg:w-[70%]">
-            <div className="mb-6 sm:mb-8 bg-gradient-to-br from-white to-slate-50/30 p-6 rounded-xl shadow-lg border border-slate-200/80">
+            <div className="mb-6 sm:mb-8 bg-gradient-to-br from-white to-slate-50/30 p-6 rounded-xl border border-slate-200/80">
               <EditableField
                 value={ticket.title}
                 onSave={(value) => updateTicket({ title: value })}
@@ -95,7 +95,7 @@ const TicketPage = () => {
           </div>
 
           <div className="w-full lg:w-[30%] space-y-4">
-            <div className="bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl shadow-lg border border-slate-200/80">
+            <div className="bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl border border-slate-200/80">
               <span className="text-sm sm:text-base font-semibold text-slate-800 block mb-2">Priority</span>
               <PrioritySelect
                 value={ticket.priority}
@@ -104,7 +104,7 @@ const TicketPage = () => {
                 }
               />
             </div>
-            <div className="bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl shadow-lg border border-slate-200/80">
+            <div className="bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl border border-slate-200/80">
               <span className="text-sm sm:text-base font-semibold text-slate-800 block mb-2">Status</span>
               <StatusSelect
                 statuses={statuses}
@@ -114,7 +114,7 @@ const TicketPage = () => {
                 }}
               />
             </div>
-            <div className="bg-gradient-to-br from-white to-slate-50/30 rounded-xl shadow-lg border border-slate-200/80 overflow-hidden">
+            <div className="bg-gradient-to-br from-white to-slate-50/30 rounded-xl border border-slate-200/80 overflow-hidden">
               <h3 className="text-base sm:text-lg font-bold text-slate-800 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 border-b border-slate-200/80 p-4">
                 Details
               </h3>
@@ -230,7 +230,7 @@ const TicketPage = () => {
               </div>
             </div>
           </div>
-          <div className="mt-4 bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl shadow-lg border border-slate-200/80">
+          <div className="mt-4 bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl border border-slate-200/80">
             <div className="text-xs sm:text-sm text-slate-600 space-y-2">
               <div className="flex items-center gap-2">
                 <span className="font-medium">Created:</span>
@@ -245,7 +245,7 @@ const TicketPage = () => {
         </div>
       </div>
       {/* Comments Section */}
-      <div className="mt-6 sm:mt-8 bg-gradient-to-br from-white to-slate-50/30 p-6 rounded-xl shadow-lg border border-slate-200/80">
+      <div className="mt-6 sm:mt-8 bg-gradient-to-br from-white to-slate-50/30 p-6 rounded-xl border border-slate-200/80">
         <Comments projectId={projectId} ticketId={ticketId} />
       </div>
       </div>

@@ -99,17 +99,14 @@ const TicketCard = ({
       >
         <Card
           className="
-            hover:shadow-xl 
-            hover:scale-[1.03]
+            hover:scale-[1.02]
             hover:border-[#649C9E]/50
-            hover:shadow-primary
             transition-all
             duration-300
             cursor-pointer
             py-2 px-0
             bg-gradient-to-br from-white to-slate-50/30
             border-slate-200
-            shadow-md
             backdrop-blur-sm"
           onClick={handleCardClick}
         >
@@ -122,7 +119,7 @@ const TicketCard = ({
                     <MoreHorizontal size={18} className="text-slate-600" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 shadow-lg border-slate-200">
+                <DropdownMenuContent align="end" className="w-48 border-slate-200">
                   <DropdownMenuItem
                     onClick={(e) => {
                       e.stopPropagation();
@@ -161,14 +158,14 @@ const TicketCard = ({
 
                 {ticket.assignee === "unassigned" ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center shadow-sm">
+                    <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center">
                       <User className="h-4 w-4 text-slate-500" />
                     </div>
                   </div>
                 ) : (
                   assigneeMember && (
                     <div className="flex items-center gap-2">
-                      <Avatar className="w-7 h-7 border-2 border-white shadow-sm">
+                      <Avatar className="w-7 h-7 border-2 border-white">
                         <AvatarImage
                           src={assigneeMember.user.image?.replace("s96-c", "s400-c")}
                           className="object-cover"
@@ -187,12 +184,12 @@ const TicketCard = ({
               {ticket.labels && ticket.labels.length > 0 && (
                 <div className="flex justify-start gap-1.5 flex-wrap">
                   {ticket.labels.slice(0, 2).map((label) => (
-                    <Badge key={label} variant="secondary" className="text-xs bg-gradient-to-r from-[#649C9E]/15 to-[#527f81]/10 text-[#649C9E] hover:from-[#649C9E]/25 hover:to-[#527f81]/20 border border-[#649C9E]/30 shadow-sm transition-all">
+                    <Badge key={label} variant="secondary" className="text-xs bg-gradient-to-r from-[#649C9E]/15 to-[#527f81]/10 text-[#649C9E] hover:from-[#649C9E]/25 hover:to-[#527f81]/20 border border-[#649C9E]/30 transition-all">
                       {label}
                     </Badge>
                   ))}
                   {ticket.labels.length > 2 && (
-                    <Badge variant="secondary" className="text-xs bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200 shadow-sm">
+                    <Badge variant="secondary" className="text-xs bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200">
                       +{ticket.labels.length - 2}
                     </Badge>
                   )}

@@ -73,12 +73,11 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
         flex-shrink-0 sm:flex-shrink
         flex
         flex-col
-        shadow-md
         border
         transition-all
         duration-300
         backdrop-blur-sm
-        ${isOver ? 'bg-gradient-to-b from-[#649C9E]/25 via-[#649C9E]/15 to-[#649C9E]/10 border-[#649C9E] shadow-xl shadow-primary scale-[1.03]' : 'bg-gradient-to-br from-slate-100 via-slate-50 to-white border-slate-200/80 hover:border-slate-300'}
+        ${isOver ? 'bg-gradient-to-b from-[#649C9E]/25 via-[#649C9E]/15 to-[#649C9E]/10 border-[#649C9E] scale-[1.02]' : 'bg-gradient-to-br from-slate-100 via-slate-50 to-white border-slate-200/80 hover:border-slate-300'}
       `}
     >
       <div className="mb-3 flex justify-between items-center px-3 h-[3%]">
@@ -109,7 +108,7 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
               <MoreVertical size={18} className="text-slate-600" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className='w-48 shadow-lg border-slate-200'>
+          <DropdownMenuContent align="end" className='w-48 border-slate-200'>
             <DropdownMenuItem
               onClick={() => setOpen(true)}
               className="text-red-600 hover:bg-red-50 cursor-pointer"
@@ -120,14 +119,14 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className='border-slate-300/60 border-t mb-2 mx-2 shadow-sm'/>
+      <div className='border-slate-300/60 border-t mb-2 mx-2'/>
       <div className='px-2 overflow-y-auto flex-1 space-y-2'>
         {children}
       </div>
 
       {/* delete col */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="shadow-2xl border-slate-200">
+        <DialogContent className="border-slate-200">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-slate-800">Delete column?</DialogTitle>
             <DialogDescription className="text-slate-600">

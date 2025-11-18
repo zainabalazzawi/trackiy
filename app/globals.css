@@ -145,7 +145,7 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-gradient-to-br from-[#649C9E] to-[#527f81] rounded-lg hover:from-[#527f81] hover:to-[#3d6061] transition-all shadow-md;
+    @apply bg-gradient-to-br from-[#649C9E] to-[#527f81] rounded-lg hover:from-[#527f81] hover:to-[#3d6061] transition-all;
   }
   
   /* Dark mode scrollbar */
@@ -165,7 +165,6 @@
   /* Better focus states */
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-[#649C9E] outline-dashed;
-    box-shadow: 0 0 0 4px rgba(100, 156, 158, 0.1);
   }
   
   /* Improved button animations */
@@ -183,7 +182,7 @@
   
   /* Enhanced card styling */
   .card-enhanced {
-    @apply bg-gradient-to-br from-white to-slate-50 border border-slate-200/60 shadow-lg hover:shadow-xl transition-all duration-300;
+    @apply bg-gradient-to-br from-white to-slate-50 border border-slate-200/60 transition-all duration-300;
   }
   
   /* Gradient backgrounds */
@@ -226,11 +225,11 @@
   
   /* Enhanced shadows */
   .shadow-primary {
-    box-shadow: 0 4px 14px 0 rgba(100, 156, 158, 0.3);
+    box-shadow: 0 2px 8px 0 rgba(100, 156, 158, 0.15);
   }
   
   .shadow-primary-lg {
-    box-shadow: 0 10px 25px 0 rgba(100, 156, 158, 0.4);
+    box-shadow: 0 4px 12px 0 rgba(100, 156, 158, 0.2);
   }
   
   /* Glassmorphism effect */

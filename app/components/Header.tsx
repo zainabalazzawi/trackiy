@@ -32,7 +32,7 @@ const Header = () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-white via-slate-50/30 to-white border-b border-slate-200/80 shadow-md sticky top-0 z-50 backdrop-blur-lg">
+    <div className="bg-gradient-to-r from-white via-slate-50/30 to-white border-b border-slate-200/80 sticky top-0 z-50 backdrop-blur-lg">
       <div className="mx-auto px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2">
         <div className="flex items-center gap-2 sm:gap-6 w-full">
           <Link href="/" className="font-semibold text-xl hover:opacity-80 transition-opacity">
@@ -41,7 +41,7 @@ const Header = () => {
               alt="Logo"
               width={100}
               height={100}
-              className="cursor-pointer w-20 sm:w-[100px] drop-shadow-sm"
+              className="cursor-pointer w-20 sm:w-[100px]"
               onClick={() => router.push("/")}
             />
           </Link>
@@ -56,7 +56,7 @@ const Header = () => {
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 shadow-xl border-slate-200/80 bg-white">
+            <DropdownMenuContent className="w-56 border-slate-200/80 bg-white">
               <DropdownMenuItem 
                 onClick={() => router.push("/projects")}
                 className="hover:bg-slate-100 cursor-pointer transition-colors duration-200"
@@ -90,7 +90,7 @@ const Header = () => {
             <SignInDialog>
               <Button
                 variant="outline"
-                className="mr-2 sm:mr-4 text-sm sm:text-base border-[#649C9E] text-[#649C9E] hover:bg-gradient-to-r hover:from-[#649C9E] hover:to-[#527f81] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
+                className="mr-2 sm:mr-4 text-sm sm:text-base border-[#649C9E] text-[#649C9E] hover:bg-gradient-to-r hover:from-[#649C9E] hover:to-[#527f81] hover:text-white transition-all duration-300"
               >
                 Sign in
               </Button>
@@ -100,7 +100,7 @@ const Header = () => {
               <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
                   <div className="flex flex-row items-center cursor-pointer hover:opacity-80 transition-opacity">
-                    <Avatar className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-[#649C9E]/30 shadow-md hover:shadow-lg transition-all duration-200">
+                    <Avatar className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-[#649C9E]/30 transition-all duration-200">
                       {session?.user?.image && (
                         <AvatarImage
                           src={session?.user?.image?.replace("s96-c", "s400-c")}
@@ -122,7 +122,7 @@ const Header = () => {
                     )}
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="shadow-xl border-slate-200/80 w-48 bg-gradient-to-br from-white to-slate-50/30">
+                <DropdownMenuContent align="end" className="border-slate-200/80 w-48 bg-gradient-to-br from-white to-slate-50/30">
                   <DropdownMenuItem 
                     onClick={() => router.push("/settings")}
                     className="hover:bg-gradient-to-r hover:from-slate-100 hover:to-slate-50 cursor-pointer transition-all duration-200"

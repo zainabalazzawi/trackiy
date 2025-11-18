@@ -178,7 +178,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                           onChange={(e) => setNewTicket(e.target.value)}
                           placeholder="What needs to be done?"
                           autoFocus
-                          className="h-24 sm:h-32 text-sm sm:text-lg border-slate-300 bg-white shadow-sm rounded-lg"
+                          className="h-24 sm:h-32 text-sm sm:text-lg border-slate-300 bg-white rounded-lg"
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && newTicket.trim()) {
                               handleCreateTicket(column.id);
@@ -284,7 +284,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
           {/* add new col */}
           <div className={`${isAddingColumn ? "w-full" : ""}`}>
             {isAddingColumn ? (
-              <div className="p-4 rounded-xl bg-gradient-to-br from-slate-100 via-slate-50 to-white border border-slate-200 shadow-lg min-w-[200px]">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-slate-100 via-slate-50 to-white border border-slate-200 min-w-[200px]">
                 <div className="flex flex-col gap-2">
                   <Input
                     value={newColumnName}
@@ -328,9 +328,9 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
               <Button
                 onClick={() => setIsAddingColumn(true)}
                 size='icon'
-                className="cursor-pointer border-2 border-dashed border-slate-300 flex items-center justify-center hover:border-[#649C9E] hover:bg-gradient-to-br hover:from-[#649C9E]/5 hover:to-slate-50 transition-all duration-300 shadow-sm hover:shadow-md"
+                className="cursor-pointer border-2 border-dashed border-slate-300 flex items-center justify-center hover:border-[#649C9E] hover:bg-gradient-to-br hover:from-[#649C9E]/5 hover:to-slate-50 transition-all duration-300"
               >
-                  <div className="rounded-full bg-gradient-to-br from-slate-100 to-slate-50 shadow-sm">
+                  <div className="rounded-full bg-gradient-to-br from-slate-100 to-slate-50">
                     <Plus className="h-3 w-3 text-slate-500" />
                   </div>
               </Button>
