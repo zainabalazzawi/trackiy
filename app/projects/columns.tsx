@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Star, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -46,6 +46,7 @@ function ActionsCell({ project }: { project: Project }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem className="focus:bg-blue-50 focus:text-blue-700 cursor-pointer">
+            <Pencil className="mr-2 text-blue-600" size={16} />
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem
