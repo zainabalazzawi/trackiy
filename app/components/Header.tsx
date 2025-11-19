@@ -50,7 +50,7 @@ const Header = () => {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex items-center gap-2 text-sm sm:text-base font-semibold hover:bg-slate-100 hover:text-[#649C9E] transition-colors duration-200 rounded-lg"
+                className="flex items-center gap-2 text-sm sm:text-base font-semibold duration-200 rounded-lg"
               >
                 Projects
                 <ChevronDown className="h-4 w-4" />
@@ -59,16 +59,16 @@ const Header = () => {
             <DropdownMenuContent className="w-56 border-slate-200/80 bg-white">
               <DropdownMenuItem 
                 onClick={() => router.push("/projects")}
-                className="hover:bg-slate-100 cursor-pointer transition-colors duration-200"
+                className="group"
               >
-                <Layout className="mr-2 h-4 w-4 text-[#649C9E]" />
+                <Layout className="mr-2 h-4 w-4 text-[#649C9E] group-focus:text-white transition-colors" />
                 View all projects
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => router.push("/projects/create")}
-                className="hover:bg-slate-100 cursor-pointer transition-colors duration-200"
+                className="group"
               >
-                <Plus className="mr-2 h-4 w-4 text-[#649C9E]" />
+                <Plus className="mr-2 h-4 w-4 text-[#649C9E] group-focus:text-white transition-colors" />
                 Create project
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -125,13 +125,12 @@ const Header = () => {
                 <DropdownMenuContent align="end" className="border-slate-200/80 w-48 bg-gradient-to-br from-white to-slate-50/30">
                   <DropdownMenuItem 
                     onClick={() => router.push("/settings")}
-                    className=" focus:bg-[#649C9E] cursor-pointer transition-colors duration-200"
                   >
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => signOut({ callbackUrl: "/" })}
-                    className=" focus:bg-red-50 focus:text-red-600 text-red-600 cursor-pointer transition-colors duration-200"
+                    className="focus:bg-red-50 focus:text-red-600 text-red-600"
                   >
                     Log out
                   </DropdownMenuItem>
