@@ -328,11 +328,10 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
               <Button
                 onClick={() => setIsAddingColumn(true)}
                 size='icon'
-                className="cursor-pointer border-2 border-dashed border-slate-300 flex items-center justify-center hover:border-[#649C9E] hover:bg-gradient-to-br hover:from-[#649C9E]/5 hover:to-slate-50 transition-all duration-300"
+                variant="ghost"
+                className="cursor-pointer border-2 border-dashed  transition-all duration-300"
               >
-                  <div className="rounded-full bg-gradient-to-br from-slate-100 to-slate-50">
-                    <Plus className="h-3 w-3 text-slate-500" />
-                  </div>
+                <Plus className="h-4 w-4 text-slate-500" />
               </Button>
             )}
           </div>
