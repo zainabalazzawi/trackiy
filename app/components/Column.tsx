@@ -111,7 +111,7 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
           <DropdownMenuContent align="end" className='w-48 border-slate-200'>
             <DropdownMenuItem
               onClick={() => setOpen(true)}
-              className="text-red-600 hover:bg-red-50 cursor-pointer"
+              className="text-red-600 focus:bg-red-50 focus:text-red-700 cursor-pointer"
             >
               <Trash2 className="mr-2 text-red-600" size={16} />
               Delete

@@ -45,14 +45,16 @@ function ActionsCell({ project }: { project: Project }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem className="focus:bg-blue-50 focus:text-blue-700 cursor-pointer">
+            Edit
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
               setOpen(true);
             }}
-            className="text-red-800"
+            className="text-red-600 focus:bg-red-50 focus:text-red-700 cursor-pointer"
           >
-            <Trash2 className="mr-2 text-red-800" size={16} />
+            <Trash2 className="mr-2 text-red-600" size={16} />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
