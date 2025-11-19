@@ -125,13 +125,13 @@ const Header = () => {
                 <DropdownMenuContent align="end" className="border-slate-200/80 w-48 bg-gradient-to-br from-white to-slate-50/30">
                   <DropdownMenuItem 
                     onClick={() => router.push("/settings")}
-                    className="hover:bg-gradient-to-r hover:from-slate-100 hover:to-slate-50 cursor-pointer transition-all duration-200"
+                    className=" focus:bg-[#649C9E] cursor-pointer transition-colors duration-200"
                   >
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => signOut({ callbackUrl: "/" })}
-                    className="hover:bg-red-50 text-red-600 cursor-pointer transition-colors"
+                    className=" focus:bg-red-50 focus:text-red-600 text-red-600 cursor-pointer transition-colors duration-200"
                   >
                     Log out
                   </DropdownMenuItem>
