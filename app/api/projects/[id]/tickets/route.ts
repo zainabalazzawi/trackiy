@@ -1,36 +1,31 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../auth/lib/auth";
+import { requireProjectAccess } from "@/app/api/_lib/guards";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }) {
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const session = await getServerSession(authOptions);
-    const { id : projectId} = await params;
+    const { id: projectId } = await params;
 
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
 
     const tickets = await prisma.ticket.findMany({
       where: {
         column: {
-          projectId: projectId
-        }
+          projectId: projectId,
+        },
       },
       include: {
         status: true,
         column: {
           include: {
             project: {
-              select: { id: true, name: true, key: true }
-            }
-          }
+              select: { id: true, name: true, key: true },
+            },
+          },
         },
       },
     });
@@ -51,38 +46,40 @@ export async function POST(
 ) {
   try {
     const { id: projectId } = await params;
+
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
+    const { session } = guard;
+
     const body = await request.json();
-    const session = await getServerSession(authOptions);
 
     const firstColumn = await prisma.column.findFirstOrThrow({
-      where: { 
+      where: {
         projectId: projectId,
-        order: 0 
+        order: 0,
       },
       include: { status: true },
     });
 
-    // Get project key for ticket number prefix
     const project = await prisma.project.findUnique({
       where: { id: projectId },
-      select: { key: true }
+      select: { key: true },
     });
 
-    // Generate a random 3-4 digit number and combine with project key
     const randomNumber = Math.floor(Math.random() * 9000) + 1000;
     const ticketNumber = `${project?.key}-${randomNumber}`;
 
     const ticket = await prisma.ticket.create({
       data: {
         title: body.title,
-        description: body.description  ?? null,
+        description: body.description ?? null,
         columnId: firstColumn.id,
         statusId: firstColumn.statusId,
         priority: body.priority || "MEDIUM",
         assignee: body.assignee,
-        reporter: session?.user.name,
+        reporter: session.user.name,
         labels: body.labels || [],
-        ticketNumber: ticketNumber
+        ticketNumber: ticketNumber,
       },
       include: {
         status: true,

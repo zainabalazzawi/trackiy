@@ -1,18 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/lib/auth";
+import { requireProjectAccess } from "@/app/api/_lib/guards";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
     const { id } = await params;
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+
+    const guard = await requireProjectAccess(id);
+    if (!guard.ok) return guard.response;
 
     const project = await prisma.project.findUnique({
       where: { id: id },
@@ -64,28 +62,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
     const { id: projectId } = await params;
-    
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
-    // Check if user is a member of the project
-    const projectMember = await prisma.projectMember.findFirst({
-      where: {
-        projectId: projectId,
-        userId: session.user.id
-      }
-    });
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
 
-    if (!projectMember) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    // Delete the project (this will cascade delete columns, tickets, statuses, and members)
     await prisma.project.delete({
-      where: { id: projectId }
+      where: { id: projectId },
     });
 
     return NextResponse.json({ message: "Project deleted successfully" });

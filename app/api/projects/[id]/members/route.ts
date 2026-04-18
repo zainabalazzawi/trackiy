@@ -1,25 +1,24 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../auth/lib/auth";
+import { requireProjectAccess } from "@/app/api/_lib/guards";
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const session = await getServerSession(authOptions);
     const { id: projectId } = await params;
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
 
-    // Fetch all project members
     const projectMembers = await prisma.projectMember.findMany({
       where: { projectId },
       include: { user: true },
     });
 
     const members = projectMembers.map((member) => ({
-      id: member.id, // ProjectMember record ID (for React keys)
+      id: member.id,
       user: {
         id: member.user.id,
         name: member.user.name,
@@ -31,23 +30,26 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json(members);
   } catch (error) {
     console.error("Error fetching project members:", error);
-    return NextResponse.json({ error: "Failed to fetch members" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch members" },
+      { status: 500 }
+    );
   }
 }
 
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const session = await getServerSession(authOptions);
     const { id: projectId } = await params;
+
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
+
     const body = await request.json();
     const { memberIds } = body;
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-
-    // Add members to the project
     const projectMembers = await Promise.all(
       memberIds.map(async (userId: string) => {
         return prisma.projectMember.create({
@@ -70,7 +72,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     );
 
     const members = projectMembers.map((member) => ({
-      id: member.id, // ProjectMember record ID (for React keys)
+      id: member.id,
       user: {
         id: member.user.id,
         name: member.user.name,
@@ -82,6 +84,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json(members);
   } catch (error) {
     console.error("Error adding project members:", error);
-    return NextResponse.json({ error: "Failed to add members" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to add members" },
+      { status: 500 }
+    );
   }
-} 
+}

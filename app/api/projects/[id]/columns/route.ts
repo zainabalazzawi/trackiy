@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../auth/lib/auth";
+import { requireProjectAccess } from "@/app/api/_lib/guards";
 
 export async function GET(
   request: Request,
@@ -9,11 +8,9 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const session = await getServerSession(authOptions);
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireProjectAccess(id);
+    if (!guard.ok) return guard.response;
 
     const columns = await prisma.column.findMany({
       where: {
@@ -38,10 +35,27 @@ export async function GET(
   }
 }
 
-export async function PATCH(request: Request) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id: projectId } = await params;
+
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
+
     const body = await request.json();
     const { id, name, order } = body;
+
+    const existing = await prisma.column.findUnique({
+      where: { id },
+      select: { projectId: true, statusId: true },
+    });
+
+    if (!existing || existing.projectId !== projectId) {
+      return NextResponse.json({ error: "Column not found" }, { status: 404 });
+    }
 
     const column = await prisma.column.update({
       where: { id },
@@ -67,10 +81,18 @@ export async function PATCH(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id: projectId } = await params;
+
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
+
     const body = await request.json();
-    const { name, projectId } = body;
+    const { name } = body;
 
     const highestOrderColumn = await prisma.column.findFirst({
       where: { projectId },
@@ -79,7 +101,6 @@ export async function POST(request: Request) {
 
     const newOrder = highestOrderColumn ? highestOrderColumn.order + 1 : 0;
 
-    // First create the status
     const status = await prisma.status.create({
       data: {
         name,
@@ -87,13 +108,12 @@ export async function POST(request: Request) {
       },
     });
 
-    // Then create the column with the new status
     const column = await prisma.column.create({
       data: {
         name,
         statusId: status.id,
         order: newOrder,
-        projectId, // Add the projectId to associate the column with the project
+        projectId,
       },
       include: {
         status: true,
@@ -111,27 +131,32 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id: projectId } = await params;
+
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
+
     const body = await request.json();
     const { id } = body;
 
-    // Find the column to get its statusId before deleting
     const column = await prisma.column.findUnique({
       where: { id },
-      select: { statusId: true },
+      select: { statusId: true, projectId: true },
     });
 
-    if (!column) {
+    if (!column || column.projectId !== projectId) {
       return NextResponse.json({ error: "Column not found" }, { status: 404 });
     }
 
-    // Delete the column
     const deletedColumn = await prisma.column.delete({
       where: { id },
     });
 
-    // Check if any other columns or tickets use this status
     const otherColumns = await prisma.column.count({
       where: { statusId: column.statusId },
     });
@@ -139,7 +164,6 @@ export async function DELETE(request: NextRequest) {
       where: { statusId: column.statusId },
     });
 
-    // If no other columns or tickets use this status, delete the status
     if (otherColumns === 0 && otherTickets === 0) {
       await prisma.status.delete({
         where: { id: column.statusId },

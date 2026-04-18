@@ -1,27 +1,32 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { requireProjectAccess } from "@/app/api/_lib/guards";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ ticketId: string; projectId: string }> }
+  { params }: { params: Promise<{ id: string; ticketId: string }> }
 ) {
   try {
-    const { ticketId, projectId } = await params;
+    const { ticketId, id: projectId } = await params;
+
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
+
     const ticket = await prisma.ticket.findUnique({
       where: {
         id: ticketId,
         column: {
-          projectId: projectId
-        }
+          projectId: projectId,
+        },
       },
       include: {
         status: true,
         column: {
           include: {
             project: {
-              select: { id: true, name: true, key: true }
-            }
-          }
+              select: { id: true, name: true, key: true },
+            },
+          },
         },
       },
     });
@@ -42,18 +47,22 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ ticketId: string; projectId: string }> }
+  { params }: { params: Promise<{ id: string; ticketId: string }> }
 ) {
   try {
-    const { ticketId, projectId } = await params;
+    const { ticketId, id: projectId } = await params;
+
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
+
     const body = await request.json();
-    
+
     const updatedTicket = await prisma.ticket.update({
-      where: { 
+      where: {
         id: ticketId,
         column: {
-          projectId: projectId
-        }
+          projectId: projectId,
+        },
       },
       data: {
         description: body.description,
@@ -63,24 +72,26 @@ export async function PATCH(
         labels: body.labels,
         ...(body.statusId && {
           statusId: body.statusId,
-          columnId: (await prisma.column.findFirstOrThrow({
-            where: { 
-              statusId: body.statusId,
-              projectId: projectId 
-            },
-          })).id
-        })
+          columnId: (
+            await prisma.column.findFirstOrThrow({
+              where: {
+                statusId: body.statusId,
+                projectId: projectId,
+              },
+            })
+          ).id,
+        }),
       },
-      include: { 
-        status: true, 
+      include: {
+        status: true,
         column: {
           include: {
             project: {
-              select: { id: true, name: true, key: true }
-            }
-          }
-        }
-      }
+              select: { id: true, name: true, key: true },
+            },
+          },
+        },
+      },
     });
 
     return NextResponse.json(updatedTicket);
@@ -95,17 +106,20 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ ticketId: string; projectId: string }> }
+  { params }: { params: Promise<{ id: string; ticketId: string }> }
 ) {
   try {
-    const { ticketId, projectId } = await params;
-    
+    const { ticketId, id: projectId } = await params;
+
+    const guard = await requireProjectAccess(projectId);
+    if (!guard.ok) return guard.response;
+
     await prisma.ticket.delete({
-      where: { 
+      where: {
         id: ticketId,
         column: {
-          projectId: projectId
-        }
+          projectId: projectId,
+        },
       },
     });
 
