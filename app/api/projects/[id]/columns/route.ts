@@ -1,12 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 import { requireProjectAccess } from "@/app/api/_lib/guards";
-import { parseJson } from "@/app/api/_lib/validation";
-import {
-  CreateColumnSchema,
-  UpdateColumnSchema,
-  DeleteColumnSchema,
-} from "@/app/api/_lib/schemas";
 
 export async function GET(
   request: Request,
@@ -51,9 +45,8 @@ export async function PATCH(
     const guard = await requireProjectAccess(projectId);
     if (!guard.ok) return guard.response;
 
-    const body = await parseJson(request, UpdateColumnSchema);
-    if (!body.ok) return body.response;
-    const { id, name, order } = body.data;
+    const body = await request.json();
+    const { id, name, order } = body;
 
     const existing = await prisma.column.findUnique({
       where: { id },
@@ -98,9 +91,8 @@ export async function POST(
     const guard = await requireProjectAccess(projectId);
     if (!guard.ok) return guard.response;
 
-    const body = await parseJson(request, CreateColumnSchema);
-    if (!body.ok) return body.response;
-    const { name } = body.data;
+    const body = await request.json();
+    const { name } = body;
 
     const highestOrderColumn = await prisma.column.findFirst({
       where: { projectId },
@@ -149,9 +141,8 @@ export async function DELETE(
     const guard = await requireProjectAccess(projectId);
     if (!guard.ok) return guard.response;
 
-    const body = await parseJson(request, DeleteColumnSchema);
-    if (!body.ok) return body.response;
-    const { id } = body.data;
+    const body = await request.json();
+    const { id } = body;
 
     const column = await prisma.column.findUnique({
       where: { id },

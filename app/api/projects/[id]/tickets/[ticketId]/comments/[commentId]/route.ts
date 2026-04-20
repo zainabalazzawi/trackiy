@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { requireProjectAccess } from "@/app/api/_lib/guards";
-import { parseJson } from "@/app/api/_lib/validation";
-import { UpdateCommentSchema } from "@/app/api/_lib/schemas";
 
 export async function PATCH(
   request: Request,
@@ -15,9 +13,14 @@ export async function PATCH(
     if (!guard.ok) return guard.response;
     const { session } = guard;
 
-    const body = await parseJson(request, UpdateCommentSchema);
-    if (!body.ok) return body.response;
-    const { content } = body.data;
+    const { content } = await request.json();
+
+    if (!content?.trim()) {
+      return NextResponse.json(
+        { error: "Comment content is required" },
+        { status: 400 }
+      );
+    }
 
     const comment = await prisma.comment.findUnique({
       where: {
@@ -39,7 +42,7 @@ export async function PATCH(
     const updatedComment = await prisma.comment.update({
       where: { id: commentId },
       data: {
-        content,
+        content: content.trim(),
       },
       include: {
         user: {

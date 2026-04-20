@@ -1,26 +1,29 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
-import { requireSession } from "../../_lib/guards";
-import { parseQuery } from "../../_lib/validation";
-import { SearchTicketsQuerySchema } from "../../_lib/schemas";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const sessionGuard = await requireSession();
-    if (!sessionGuard.ok) return sessionGuard.response;
+    const session = await getServerSession(authOptions);
 
-    const parsed = parseQuery(
-      request.nextUrl.searchParams,
-      SearchTicketsQuerySchema
-    );
-    if (!parsed.ok) return parsed.response;
-    const { q } = parsed.data;
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
+    const searchParams = request.nextUrl.searchParams;
+    const query = searchParams.get("q") || "";
+
+    if (!query.trim()) {
+      return NextResponse.json([]);
+    }
+
+    // Simple search: find tickets by title OR ticket number (both strings now)
     const tickets = await prisma.ticket.findMany({
       where: {
         OR: [
-          { title: { contains: q, mode: "insensitive" } },
-          { ticketNumber: { contains: q, mode: "insensitive" } },
+          { title: { contains: query, mode: "insensitive" } },
+          { ticketNumber: { contains: query, mode: "insensitive" } }
         ],
       },
       include: {

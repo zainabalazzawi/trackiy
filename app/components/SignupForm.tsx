@@ -3,19 +3,38 @@ import { Form, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+// import { ImageUpload } from "./ImageUpload";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
-import { SignupSchema, type SignupInput } from "@/app/api/_lib/schemas";
+const signupSchema = z.object({
+  email: z
+    .string()
+    .min(2, {
+      message: "Email field is required",
+    })
+    .email({ message: "Invalid email address" }),
+  password: z.string().min(6, {
+    message: "Password field is required and must be at least 6 characters",
+  }),
+  name: z.string().min(2, {
+    message: "name field is required",
+  }),
+//   image: z.string().optional(),
+});
+
+type SignupFormData = z.infer<typeof signupSchema>;
 
 const SignupForm = ({ onSuccess, redirectUrl }: { onSuccess?: () => void; redirectUrl?: string }) => {
-  const form = useForm<SignupInput>({
-    resolver: zodResolver(SignupSchema),
+  const form = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
       password: "",
       name: "",
+    //   image: "",
     },
   });
 
@@ -25,7 +44,7 @@ const SignupForm = ({ onSuccess, redirectUrl }: { onSuccess?: () => void; redire
     formState: { errors },
   } = form;
 
-  const signUpMutation = async (signupData: SignupInput) => {
+  const signUpMutation = async (signupData: SignupFormData) => {
     const response = await axios.post("/api/auth/signup", signupData);
     if (response.status !== 200) {
       throw new Error(response.data.error);
@@ -43,7 +62,7 @@ const SignupForm = ({ onSuccess, redirectUrl }: { onSuccess?: () => void; redire
       }
     },
   });
-  const onHandleSubmit = (signupData: SignupInput) => {
+  const onHandleSubmit = (signupData: SignupFormData) => {
     mutation.mutate(signupData);
   };
 

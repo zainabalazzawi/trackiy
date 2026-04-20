@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { requireProjectAccess } from "@/app/api/_lib/guards";
-import { parseJson } from "@/app/api/_lib/validation";
-import { UpdateTicketSchema } from "@/app/api/_lib/schemas";
 
 export async function GET(
   request: Request,
@@ -57,9 +55,7 @@ export async function PATCH(
     const guard = await requireProjectAccess(projectId);
     if (!guard.ok) return guard.response;
 
-    const body = await parseJson(request, UpdateTicketSchema);
-    if (!body.ok) return body.response;
-    const data = body.data;
+    const body = await request.json();
 
     const updatedTicket = await prisma.ticket.update({
       where: {
@@ -69,17 +65,17 @@ export async function PATCH(
         },
       },
       data: {
-        ...(data.title !== undefined && { title: data.title }),
-        ...(data.description !== undefined && { description: data.description }),
-        ...(data.priority !== undefined && { priority: data.priority }),
-        ...(data.assignee !== undefined && { assignee: data.assignee }),
-        ...(data.labels !== undefined && { labels: data.labels }),
-        ...(data.statusId !== undefined && {
-          statusId: data.statusId,
+        description: body.description,
+        title: body.title,
+        priority: body.priority,
+        assignee: body.assignee,
+        labels: body.labels,
+        ...(body.statusId && {
+          statusId: body.statusId,
           columnId: (
             await prisma.column.findFirstOrThrow({
               where: {
-                statusId: data.statusId,
+                statusId: body.statusId,
                 projectId: projectId,
               },
             })

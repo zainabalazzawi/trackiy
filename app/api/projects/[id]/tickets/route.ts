@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { requireProjectAccess } from "@/app/api/_lib/guards";
-import { parseJson } from "@/app/api/_lib/validation";
-import { CreateTicketSchema } from "@/app/api/_lib/schemas";
 
 export async function GET(
   request: Request,
@@ -53,9 +51,7 @@ export async function POST(
     if (!guard.ok) return guard.response;
     const { session } = guard;
 
-    const body = await parseJson(request, CreateTicketSchema);
-    if (!body.ok) return body.response;
-    const { title, description, priority, assignee, labels } = body.data;
+    const body = await request.json();
 
     const firstColumn = await prisma.column.findFirstOrThrow({
       where: {
@@ -75,15 +71,15 @@ export async function POST(
 
     const ticket = await prisma.ticket.create({
       data: {
-        title,
-        description: description ?? null,
+        title: body.title,
+        description: body.description ?? null,
         columnId: firstColumn.id,
         statusId: firstColumn.statusId,
-        priority: priority ?? "MEDIUM",
-        assignee: assignee ?? null,
+        priority: body.priority || "MEDIUM",
+        assignee: body.assignee,
         reporter: session.user.name,
-        labels: labels ?? [],
-        ticketNumber,
+        labels: body.labels || [],
+        ticketNumber: ticketNumber,
       },
       include: {
         status: true,
