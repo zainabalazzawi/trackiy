@@ -1,20 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/lib/auth";
+import { requireSession } from "../_lib/guards";
+import { parseJson, parseQuery } from "../_lib/validation";
+import { TypingBodySchema, TypingQuerySchema } from "../_lib/schemas";
 
-// POST /api/typing - Start typing indicator
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const sessionGuard = await requireSession();
+    if (!sessionGuard.ok) return sessionGuard.response;
+    const { session } = sessionGuard;
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const body = await parseJson(request, TypingBodySchema);
+    if (!body.ok) return body.response;
+    const { ticketId, fieldId } = body.data;
 
-    const { ticketId, fieldId } = await request.json();
-
-    // Upsert typing indicator
     await prisma.typingIndicator.upsert({
       where: {
         uniqueKey: {
@@ -44,18 +43,15 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE /api/typing - Stop typing indicator
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const sessionGuard = await requireSession();
+    if (!sessionGuard.ok) return sessionGuard.response;
+    const { session } = sessionGuard;
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const searchParams = request.nextUrl.searchParams;
-
-    const ticketId = searchParams.get("ticketId") || "";
-    const fieldId = searchParams.get("fieldId") || "";
+    const parsed = parseQuery(request.nextUrl.searchParams, TypingQuerySchema);
+    if (!parsed.ok) return parsed.response;
+    const { ticketId, fieldId } = parsed.data;
 
     await prisma.typingIndicator.deleteMany({
       where: {
@@ -75,29 +71,25 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-// GET /api/typing?ticketId=X&fieldId=Y - Get current typing users
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const sessionGuard = await requireSession();
+    if (!sessionGuard.ok) return sessionGuard.response;
+    const { session } = sessionGuard;
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const parsed = parseQuery(request.nextUrl.searchParams, TypingQuerySchema);
+    if (!parsed.ok) return parsed.response;
+    const { ticketId, fieldId } = parsed.data;
 
-    const searchParams = request.nextUrl.searchParams;
-    const ticketId = searchParams.get("ticketId") || "";
-    const fieldId = searchParams.get("fieldId") || "";
-
-    // Get typing users (last 5 seconds)
     const typingUsers = await prisma.typingIndicator.findMany({
       where: {
         ticketId,
         fieldId,
         lastActivity: {
-          gte: new Date(Date.now() - 5000), // Last 5 seconds
+          gte: new Date(Date.now() - 5000),
         },
         userId: {
-          not: session.user.id, // Exclude current user
+          not: session.user.id,
         },
       },
       include: {

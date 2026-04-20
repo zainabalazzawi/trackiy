@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { requireProjectAccess } from "@/app/api/_lib/guards";
+import { parseJson } from "@/app/api/_lib/validation";
+import { CreateCommentSchema } from "@/app/api/_lib/schemas";
 
 export async function GET(
   request: Request,
@@ -52,18 +54,13 @@ export async function POST(
     if (!guard.ok) return guard.response;
     const { session } = guard;
 
-    const { content } = await request.json();
-
-    if (!content?.trim()) {
-      return NextResponse.json(
-        { error: "Comment content is required" },
-        { status: 400 }
-      );
-    }
+    const body = await parseJson(request, CreateCommentSchema);
+    if (!body.ok) return body.response;
+    const { content } = body.data;
 
     const comment = await prisma.comment.create({
       data: {
-        content: content.trim(),
+        content,
         ticketId,
         userId: session.user.id,
         projectId,
