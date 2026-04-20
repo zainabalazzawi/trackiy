@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { requireProjectAccess } from "@/app/api/_lib/guards";
+import { parseJson } from "@/app/api/_lib/validation";
+import { AddMembersSchema } from "@/app/api/_lib/schemas";
 
 export async function GET(
   request: Request,
@@ -47,8 +49,9 @@ export async function POST(
     const guard = await requireProjectAccess(projectId);
     if (!guard.ok) return guard.response;
 
-    const body = await request.json();
-    const { memberIds } = body;
+    const body = await parseJson(request, AddMembersSchema);
+    if (!body.ok) return body.response;
+    const { memberIds } = body.data;
 
     const projectMembers = await Promise.all(
       memberIds.map(async (userId: string) => {

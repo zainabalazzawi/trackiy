@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import sgMail from "@/lib/sendgrid";
 import { randomBytes } from "crypto";
 import { requireProjectAccess } from "@/app/api/_lib/guards";
+import { parseJson } from "@/app/api/_lib/validation";
+import { SendInviteSchema } from "@/app/api/_lib/schemas";
 
 export async function POST(
   req: Request,
@@ -14,14 +16,9 @@ export async function POST(
     const guard = await requireProjectAccess(projectId);
     if (!guard.ok) return guard.response;
 
-    const { email } = await req.json();
-
-    if (!email || !projectId) {
-      return NextResponse.json(
-        { error: "Email and projectId are required" },
-        { status: 400 }
-      );
-    }
+    const body = await parseJson(req, SendInviteSchema);
+    if (!body.ok) return body.response;
+    const { email } = body.data;
 
     const token = randomBytes(32).toString("hex");
 

@@ -1,33 +1,22 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/lib/auth";
+import { requireSession } from "../_lib/guards";
+import { parseJson } from "../_lib/validation";
+import { CreateProjectSchema } from "../_lib/schemas";
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const sessionGuard = await requireSession();
+    if (!sessionGuard.ok) return sessionGuard.response;
+    const { session } = sessionGuard;
 
-    const body = await request.json();
-    const { name, key, type, template, category, memberIds = [] } = body;
+    const body = await parseJson(request, CreateProjectSchema);
+    if (!body.ok) return body.response;
+    const { name, key, type, template, category } = body.data;
+    const memberIds = body.data.memberIds ?? [];
 
-    // Validate required fields
-    if (!name || !key || !type) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    // Check if project key is unique
     const existingProject = await prisma.project.findUnique({
-      where: { key },
+      where: { key: key.toUpperCase() },
     });
 
     if (existingProject) {
@@ -37,14 +26,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create project
     const project = await prisma.project.create({
       data: {
         name,
         key: key.toUpperCase(),
-        category: category === "SOFTWARE" ? "SOFTWARE" : "SERVICE",
-        type: type === "TEAM_MANAGED" ? "TEAM_MANAGED" : "COMPANY_MANAGED",
-        template: template  === "KANBAN" ? "KANBAN" : "CUSTOMER_SERVICE",
+        category,
+        type,
+        template,
         userId: session.user.id,
       },
       include: {
@@ -60,9 +48,8 @@ export async function POST(request: Request) {
       },
     });
 
-    // Add the project creator as a member
-    const allMemberIds = memberIds.includes(session.user.id) 
-      ? memberIds 
+    const allMemberIds = memberIds.includes(session.user.id)
+      ? memberIds
       : [...memberIds, session.user.id];
 
     await Promise.all(
@@ -76,56 +63,50 @@ export async function POST(request: Request) {
       })
     );
 
-    // Update default columns to match the ones in columns route
     const defaultColumns = [
       "Ready to Development",
       "In Development",
       "Ready for Code Review",
       "Ready for QA",
-      "Done"
+      "Done",
     ];
-    
-    // First, get or create all statuses
+
     const statuses = await Promise.all(
       defaultColumns.map(async (columnName) => {
-        // Try to find existing status
         const existingStatus = await prisma.status.findFirst({
-          where: { name: columnName, projectId: project.id }
+          where: { name: columnName, projectId: project.id },
         });
 
         if (existingStatus) {
           return existingStatus;
         }
 
-        // Create new status if it doesn't exist
         return prisma.status.create({
-          data: { name: columnName, projectId: project.id }
+          data: { name: columnName, projectId: project.id },
         });
       })
     );
 
-    // Then create columns with the statuses
     await prisma.column.createMany({
       data: statuses.map((status, index) => ({
         name: status.name,
         statusId: status.id,
-        order: index,  // We keep the order in the Column model
+        order: index,
         projectId: project.id,
       })),
     });
 
-    // Fetch the complete project with columns
     const completeProject = await prisma.project.findUnique({
       where: { id: project.id },
       include: {
         columns: {
           include: {
             tickets: true,
-            status: true
+            status: true,
           },
           orderBy: {
-            order: 'asc'
-          }
+            order: "asc",
+          },
         },
         createdBy: {
           select: {
@@ -162,39 +143,32 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const sessionGuard = await requireSession();
+    if (!sessionGuard.ok) return sessionGuard.response;
+    const { session } = sessionGuard;
 
     const projects = await prisma.project.findMany({
       where: {
         OR: [
-          // Projects created by the user
           { userId: session.user.id },
-          // Projects where the user is a member
           {
             members: {
               some: {
-                userId: session.user.id
-              }
-            }
-          }
-        ]
+                userId: session.user.id,
+              },
+            },
+          },
+        ],
       },
       include: {
         columns: {
           include: {
             tickets: true,
-            status: true
+            status: true,
           },
           orderBy: {
-            order: 'asc'
-          }
+            order: "asc",
+          },
         },
         createdBy: {
           select: {
@@ -227,4 +201,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-} 
+}

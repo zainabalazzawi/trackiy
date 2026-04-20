@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { parseJson } from "@/app/api/_lib/validation";
+import { SignupSchema } from "@/app/api/_lib/schemas";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { email, password, name } = body;
+    const body = await parseJson(request, SignupSchema);
+    if (!body.ok) return body.response;
+    const { email, password, name } = body.data;
 
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -29,7 +32,8 @@ export async function POST(request: Request) {
       },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _password, ...userWithoutPassword } = user;
+    void _password;
 
     return NextResponse.json(userWithoutPassword);
   } catch (error) {
