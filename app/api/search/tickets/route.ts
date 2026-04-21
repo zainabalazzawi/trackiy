@@ -15,12 +15,27 @@ export async function GET(request: NextRequest) {
     );
     if (!parsed.ok) return parsed.response;
     const { q } = parsed.data;
+    const userId = sessionGuard.session.user.id;
 
     const tickets = await prisma.ticket.findMany({
       where: {
-        OR: [
-          { title: { contains: q, mode: "insensitive" } },
-          { ticketNumber: { contains: q, mode: "insensitive" } },
+        AND: [
+          {
+            OR: [
+              { title: { contains: q, mode: "insensitive" } },
+              { ticketNumber: { contains: q, mode: "insensitive" } },
+            ],
+          },
+          {
+            column: {
+              project: {
+                OR: [
+                  { userId },
+                  { members: { some: { userId } } },
+                ],
+              },
+            },
+          },
         ],
       },
       include: {
