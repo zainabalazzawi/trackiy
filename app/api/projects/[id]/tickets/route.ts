@@ -65,30 +65,32 @@ export async function POST(
       include: { status: true },
     });
 
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      select: { key: true },
-    });
+    const ticket = await prisma.$transaction(async (tx) => {
+      const project = await tx.project.update({
+        where: { id: projectId },
+        data: { nextTicketSeq: { increment: 1 } },
+        select: { key: true, nextTicketSeq: true },
+      });
+      const seq = project.nextTicketSeq - 1;
+      const ticketNumber = `${project.key}-${seq}`;
 
-    const randomNumber = Math.floor(Math.random() * 9000) + 1000;
-    const ticketNumber = `${project?.key}-${randomNumber}`;
-
-    const ticket = await prisma.ticket.create({
-      data: {
-        title,
-        description: description ?? null,
-        columnId: firstColumn.id,
-        statusId: firstColumn.statusId,
-        priority: priority ?? "MEDIUM",
-        assignee: assignee ?? null,
-        reporter: session.user.name,
-        labels: labels ?? [],
-        ticketNumber,
-      },
-      include: {
-        status: true,
-        column: true,
-      },
+      return tx.ticket.create({
+        data: {
+          title,
+          description: description ?? null,
+          columnId: firstColumn.id,
+          statusId: firstColumn.statusId,
+          priority: priority ?? "MEDIUM",
+          assignee: assignee ?? null,
+          reporter: session.user.name,
+          labels: labels ?? [],
+          ticketNumber,
+        },
+        include: {
+          status: true,
+          column: true,
+        },
+      });
     });
 
     return NextResponse.json(ticket);
