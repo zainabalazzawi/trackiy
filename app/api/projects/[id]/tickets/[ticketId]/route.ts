@@ -61,41 +61,42 @@ export async function PATCH(
     if (!body.ok) return body.response;
     const data = body.data;
 
-    const updatedTicket = await prisma.ticket.update({
-      where: {
-        id: ticketId,
-        column: {
-          projectId: projectId,
+    const updatedTicket = await prisma.$transaction(async (tx) => {
+      let columnId: string | undefined;
+      if (data.statusId !== undefined) {
+        const column = await tx.column.findFirstOrThrow({
+          where: { statusId: data.statusId, projectId },
+        });
+        columnId = column.id;
+      }
+
+      return tx.ticket.update({
+        where: {
+          id: ticketId,
+          column: { projectId },
         },
-      },
-      data: {
-        ...(data.title !== undefined && { title: data.title }),
-        ...(data.description !== undefined && { description: data.description }),
-        ...(data.priority !== undefined && { priority: data.priority }),
-        ...(data.assignee !== undefined && { assignee: data.assignee }),
-        ...(data.labels !== undefined && { labels: data.labels }),
-        ...(data.statusId !== undefined && {
-          statusId: data.statusId,
-          columnId: (
-            await prisma.column.findFirstOrThrow({
-              where: {
-                statusId: data.statusId,
-                projectId: projectId,
+        data: {
+          ...(data.title !== undefined && { title: data.title }),
+          ...(data.description !== undefined && { description: data.description }),
+          ...(data.priority !== undefined && { priority: data.priority }),
+          ...(data.assignee !== undefined && { assignee: data.assignee }),
+          ...(data.labels !== undefined && { labels: data.labels }),
+          ...(data.statusId !== undefined && {
+            statusId: data.statusId,
+            columnId,
+          }),
+        },
+        include: {
+          status: true,
+          column: {
+            include: {
+              project: {
+                select: { id: true, name: true, key: true },
               },
-            })
-          ).id,
-        }),
-      },
-      include: {
-        status: true,
-        column: {
-          include: {
-            project: {
-              select: { id: true, name: true, key: true },
             },
           },
         },
-      },
+      });
     });
 
     return NextResponse.json(updatedTicket);
