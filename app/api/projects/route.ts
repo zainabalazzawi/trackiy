@@ -26,42 +26,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const project = await prisma.project.create({
-      data: {
-        name,
-        key: key.toUpperCase(),
-        category,
-        type,
-        template,
-        userId: session.user.id,
-      },
-      include: {
-        columns: true,
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-          },
-        },
-      },
-    });
-
     const allMemberIds = memberIds.includes(session.user.id)
       ? memberIds
       : [...memberIds, session.user.id];
-
-    await Promise.all(
-      allMemberIds.map(async (userId: string) => {
-        return prisma.projectMember.create({
-          data: {
-            projectId: project.id,
-            userId,
-          },
-        });
-      })
-    );
 
     const defaultColumns = [
       "Ready to Development",
@@ -71,64 +38,62 @@ export async function POST(request: Request) {
       "Done",
     ];
 
-    const statuses = await Promise.all(
-      defaultColumns.map(async (columnName) => {
-        const existingStatus = await prisma.status.findFirst({
-          where: { name: columnName, projectId: project.id },
-        });
-
-        if (existingStatus) {
-          return existingStatus;
-        }
-
-        return prisma.status.create({
-          data: { name: columnName, projectId: project.id },
-        });
-      })
-    );
-
-    await prisma.column.createMany({
-      data: statuses.map((status, index) => ({
-        name: status.name,
-        statusId: status.id,
-        order: index,
-        projectId: project.id,
-      })),
-    });
-
-    const completeProject = await prisma.project.findUnique({
-      where: { id: project.id },
-      include: {
-        columns: {
-          include: {
-            tickets: true,
-            status: true,
-          },
-          orderBy: {
-            order: "asc",
-          },
+    const completeProject = await prisma.$transaction(async (tx) => {
+      const project = await tx.project.create({
+        data: {
+          name,
+          key: key.toUpperCase(),
+          category,
+          type,
+          template,
+          userId: session.user.id,
         },
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
+      });
+
+      await Promise.all(
+        allMemberIds.map((userId: string) =>
+          tx.projectMember.create({
+            data: { projectId: project.id, userId },
+          })
+        )
+      );
+
+      const statuses = await Promise.all(
+        defaultColumns.map((columnName) =>
+          tx.status.create({
+            data: { name: columnName, projectId: project.id },
+          })
+        )
+      );
+
+      await tx.column.createMany({
+        data: statuses.map((status, index) => ({
+          name: status.name,
+          statusId: status.id,
+          order: index,
+          projectId: project.id,
+        })),
+      });
+
+      return tx.project.findUniqueOrThrow({
+        where: { id: project.id },
+        include: {
+          columns: {
+            include: { tickets: true, status: true },
+            orderBy: { order: "asc" },
           },
-        },
-        members: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
+          createdBy: {
+            select: { id: true, name: true, email: true, image: true },
+          },
+          members: {
+            include: {
+              user: {
+                select: { id: true, name: true, email: true, image: true },
               },
             },
           },
         },
-      },
+      });
     });
 
     return NextResponse.json(completeProject);
