@@ -31,10 +31,10 @@ export const columns: ColumnDef<Ticket>[] = [
     },
   },
   {
-    accessorKey: "assignee",
+    accessorKey: "assigneeId",
     header: "Assignee",
     cell: ({ row }) => {
-      const assignee = row.getValue("assignee") as string;
+      const assignee = row.getValue("assigneeId") as string;
       return <AssigneeName assignee={assignee} />;
     },
   },
@@ -42,8 +42,8 @@ export const columns: ColumnDef<Ticket>[] = [
     accessorKey: "reporter",
     header: "Reporter",
     cell: ({ row }) => {
-      const reporter = row.getValue("reporter") as string;
-      return reporter || "-";
+      const reporter = row.getValue("reporter") as { name: string | null } | null;
+      return reporter?.name || "-";
     },
   },
   {

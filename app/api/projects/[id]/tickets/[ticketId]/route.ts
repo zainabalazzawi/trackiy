@@ -23,6 +23,8 @@ export async function GET(
       },
       include: {
         status: true,
+        assignee: { select: { id: true, name: true, email: true, image: true } },
+        reporter: { select: { id: true, name: true, email: true, image: true } },
         column: {
           include: {
             project: {
@@ -79,7 +81,7 @@ export async function PATCH(
           ...(data.title !== undefined && { title: data.title }),
           ...(data.description !== undefined && { description: data.description }),
           ...(data.priority !== undefined && { priority: data.priority }),
-          ...(data.assignee !== undefined && { assignee: data.assignee }),
+          ...(data.assigneeId !== undefined && { assigneeId: data.assigneeId }),
           ...(data.labels !== undefined && { labels: data.labels }),
           ...(data.statusId !== undefined && {
             statusId: data.statusId,
@@ -88,6 +90,8 @@ export async function PATCH(
         },
         include: {
           status: true,
+          assignee: { select: { id: true, name: true, email: true, image: true } },
+          reporter: { select: { id: true, name: true, email: true, image: true } },
           column: {
             include: {
               project: {

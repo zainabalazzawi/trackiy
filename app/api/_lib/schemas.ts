@@ -45,7 +45,7 @@ export const CreateTicketSchema = z.object({
   title: trimmedString(200, "Title"),
   description: optionalTrimmedString(10_000, "Description"),
   priority: PrioritySchema.optional(),
-  assignee: z.string().min(1, "Assignee cannot be empty").nullable().optional(),
+  assigneeId: z.string().min(1, "Assignee id cannot be empty").nullable().optional(),
   labels: z.array(z.string().min(1, "Label cannot be empty")).optional(),
 });
 export type CreateTicketInput = z.infer<typeof CreateTicketSchema>;
@@ -59,7 +59,7 @@ export const UpdateTicketSchema = z
       .nullable()
       .optional(),
     priority: PrioritySchema.optional(),
-    assignee: z.string().min(1, "Assignee cannot be empty").nullable().optional(),
+    assigneeId: z.string().min(1, "Assignee id cannot be empty").nullable().optional(),
     labels: z.array(z.string().min(1, "Label cannot be empty")).optional(),
     statusId: z.string().min(1, "Status id cannot be empty").optional(),
   })

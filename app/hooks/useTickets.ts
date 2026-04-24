@@ -66,7 +66,7 @@ export function useCreateTicket(projectId: string) {
     mutationFn: async (ticketData: {
       title: string;
       columnId: string;
-      assignee?: string;
+      assigneeId?: string;
     }) => {
       const response = await axios.post(
         `/api/projects/${projectId}/tickets`,

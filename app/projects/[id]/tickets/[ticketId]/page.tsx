@@ -61,7 +61,7 @@ const TicketPage = () => {
   if (!ticket) return <div className="p-6">Ticket not found</div>;
 
   const assigneeMember =
-    findMemberById(members, ticket.assignee as string) || "unassigned";
+    findMemberById(members, ticket.assigneeId as string) || "unassigned";
 
   return (
     <div className="p-3 sm:p-6 w-full bg-gradient-to-br from-slate-50 to-white min-h-screen">
@@ -131,7 +131,7 @@ const TicketPage = () => {
                     onValueChange={(value) => {
                       const assigneeValue =
                         value === "unassigned" ? "unassigned" : value;
-                      updateTicket({ assignee: assigneeValue });
+                      updateTicket({ assigneeId: assigneeValue });
                     }}
                   >
                     <SelectTrigger className="w-full sm:w-auto border-0 p-0 h-auto bg-transparent hover:bg-gray-50 rounded">
@@ -201,7 +201,7 @@ const TicketPage = () => {
               <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4">
                 <div className="text-xs sm:text-sm text-slate-600 font-medium">Reporter</div>
                 <div className="text-xs sm:text-sm font-medium text-slate-700">
-                  {ticket?.reporter}
+                  {ticket?.reporter?.name ?? "Unknown"}
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4">

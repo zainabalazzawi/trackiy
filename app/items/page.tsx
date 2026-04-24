@@ -27,9 +27,9 @@ const ItemsPage = () => {
   // Simple assignees - get unique assignee IDs and convert to names
   const assignees = [
     ...new Set(
-      tickets?.flatMap((ticket) => ticket.assignee)
+      tickets?.flatMap((ticket) => ticket.assigneeId)
     ),
-  ].map(assigneeId => getAssigneeName(assigneeId, projects || [])) 
+  ].map(assigneeId => getAssigneeName(assigneeId ?? undefined, projects || [])) 
    .sort();
 
   // Get unique labels from tickets
@@ -71,7 +71,7 @@ const ItemsPage = () => {
     // Assignee filter
     if (selectedAssignees.length > 0) {
       filtered = filtered.filter((ticket: Ticket) => {
-        const assigneeName = getAssigneeName(ticket.assignee, projects || []);
+        const assigneeName = getAssigneeName(ticket.assigneeId ?? undefined, projects || []);
         return selectedAssignees.includes(assigneeName);
       });
     }

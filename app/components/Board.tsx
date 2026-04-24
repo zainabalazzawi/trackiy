@@ -120,7 +120,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
     createTicket({
       title: newTicket,
       columnId: columnId,
-      assignee: selectedAssignee,
+      assigneeId: selectedAssignee,
     }, {
       onSuccess: () => {
         setIsCreatingTicket(false);
@@ -143,8 +143,8 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
               ticket.columnId === column.id && 
               (!selectedMemberId || 
                (selectedMemberId === "unassigned" ? 
-                 !ticket.assignee || ticket.assignee === "unassigned" : 
-                 ticket.assignee === selectedMemberId))
+                 !ticket.assigneeId || ticket.assigneeId === "unassigned" : 
+                 ticket.assigneeId === selectedMemberId))
             );
 
             return (

@@ -51,8 +51,10 @@ export interface Ticket {
     name: string;
   };
   priority: Priority;
-  assignee?: string;
-  reporter?: string;
+  assigneeId?: string | null;
+  assignee?: { id: string; name: string | null; email: string | null; image: string | null } | null;
+  reporterId?: string | null;
+  reporter?: { id: string; name: string | null; email: string | null; image: string | null } | null;
   labels?: string[];
   createdAt: string;
   updatedAt: string;
