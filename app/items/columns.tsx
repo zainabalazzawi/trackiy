@@ -1,15 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Ticket, Priority } from "@/app/types";
 import Link from "next/link";
-import { formatDate, getAssigneeName, getPriorityClasses } from "@/lib/utils";
-import { useProjects } from "@/app/hooks/useProjects";
+import { formatDate, getPriorityClasses } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-
-// Simple component to get user name from assignee
-const AssigneeName = ({ assignee }: { assignee: string }) => {
-  const { projects } = useProjects();
-  return getAssigneeName(assignee, projects || []);
-};
 
 export const columns: ColumnDef<Ticket>[] = [
   {
@@ -31,11 +24,11 @@ export const columns: ColumnDef<Ticket>[] = [
     },
   },
   {
-    accessorKey: "assigneeId",
+    accessorKey: "assignee",
     header: "Assignee",
     cell: ({ row }) => {
-      const assignee = row.getValue("assigneeId") as string;
-      return <AssigneeName assignee={assignee} />;
+      const assignee = row.getValue("assignee") as { name: string | null } | null;
+      return assignee?.name || "Unassigned";
     },
   },
   {
