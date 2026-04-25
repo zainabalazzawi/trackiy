@@ -22,6 +22,8 @@ export async function GET(
       },
       include: {
         status: true,
+        assignee: { select: { id: true, name: true, email: true, image: true } },
+        reporter: { select: { id: true, name: true, email: true, image: true } },
         column: {
           include: {
             project: {
@@ -55,7 +57,7 @@ export async function POST(
 
     const body = await parseJson(request, CreateTicketSchema);
     if (!body.ok) return body.response;
-    const { title, description, priority, assignee, labels } = body.data;
+    const { title, description, priority, assigneeId, labels } = body.data;
 
     const firstColumn = await prisma.column.findFirstOrThrow({
       where: {
@@ -81,13 +83,15 @@ export async function POST(
           columnId: firstColumn.id,
           statusId: firstColumn.statusId,
           priority: priority ?? "MEDIUM",
-          assignee: assignee ?? null,
-          reporter: session.user.name,
+          assigneeId: assigneeId ?? null,
+          reporterId: session.user.id,
           labels: labels ?? [],
           ticketNumber,
         },
         include: {
           status: true,
+          assignee: { select: { id: true, name: true, email: true, image: true } },
+          reporter: { select: { id: true, name: true, email: true, image: true } },
           column: true,
         },
       });

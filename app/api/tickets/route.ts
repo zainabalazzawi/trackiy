@@ -36,6 +36,8 @@ export async function GET() {
       },
       include: {
         status: true,
+        assignee: { select: { id: true, name: true, email: true, image: true } },
+        reporter: { select: { id: true, name: true, email: true, image: true } },
         column: {
           include: {
             project: {

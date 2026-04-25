@@ -62,7 +62,7 @@ const TicketCard = ({
 
   const isCurrentlyDragging = isDragging || isSortableDragging;
 
-  const assigneeMember = findMemberById(members, ticket.assignee as string);
+  const assigneeMember = findMemberById(members, ticket.assigneeId as string);
 
   const { deleteTicket, isDeleting } = useDeleteTicket(ticket.column.project.id);
 
@@ -156,7 +156,7 @@ const TicketCard = ({
                   />
                 </div>
 
-                {ticket.assignee === "unassigned" ? (
+                {!ticket.assigneeId ? (
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center">
                       <User className="h-4 w-4 text-slate-500" />
