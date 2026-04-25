@@ -129,9 +129,9 @@ const TicketPage = () => {
                         : "unassigned"
                     }
                     onValueChange={(value) => {
-                      const assigneeValue =
-                        value === "unassigned" ? "unassigned" : value;
-                      updateTicket({ assigneeId: assigneeValue });
+                      updateTicket({
+                        assigneeId: value === "unassigned" ? null : value,
+                      });
                     }}
                   >
                     <SelectTrigger className="w-full sm:w-auto border-0 p-0 h-auto bg-transparent hover:bg-gray-50 rounded">

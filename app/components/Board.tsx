@@ -120,7 +120,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
     createTicket({
       title: newTicket,
       columnId: columnId,
-      assigneeId: selectedAssignee,
+      assigneeId: selectedAssignee === "unassigned" ? undefined : selectedAssignee,
     }, {
       onSuccess: () => {
         setIsCreatingTicket(false);
