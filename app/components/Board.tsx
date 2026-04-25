@@ -142,9 +142,9 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
             const columnTickets = tickets.filter((ticket) => 
               ticket.columnId === column.id && 
               (!selectedMemberId || 
-               (selectedMemberId === "unassigned" ? 
-                 !ticket.assigneeId || ticket.assigneeId === "unassigned" : 
-                 ticket.assigneeId === selectedMemberId))
+               (selectedMemberId === "unassigned"
+                 ? !ticket.assigneeId
+                 : ticket.assigneeId === selectedMemberId))
             );
 
             return (
