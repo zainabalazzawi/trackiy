@@ -10,7 +10,6 @@ import { FilterBar } from "@/app/components/FilterBar";
 import { Star, ArrowLeft } from "lucide-react";
 import { Ticket, PRIORITIES } from "@/app/types";
 import { useAllStatuses } from "../hooks/useStatuses";
-import { getAssigneeName } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -24,13 +23,12 @@ const ItemsPage = () => {
   const statuses = uniqueNames.map(
     (name) => allStatuses.find((s) => s.name === name)!
   );
-  // Simple assignees - get unique assignee IDs and convert to names
+  // Build assignee filter options from the same relation used by the table.
   const assignees = [
     ...new Set(
-      tickets?.flatMap((ticket) => ticket.assigneeId)
+      tickets?.map((ticket) => ticket.assignee?.name ?? "Unassigned")
     ),
-  ].map(assigneeId => getAssigneeName(assigneeId ?? undefined, projects || [])) 
-   .sort();
+  ].sort();
 
   // Get unique labels from tickets
   const labels = [
@@ -71,7 +69,7 @@ const ItemsPage = () => {
     // Assignee filter
     if (selectedAssignees.length > 0) {
       filtered = filtered.filter((ticket: Ticket) => {
-        const assigneeName = getAssigneeName(ticket.assigneeId ?? undefined, projects || []);
+        const assigneeName = ticket.assignee?.name ?? "Unassigned";
         return selectedAssignees.includes(assigneeName);
       });
     }
@@ -104,7 +102,6 @@ const ItemsPage = () => {
     return filtered;
   }, [
     tickets,
-    projects,
     searchQuery,
     selectedProjects,
     selectedAssignees,
