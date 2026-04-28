@@ -31,10 +31,11 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      // Required so that a credentials-registered user can later link their
-      // Google account (same email). Safe here because the Google provider
-      // already guarantees the email is verified.
-      allowDangerousEmailAccountLinking: true,
+      // We only enable email-based account linking when explicitly allowed.
+      // Even then, we still enforce `email_verified` in the `signIn` callback
+      // for the Google provider.
+      allowDangerousEmailAccountLinking:
+        process.env.NEXTAUTH_ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING === "true",
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -88,6 +89,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider === "google" && user.email) {
+        const emailVerified = (profile as { email_verified?: boolean } | null | undefined)
+          ?.email_verified;
+        if (emailVerified === false) return false;
+
         try {
           // Sync name/image from Google profile on every login so they
           // stay up-to-date.  User creation for new OAuth users is handled
@@ -107,13 +112,37 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) {
       if (user) {
         token.id = user.id;
         token.name = user.name ?? undefined;
         token.email = user.email ?? undefined;
         token.image = (user as { image?: string | null }).image ?? undefined;
       }
+
+      if (account?.provider === "google") {
+        const gp = profile as
+          | { email?: string; name?: string; picture?: string }
+          | null
+          | undefined;
+
+        token.email ??= gp?.email;
+        token.name ??= gp?.name;
+        token.image ??= gp?.picture;
+      }
+
+      if ((!token.email || !token.image) && token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id },
+          select: { email: true, image: true, name: true },
+        });
+        if (dbUser) {
+          token.email ??= dbUser.email ?? undefined;
+          token.image ??= dbUser.image ?? undefined;
+          token.name ??= dbUser.name ?? undefined;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
