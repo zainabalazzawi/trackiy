@@ -91,7 +91,8 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google" && user.email) {
         const emailVerified = (profile as { email_verified?: boolean } | null | undefined)
           ?.email_verified;
-        if (emailVerified === false) return false;
+        // Fail closed: only allow Google sign-in when verification is explicitly true.
+        if (emailVerified !== true) return false;
 
         try {
           // Sync name/image from Google profile on every login so they
@@ -131,7 +132,7 @@ export const authOptions: NextAuthOptions = {
         token.image ??= gp?.picture;
       }
 
-      if ((!token.email || !token.image) && token.id) {
+      if (!token.email && token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id },
           select: { email: true, image: true, name: true },
