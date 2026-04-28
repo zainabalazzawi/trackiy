@@ -16,11 +16,24 @@ declare module "next-auth" {
     };
   }
 }
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    email?: string | null;
+    name?: string | null;
+    image?: string | null;
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Required so that a credentials-registered user can later link their
+      // Google account (same email). Safe here because the Google provider
+      // already guarantees the email is verified.
       allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
@@ -73,24 +86,19 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       if (account?.provider === "google" && user.email) {
         try {
-          const existingUser = await prisma.user.findUnique({
-            where: {
-              email: user.email,
+          // Sync name/image from Google profile on every login so they
+          // stay up-to-date.  User creation for new OAuth users is handled
+          // by the PrismaAdapter automatically.
+          await prisma.user.updateMany({
+            where: { email: user.email },
+            data: {
+              name: profile?.name ?? user.name,
+              image: (profile as { picture?: string } | undefined)?.picture ?? user.image,
             },
           });
-    
-          if (!existingUser) {
-            await prisma.user.create({
-              data: {
-                email: user.email,
-                name: user.name,
-                image: user.image,
-              },
-            });
-          }
           return true;
         } catch (error) {
           console.error("Error during Google sign in:", error);
@@ -103,13 +111,17 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.name = user.name ?? undefined;
+        token.email = user.email ?? undefined;
+        token.image = (user as { image?: string | null }).image ?? undefined;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
+        session.user.id = token.id;
         session.user.name = token.name ?? undefined;
+        session.user.email = token.email ?? undefined;
+        session.user.image = token.image ?? undefined;
       }
       return session;
     },
