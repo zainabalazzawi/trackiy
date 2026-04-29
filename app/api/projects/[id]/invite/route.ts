@@ -34,7 +34,6 @@ export async function POST(
       }),
       prisma.invitation.count({
         where: {
-          projectId,
           email,
           createdAt: { gte: windowStart },
         },
