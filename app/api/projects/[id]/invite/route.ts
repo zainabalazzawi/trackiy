@@ -6,6 +6,10 @@ import { requireProjectAccess } from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { SendInviteSchema } from "@/app/api/_lib/schemas";
 
+const INVITE_RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const INVITE_RATE_LIMIT_PER_PROJECT = 20;
+const INVITE_RATE_LIMIT_PER_EMAIL = 3;
+
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -19,6 +23,37 @@ export async function POST(
     const body = await parseJson(req, SendInviteSchema);
     if (!body.ok) return body.response;
     const { email } = body.data;
+    const windowStart = new Date(Date.now() - INVITE_RATE_LIMIT_WINDOW_MS);
+
+    const [projectInviteCount, recipientInviteCount] = await Promise.all([
+      prisma.invitation.count({
+        where: {
+          projectId,
+          createdAt: { gte: windowStart },
+        },
+      }),
+      prisma.invitation.count({
+        where: {
+          email,
+          createdAt: { gte: windowStart },
+        },
+      }),
+    ]);
+
+    if (
+      projectInviteCount >= INVITE_RATE_LIMIT_PER_PROJECT ||
+      recipientInviteCount >= INVITE_RATE_LIMIT_PER_EMAIL
+    ) {
+      return NextResponse.json(
+        { error: "Too many invite requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(INVITE_RATE_LIMIT_WINDOW_MS / 1000),
+          },
+        }
+      );
+    }
 
     const token = randomBytes(32).toString("hex");
 
