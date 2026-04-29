@@ -74,19 +74,14 @@ export const CreateColumnSchema = z.object({
 export type CreateColumnInput = z.infer<typeof CreateColumnSchema>;
 
 export const UpdateColumnSchema = z.object({
-  id: z.string().min(1, "Column id is required"),
   name: trimmedString(60, "Column name"),
   order: z
     .number({ invalid_type_error: "Order must be a number" })
     .int("Order must be an integer")
-    .min(0, "Order cannot be negative"),
+    .min(0, "Order cannot be negative")
+    .optional(),
 });
 export type UpdateColumnInput = z.infer<typeof UpdateColumnSchema>;
-
-export const DeleteColumnSchema = z.object({
-  id: z.string().min(1, "Column id is required"),
-});
-export type DeleteColumnInput = z.infer<typeof DeleteColumnSchema>;
 
 export const AddMembersSchema = z.object({
   memberIds: z

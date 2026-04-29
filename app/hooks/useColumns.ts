@@ -49,10 +49,10 @@ export function useUpdateColumn(projectId: string) {
 
   const updateColumnMutation = useMutation({
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
-      const response = await axios.patch(`/api/projects/${projectId}/columns`, {
-        id,
+      const response = await axios.patch(
+        `/api/projects/${projectId}/columns/${id}`,
+        {
         name,
-        status: name,
       });
       return response.data;
     },
@@ -74,9 +74,9 @@ export function useDeleteColumn(projectId: string) {
 
   const deleteColumnMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await axios.delete(`/api/projects/${projectId}/columns`, {
-        data: { id },
-      });
+      const response = await axios.delete(
+        `/api/projects/${projectId}/columns/${id}`
+      );
       return response.data;
     },
     onSuccess: () => {
