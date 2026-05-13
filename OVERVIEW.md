@@ -1,3 +1,4 @@
+```markdown
 # Trackiy
 
 Trackiy is a Jira/Trello-style **project & ticket management web app** built with Next.js. It lets teams create projects, organize work on a Kanban board, manage tickets (priority, assignee, labels, comments), invite members by email, and collaborate in real time with typing indicators.
@@ -19,18 +20,21 @@ Trackiy is a Jira/Trello-style **project & ticket management web app** built wit
 ## Tech Stack
 
 ### Framework & Language
+
 - **Next.js 15** (App Router, Turbopack dev server)
 - **React 19**
 - **TypeScript 5**
 
 ### Styling & UI
+
 - **Tailwind CSS v4** with `tailwindcss-animate` and `tailwind-merge`
-- **shadcn/ui** (new-york style) on top of **Radix UI** primitives (`@radix-ui/react-*`)
+- **shadcn/ui** (new-york style) on top of **Radix UI** primitives (`@radix-ui/react-`*)
 - **lucide-react** + **react-icons** for icons
 - **cmdk** for command palette / search input
 - `class-variance-authority` + `clsx` for variant-based styling
 
 ### Data & Auth
+
 - **Prisma 6** ORM
 - **PostgreSQL** database
 - **NextAuth.js v4** with `@next-auth/prisma-adapter`
@@ -39,20 +43,24 @@ Trackiy is a Jira/Trello-style **project & ticket management web app** built wit
 - **bcrypt** for password hashing
 
 ### State & Data Fetching
+
 - **TanStack React Query v5** — server state, caching, and polling
 - **Zustand v5** — client state (recent projects store)
 - **axios** — HTTP client
 
 ### Forms & Validation
+
 - **React Hook Form** with `@hookform/resolvers`
 - **Zod** schemas (shared by API routes for input validation)
 
 ### Other Libraries
+
 - **@dnd-kit/core**, **@dnd-kit/sortable** — drag-and-drop for the board
 - **@tanstack/react-table** — tables for project & ticket lists
 - **@sendgrid/mail** — transactional email for invitations
 
 ### Tooling
+
 - **ESLint 9**
 - **Prisma CLI** (auto-runs `prisma generate` on `postinstall`)
 
@@ -176,11 +184,15 @@ npm run tslint   # tsc --noEmit (type-check)
 
 ## Environment Variables
 
-Used across the app (see `.env`):
+`.env*` files are gitignored. To run the app locally, create your own `.env.local` (or `.env`) at the repo root with the following keys:
 
 - `DATABASE_URL` — PostgreSQL connection string (Prisma)
 - `NEXTAUTH_SECRET` — NextAuth JWT secret
-- `NEXTAUTH_URL` — App base URL
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` — Google OAuth
-- `NEXTAUTH_ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING` — optional, allows linking accounts by email
-- `SENDGRID_API_KEY` — for invitation emails (see `lib/sendgrid.ts`)
+- `NEXTAUTH_URL` — App base URL (e.g. `http://localhost:3000`)
+- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` — Google OAuth credentials
+- `NEXTAUTH_ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING` — optional, set to `"true"` to allow linking accounts by email
+- `SENDGRID_API_KEY` — for invitation emails (used by `lib/sendgrid.ts`)
+
+
+```
+
