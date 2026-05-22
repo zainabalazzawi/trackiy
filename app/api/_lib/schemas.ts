@@ -109,18 +109,6 @@ export const UpdateCommentSchema = z.object({
 });
 export type UpdateCommentInput = z.infer<typeof UpdateCommentSchema>;
 
-export const TypingBodySchema = z.object({
-  ticketId: z.string().min(1, "ticketId is required"),
-  fieldId: z.string().min(1, "fieldId is required"),
-});
-export type TypingBodyInput = z.infer<typeof TypingBodySchema>;
-
-export const TypingQuerySchema = z.object({
-  ticketId: z.string().min(1, "ticketId is required"),
-  fieldId: z.string().min(1, "fieldId is required"),
-});
-export type TypingQueryInput = z.infer<typeof TypingQuerySchema>;
-
 export const SearchTicketsQuerySchema = z.object({
   q: z
     .string()

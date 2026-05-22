@@ -78,8 +78,6 @@ const TicketPage = () => {
                 value={ticket.title}
                 onSave={(value) => updateTicket({ title: value })}
                 titleText
-                ticketId={ticketId}
-                fieldId="title"
               />
               <div className="mt-6">
                 <EditableField
@@ -87,8 +85,6 @@ const TicketPage = () => {
                   onSave={(value) => updateTicket({ description: value })}
                   label="Description"
                   type="textarea"
-                  ticketId={ticketId}
-                  fieldId="description"
                 />
               </div>
             </div>

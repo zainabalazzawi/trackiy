@@ -1,7 +1,6 @@
-```markdown
 # Trackiy
 
-Trackiy is a Jira/Trello-style **project & ticket management web app** built with Next.js. It lets teams create projects, organize work on a Kanban board, manage tickets (priority, assignee, labels, comments), invite members by email, and collaborate in real time with typing indicators.
+Trackiy is a Jira/Trello-style **project & ticket management web app** built with Next.js. It lets teams create projects, organize work on a Kanban board, manage tickets (priority, assignee, labels, comments), and invite members by email.
 
 ## Features
 
@@ -14,7 +13,6 @@ Trackiy is a Jira/Trello-style **project & ticket management web app** built wit
 - **Recent projects** — Tracks recently visited projects in a Zustand-backed sidebar panel.
 - **Global search** — Search tickets by title or ticket number from the header.
 - **Filtering** — Filter the “All work items” page by project, assignee, status, priority, and labels.
-- **Typing indicators** — Live "user is typing…" hints on ticket fields, polled every 2s.
 - **Responsive UI** — Mobile-friendly layout with collapsible sidebar.
 
 ## Tech Stack
@@ -86,7 +84,6 @@ trackiy/
 │   │   ├── statuses/route.ts         # Global statuses (for filters)
 │   │   ├── tickets/route.ts          # Global tickets (for filters)
 │   │   ├── search/tickets/route.ts   # Header search
-│   │   ├── typing/                   # Typing indicators (poll + SSE stream)
 │   │   ├── invite/[token]/route.ts   # Accept invitation
 │   │   └── debug/invitation/         # Dev debugging helpers
 │   │
@@ -103,7 +100,7 @@ trackiy/
 │   ├── hooks/                        # React Query data hooks
 │   │   ├── useProjects.ts, useTickets.ts, useColumns.ts
 │   │   ├── useStatuses.ts, useComments.ts
-│   │   ├── useTicketSearch.ts, useTypingIndicator.ts
+│   │   ├── useTicketSearch.ts
 │   │
 │   ├── stores/
 │   │   └── recentProjectsStore.ts    # Zustand store
@@ -160,7 +157,6 @@ Defined in `prisma/schema.prisma`. Core entities:
 - **Status** — named status per project (used for tickets and column mapping).
 - **Ticket** — `ticketNumber` (e.g. `TRK-1000`), title, description, `priority`, assignee, reporter, labels; belongs to a column + status.
 - **Comment** — message on a ticket, scoped to a project and authored by a user.
-- **TypingIndicator** — `(ticketId, fieldId, userId)` row updated on each keystroke; rows newer than 5s are shown as "typing…".
 
 ## Request Flow (typical)
 
@@ -192,7 +188,4 @@ npm run tslint   # tsc --noEmit (type-check)
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` — Google OAuth credentials
 - `NEXTAUTH_ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING` — optional, set to `"true"` to allow linking accounts by email
 - `SENDGRID_API_KEY` — for invitation emails (used by `lib/sendgrid.ts`)
-
-
-```
 
