@@ -23,7 +23,7 @@ import {
 import { Check, Plus, X, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useProjectMembers } from "../hooks/useProjects";
+import { useProjectMembers, useProjectPermissions } from "../hooks/useProjects";
 import {
   Select,
   SelectContent,
@@ -43,6 +43,7 @@ interface BoardProps {
 
 const Board = ({ projectId, selectedMemberId }: BoardProps) => {
   const { members } = useProjectMembers(projectId);
+  const { canEditTickets, canManageColumns } = useProjectPermissions(projectId);
   const { tickets } = useTickets(projectId);
   const { updateTicketStatus } = useUpdateTicketStatus(projectId);
   const { createTicket } = useCreateTicket(projectId);
@@ -60,7 +61,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5,
+        distance: canEditTickets ? 5 : 999999,
       },
     })
   );
@@ -83,6 +84,11 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (!canEditTickets) {
+      setActiveId(null);
+      return;
+    }
+
     const { active, over } = event;
 
     if (!over) {
@@ -168,7 +174,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                     />
                   ))}
                 </SortableContext>
-                {index === 0 && (
+                {index === 0 && canEditTickets && (
                   <div className="mt-2">
                     {isCreatingTicket ? (
                       <div className="relative">
@@ -281,7 +287,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
               </Column>
             );
           })}
-          {/* add new col */}
+          {canManageColumns && (
           <div className={`${isAddingColumn ? "w-full" : ""}`}>
             {isAddingColumn ? (
               <div className="p-4 rounded-xl bg-gradient-to-br from-slate-100 via-slate-50 to-white border border-slate-200 min-w-[200px]">
@@ -335,6 +341,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
               </Button>
             )}
           </div>
+          )}
         </div>
 
         <DragOverlay>

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { requireProjectAccess } from "@/app/api/_lib/guards";
+import { requireProjectPermission } from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { UpdateColumnSchema } from "@/app/api/_lib/schemas";
 
@@ -11,7 +11,7 @@ export async function PATCH(
   try {
     const { id: projectId, columnId } = await params;
 
-    const guard = await requireProjectAccess(projectId);
+    const guard = await requireProjectPermission(projectId, "manage_columns");
     if (!guard.ok) return guard.response;
 
     const body = await parseJson(request, UpdateColumnSchema);
@@ -61,7 +61,7 @@ export async function DELETE(
   try {
     const { id: projectId, columnId } = await params;
 
-    const guard = await requireProjectAccess(projectId);
+    const guard = await requireProjectPermission(projectId, "manage_columns");
     if (!guard.ok) return guard.response;
 
     const column = await prisma.column.findUnique({

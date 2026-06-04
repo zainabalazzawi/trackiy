@@ -4,6 +4,7 @@ import { Column as ColumnType } from '../types';
 import { KeyboardEvent, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { useUpdateColumn, useDeleteColumn } from '@/app/hooks/useColumns';
+import { useProjectPermissions } from '@/app/hooks/useProjects';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from "lucide-react";
 import {
@@ -30,6 +31,7 @@ interface ColumnProps {
 }
 
 const Column = ({ column, children, projectId }: ColumnProps) => {
+  const { canManageColumns } = useProjectPermissions(projectId);
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(column.name);
 
@@ -96,12 +98,13 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
           />
         ) : (
           <h2 
-            className="text-slate-700 font-semibold cursor-pointer py-2 text-sm"
-            onClick={() => setIsEditing(true)}
+            className={`text-slate-700 font-semibold py-2 text-sm ${canManageColumns ? "cursor-pointer" : ""}`}
+            onClick={() => canManageColumns && setIsEditing(true)}
           >
             {column.name}
           </h2>
         )}
+        {canManageColumns && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="hover:bg-white/60 rounded-lg">
@@ -118,6 +121,7 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        )}
       </div>
       <div className='border-slate-300/60 border-t mb-2 mx-2'/>
       <div className='px-2 overflow-y-auto flex-1 space-y-2'>

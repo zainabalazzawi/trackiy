@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { requireProjectAccess } from "@/app/api/_lib/guards";
+import {
+  requireProjectAccess,
+  requireProjectPermission,
+} from "@/app/api/_lib/guards";
 
 export async function GET(
   request: Request,
@@ -11,6 +14,7 @@ export async function GET(
 
     const guard = await requireProjectAccess(id);
     if (!guard.ok) return guard.response;
+    const { role: currentUserRole } = guard;
 
     const project = await prisma.project.findUnique({
       where: { id: id },
@@ -47,7 +51,11 @@ export async function GET(
       },
     });
 
-    return NextResponse.json(project);
+    if (!project) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ ...project, currentUserRole });
   } catch (error) {
     console.error("Error fetching project:", error);
     return NextResponse.json(
@@ -64,7 +72,7 @@ export async function DELETE(
   try {
     const { id: projectId } = await params;
 
-    const guard = await requireProjectAccess(projectId);
+    const guard = await requireProjectPermission(projectId, "delete_project");
     if (!guard.ok) return guard.response;
 
     await prisma.project.delete({

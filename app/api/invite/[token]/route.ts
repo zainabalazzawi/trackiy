@@ -54,6 +54,7 @@ export async function POST(
         data: {
           projectId: invitation.projectId,
           userId: session.user.id,
+          role: "MEMBER",
         },
       });
     } catch (error) {

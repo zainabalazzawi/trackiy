@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useProjectPermissions } from "@/app/hooks/useProjects";
 import {
   useComments,
   useCreateComment,
@@ -29,6 +30,7 @@ interface CommentsProps {
 }
 
 const Comments = ({ projectId, ticketId }: CommentsProps) => {
+  const { canEditTickets } = useProjectPermissions(projectId);
   const [newComment, setNewComment] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
@@ -69,7 +71,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
         <span className="text-sm">({comments.length})</span>
       </div>
 
-      {/* Comment Form */}
+      {canEditTickets && (
       <form onSubmit={handleSubmit} className="space-y-3">
         <Textarea
           placeholder="Write a comment..."
@@ -88,6 +90,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
           </Button>
         </div>
       </form>
+      )}
 
       {/* Comments List */}
       <div className="space-y-4">
@@ -123,6 +126,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
                     {formatDate(comment.createdAt)}
                   </span>
                 </div>
+                {canEditTickets && (
                 <div>
                   <Button
                     variant="ghost"
@@ -134,13 +138,18 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
+                )}
               </div>
               <div className="ml-5">
+                {canEditTickets ? (
                 <EditableField
                   value={comment.content}
                   onSave={(value) => handleUpdateComment(comment.id, value)}
                   type="textarea"
                 />
+                ) : (
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{comment.content}</p>
+                )}
               </div>
             </div>
           ))

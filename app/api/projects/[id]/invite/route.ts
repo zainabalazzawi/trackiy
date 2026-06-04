@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import sgMail from "@/lib/sendgrid";
 import { randomBytes } from "crypto";
-import { requireProjectAccess } from "@/app/api/_lib/guards";
+import { requireProjectPermission } from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { SendInviteSchema } from "@/app/api/_lib/schemas";
 
@@ -13,7 +13,7 @@ export async function POST(
   try {
     const { id: projectId } = await params;
 
-    const guard = await requireProjectAccess(projectId);
+    const guard = await requireProjectPermission(projectId, "manage_members");
     if (!guard.ok) return guard.response;
 
     const body = await parseJson(req, SendInviteSchema);

@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { requireProjectAccess } from "@/app/api/_lib/guards";
+import {
+  requireProjectAccess,
+  requireProjectPermission,
+} from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { UpdateTicketSchema } from "@/app/api/_lib/schemas";
 
@@ -56,7 +59,7 @@ export async function PATCH(
   try {
     const { ticketId, id: projectId } = await params;
 
-    const guard = await requireProjectAccess(projectId);
+    const guard = await requireProjectPermission(projectId, "edit_ticket");
     if (!guard.ok) return guard.response;
 
     const body = await parseJson(request, UpdateTicketSchema);
@@ -120,7 +123,7 @@ export async function DELETE(
   try {
     const { ticketId, id: projectId } = await params;
 
-    const guard = await requireProjectAccess(projectId);
+    const guard = await requireProjectPermission(projectId, "edit_ticket");
     if (!guard.ok) return guard.response;
 
     await prisma.ticket.delete({

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useProjectMembers } from "../hooks/useProjects";
+import { useProjectMembers, useProjectPermissions } from "../hooks/useProjects";
 import { User, Trash2, MoreHorizontal, Circle } from "lucide-react";
 import { findMemberById } from "@/lib/utils";
 import {
@@ -39,7 +39,9 @@ const TicketCard = ({
   onTicketDeleted,
 }: CardProps) => {
   const router = useRouter();
-  const { members = [] } = useProjectMembers(ticket.column.project.id);
+  const projectId = ticket.column.project.id;
+  const { members = [] } = useProjectMembers(projectId);
+  const { canEditTickets } = useProjectPermissions(projectId);
   const [open, setOpen] = useState(false);
 
 
@@ -89,7 +91,7 @@ const TicketCard = ({
         ref={setNodeRef}
         style={style}
         {...attributes}
-        {...listeners}
+        {...(canEditTickets ? listeners : {})}
         className={`
           touch-none 
           transition-all
@@ -113,6 +115,7 @@ const TicketCard = ({
           <CardHeader className="pb-2 px-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent line-clamp-2">{ticket.title}</CardTitle>
+              {canEditTickets && (
               <DropdownMenu >
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="pt-0 hover:bg-slate-100 rounded-lg h-8 w-8">
@@ -132,6 +135,7 @@ const TicketCard = ({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              )}
             </div>
           </CardHeader>
           <CardContent className="px-3">
