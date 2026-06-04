@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { requireProjectAccess } from "@/app/api/_lib/guards";
+import {
+  requireProjectAccess,
+  requireProjectPermission,
+} from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { AddMembersSchema } from "@/app/api/_lib/schemas";
 
@@ -21,6 +24,7 @@ export async function GET(
 
     const members = projectMembers.map((member) => ({
       id: member.id,
+      role: member.role,
       user: {
         id: member.user.id,
         name: member.user.name,
@@ -46,7 +50,7 @@ export async function POST(
   try {
     const { id: projectId } = await params;
 
-    const guard = await requireProjectAccess(projectId);
+    const guard = await requireProjectPermission(projectId, "manage_members");
     if (!guard.ok) return guard.response;
 
     const body = await parseJson(request, AddMembersSchema);
@@ -59,6 +63,7 @@ export async function POST(
           data: {
             projectId,
             userId,
+            role: "MEMBER",
           },
           include: {
             user: {
@@ -76,6 +81,7 @@ export async function POST(
 
     const members = projectMembers.map((member) => ({
       id: member.id,
+      role: member.role,
       user: {
         id: member.user.id,
         name: member.user.name,

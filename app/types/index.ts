@@ -1,5 +1,6 @@
 export type Priority = "LOW" | "MEDIUM" | "HIGH";
 export type InvitationStatus = "pending" | "accepted";
+export type Role = "OWNER" | "ADMIN" | "MEMBER" | "VIEWER";
 export type MemberSelection = string | "unassigned" | null;
 
 // Simple constants
@@ -17,11 +18,13 @@ export interface Project {
     image: string | null;
   };
   lead: string | null;
+  currentUserRole?: Role;
   members?: ProjectMember[];
 }
 
 export interface ProjectMember {
   id: string; // ProjectMember record ID (for React keys)
+  role: Role;
   user: {
     id: string;
     name: string | null;

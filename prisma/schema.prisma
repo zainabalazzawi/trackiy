@@ -92,6 +92,13 @@ enum InvitationStatus {
   accepted
 }
 
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
 model Ticket {
   id           String   @id @default(cuid())
   ticketNumber String   @unique
@@ -180,6 +187,7 @@ model ProjectMember {
   projectId String
   user      User     @relation(fields: [userId], references: [id])
   userId    String
+  role      Role     @default(MEMBER)
 
   @@unique([projectId, userId])
 }

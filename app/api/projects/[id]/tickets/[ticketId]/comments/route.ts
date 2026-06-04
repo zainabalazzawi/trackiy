@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { requireProjectAccess } from "@/app/api/_lib/guards";
+import {
+  requireProjectAccess,
+  requireProjectPermission,
+} from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { CreateCommentSchema } from "@/app/api/_lib/schemas";
 
@@ -50,7 +53,7 @@ export async function POST(
   try {
     const { id: projectId, ticketId } = await params;
 
-    const guard = await requireProjectAccess(projectId);
+    const guard = await requireProjectPermission(projectId, "edit_ticket");
     if (!guard.ok) return guard.response;
     const { session } = guard;
 

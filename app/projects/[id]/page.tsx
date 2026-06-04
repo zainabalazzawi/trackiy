@@ -20,7 +20,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingState } from "@/app/components/LoadingState";
-import { useProject } from "@/app/hooks/useProjects";
+import { useProject, useProjectPermissions } from "@/app/hooks/useProjects";
 import useRecentProjectsStore from "@/app/stores/recentProjectsStore";
 
 export default function ProjectPage({
@@ -31,6 +31,7 @@ export default function ProjectPage({
   const resolvedParams = use(params);
 
   const { project, isLoading } = useProject(resolvedParams.id);
+  const { canManageMembers } = useProjectPermissions(resolvedParams.id);
   const addProject = useRecentProjectsStore((state) => state.addProject);
 
   const [open, setOpen] = useState(false);
@@ -83,6 +84,7 @@ export default function ProjectPage({
             onMemberSelect={setSelectedMemberId}
           />
 
+          {canManageMembers && (
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button
@@ -131,6 +133,7 @@ export default function ProjectPage({
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
       </div>
       <Board

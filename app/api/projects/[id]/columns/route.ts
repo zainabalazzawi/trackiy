@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { requireProjectAccess } from "@/app/api/_lib/guards";
+import {
+  requireProjectAccess,
+  requireProjectPermission,
+} from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { CreateColumnSchema } from "@/app/api/_lib/schemas";
 
@@ -44,7 +47,7 @@ export async function POST(
   try {
     const { id: projectId } = await params;
 
-    const guard = await requireProjectAccess(projectId);
+    const guard = await requireProjectPermission(projectId, "manage_columns");
     if (!guard.ok) return guard.response;
 
     const body = await parseJson(request, CreateColumnSchema);

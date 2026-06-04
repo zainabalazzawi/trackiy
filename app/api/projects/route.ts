@@ -53,7 +53,11 @@ export async function POST(request: Request) {
       await Promise.all(
         allMemberIds.map((userId: string) =>
           tx.projectMember.create({
-            data: { projectId: project.id, userId },
+            data: {
+              projectId: project.id,
+              userId,
+              role: userId === session.user.id ? "OWNER" : "MEMBER",
+            },
           })
         )
       );

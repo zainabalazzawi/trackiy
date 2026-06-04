@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Project } from "@/app/types";
+import { hasPermission, type Permission } from "@/lib/permissions";
 
 // Hook to get all projects
 export function useProjects() {
@@ -96,4 +97,20 @@ export function useProjectMembers(projectId: string) {
   return {
     members: members || [],
   };
-} 
+}
+
+export function useProjectPermissions(projectId: string) {
+  const { project } = useProject(projectId);
+  const role = project?.currentUserRole ?? null;
+
+  const can = (permission: Permission) => hasPermission(role, permission);
+
+  return {
+    role,
+    canView: can("view"),
+    canEditTickets: can("edit_ticket"),
+    canManageMembers: can("manage_members"),
+    canManageColumns: can("manage_columns"),
+    canDeleteProject: can("delete_project"),
+  };
+}
