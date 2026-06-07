@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
+import { expectFailure, expectSuccess } from "@/test/helpers";
 import type { Session } from "next-auth";
 import type { Role } from "@/lib/permissions";
 
@@ -39,21 +40,6 @@ function makeSession(userId = USER_ID): Session {
     user: { id: userId, email: "user@example.com" },
     expires: "2099-01-01T00:00:00.000Z",
   };
-}
-
-async function expectFailure(
-  result: { ok: boolean; response?: Response },
-  status: number,
-  error: string
-) {
-  expect(result.ok).toBe(false);
-  expect(result.response!.status).toBe(status);
-  expect(await result.response!.json()).toEqual({ error });
-}
-
-function expectSuccess<T extends { ok: true }>(result: { ok: boolean }) {
-  expect(result.ok).toBe(true);
-  return result as T;
 }
 
 function mockProjectLookup(options: {
