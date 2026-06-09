@@ -55,10 +55,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command          | Description                  |
-| ---------------- | ---------------------------- |
-| `npm run dev`    | Start dev server (Turbopack) |
-| `npm run build`  | Production build             |
-| `npm run start`  | Start production server      |
-| `npm run lint`   | Run ESLint                   |
-| `npm run tslint` | Type-check with TypeScript   |
+| Command            | Description                        |
+| ------------------ | ---------------------------------- |
+| `npm run dev`      | Start dev server (Turbopack)       |
+| `npm run build`    | Production build                   |
+| `npm run start`    | Start production server            |
+| `npm run lint`     | Run ESLint                         |
+| `npm run tslint`   | Type-check with TypeScript         |
+| `npm run test`     | Run unit tests in watch mode       |
+| `npm run test:run` | Run unit tests once (CI-friendly)  |

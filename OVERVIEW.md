@@ -37,6 +37,7 @@ Each project has **four roles** — Viewer, Member, Admin, Owner. The creator is
 | `components/ui/` | shadcn/ui primitives |
 | `lib/` | Prisma client, permissions, SendGrid, utilities |
 | `prisma/schema.prisma` | Database schema |
+| `test/` | Shared test helpers (`expectSuccess`, `expectFailure`) |
 
 ## Request flow
 
@@ -85,6 +86,18 @@ Core entities in `prisma/schema.prisma`:
 | **Comment** | Message on a ticket |
 | **Invitation** | Pending email invite with accept token |
 
+## Testing
+
+Unit tests use **Vitest** (`vitest.config.mts`). Run `npm run test` for watch mode or `npm run test:run` for a single pass.
+
+| Test file | What it covers |
+| --------- | -------------- |
+| `lib/permissions.test.ts` | `roleAtLeast` and `hasPermission` for every role/permission pair |
+| `app/api/_lib/guards.test.ts` | Session and project access guards (`requireSession`, `getProjectRole`, `requireProjectRole`, `requireProjectPermission`, `requireProjectAccess`) |
+| `app/api/_lib/validation.test.ts` | JSON body and query-string parsing (`parseJson`, `parseQuery`) |
+
+API guard tests mock `next-auth` and Prisma; validation tests use real Zod schemas. Shared assertions live in `test/helpers.ts`.
+
 ## Tech stack
 
-Next.js 15 (App Router) · React 19 · TypeScript · PostgreSQL · Prisma · NextAuth · TanStack React Query · Zustand · axios · Zod · Tailwind CSS v4 · shadcn/ui · @dnd-kit · SendGrid
+Next.js 15 (App Router) · React 19 · TypeScript · PostgreSQL · Prisma · NextAuth · TanStack React Query · Zustand · axios · Zod · Vitest · Tailwind CSS v4 · shadcn/ui · @dnd-kit · SendGrid
