@@ -26,7 +26,6 @@ export function useUpdateTicketStatus(projectId: string) {
   const updateTicketStatusMutation = useMutation({
     mutationFn: async ({
       ticketId,
-      columnId: _columnId,
       statusId,
     }: {
       ticketId: string;
