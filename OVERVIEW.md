@@ -35,7 +35,7 @@ Each project has **four roles** — Viewer, Member, Admin, Owner. The creator is
 | `app/projects/`, `app/items/` | Page routes |
 | `app/stores/` | Client state (e.g. recent projects in localStorage) |
 | `components/ui/` | shadcn/ui primitives |
-| `lib/` | Prisma client, permissions, SendGrid, utilities |
+| `lib/` | Prisma client, permissions, Resend, utilities |
 | `prisma/schema.prisma` | Database schema |
 | `test/` | Shared test helpers (`expectSuccess`, `expectFailure`) |
 
@@ -100,4 +100,4 @@ API guard tests mock `next-auth` and Prisma; validation tests use real Zod schem
 
 ## Tech stack
 
-Next.js 15 (App Router) · React 19 · TypeScript · PostgreSQL · Prisma · NextAuth · TanStack React Query · Zustand · axios · Zod · Vitest · Tailwind CSS v4 · shadcn/ui · @dnd-kit · SendGrid
+Next.js 15 (App Router) · React 19 · TypeScript · PostgreSQL · Prisma · NextAuth · TanStack React Query · Zustand · axios · Zod · Vitest · Tailwind CSS v4 · shadcn/ui · @dnd-kit · Resend

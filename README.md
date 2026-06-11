@@ -38,9 +38,11 @@ NEXTAUTH_ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING="true"
 
 **Optional — email invitations** (all three required)
 
+Create an API key at [resend.com/api-keys](https://resend.com/api-keys). For local testing you can use `Trackiy <onboarding@resend.dev>` as the sender (Resend only delivers to your account email until you verify a domain).
+
 ```env
-SENDGRID_API_KEY=""
-SENDGRID_FROM_EMAIL="verified-sender@yourdomain.com"
+RESEND_API_KEY=""
+RESEND_FROM_EMAIL="Trackiy <onboarding@resend.dev>"
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 ```
 

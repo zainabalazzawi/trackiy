@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import sgMail from "@/lib/sendgrid";
+import { resend } from "@/lib/resend";
 import { randomBytes } from "crypto";
 import { requireProjectPermission } from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
@@ -33,15 +33,21 @@ export async function POST(
 
     const inviteUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/projects?invite=${token}`;
 
-    const msg = {
+    const { error } = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL!,
       to: email,
-      from: process.env.SENDGRID_FROM_EMAIL!,
       subject: "You're invited to join a project on Trackiy!",
       text: `You've been invited to join a project. Click this link to accept: ${inviteUrl}`,
       html: `<p>You've been invited to join a project.</p><p><a href="${inviteUrl}">Click here to accept the invitation</a></p>`,
-    };
+    });
 
-    await sgMail.send(msg);
+    if (error) {
+      console.error("Failed to send invitation:", error);
+      return NextResponse.json(
+        { error: "Failed to send invitation" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ message: "Invitation sent successfully!" });
   } catch (error) {
