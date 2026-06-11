@@ -38,13 +38,15 @@ NEXTAUTH_ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING="true"
 
 **Optional — email invitations** (all three required)
 
-Create an API key at [resend.com/api-keys](https://resend.com/api-keys). For local testing you can use `Trackiy <onboarding@resend.dev>` as the sender (Resend only delivers to your account email until you verify a domain).
+Sign up at [brevo.com](https://www.brevo.com) (free plan). Verify your sender email under **Settings → Senders**, then create an API key under **Settings → SMTP & API → API keys**.
 
 ```env
-RESEND_API_KEY=""
-RESEND_FROM_EMAIL="Trackiy <onboarding@resend.dev>"
+BREVO_API_KEY=""
+BREVO_FROM_EMAIL="your-verified@gmail.com"
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 ```
+
+On Vercel, set `NEXT_PUBLIC_BASE_URL` to your deployment URL (e.g. `https://trackiy.vercel.app`).
 
 **Run**
 
