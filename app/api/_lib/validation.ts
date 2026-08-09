@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import type { ZodSchema, ZodError } from "zod";
+import type { ZodError, ZodTypeAny } from "zod";
+import { z } from "zod";
 
 export type ValidationFailure = { ok: false; response: NextResponse };
 export type ValidationOk<T> = { ok: true; data: T };
@@ -16,10 +17,10 @@ function formatZodError(error: ZodError) {
  * Returns either { ok: true, data } or { ok: false, response: 400 } that
  * route handlers can `return` directly.
  */
-export async function parseJson<T>(
+export async function parseJson<T extends ZodTypeAny>(
   request: Request,
-  schema: ZodSchema<T>
-): Promise<ValidationOk<T> | ValidationFailure> {
+  schema: T
+): Promise<ValidationOk<z.output<T>> | ValidationFailure> {
   let raw: unknown;
   try {
     raw = await request.json();
@@ -54,10 +55,10 @@ export async function parseJson<T>(
 /**
  * Parse and validate URL search parameters against a Zod schema.
  */
-export function parseQuery<T>(
+export function parseQuery<T extends ZodTypeAny>(
   searchParams: URLSearchParams,
-  schema: ZodSchema<T>
-): ValidationOk<T> | ValidationFailure {
+  schema: T
+): ValidationOk<z.output<T>> | ValidationFailure {
   const obj: Record<string, string> = {};
   searchParams.forEach((value, key) => {
     obj[key] = value;
