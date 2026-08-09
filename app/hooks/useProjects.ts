@@ -41,16 +41,9 @@ export function useCreateProject() {
   const queryClient = useQueryClient();
 
   const createProjectMutation = useMutation({
-    mutationFn: async (projectData: {
-      name: string;
-      key: string;
-      type: "TEAM_MANAGED" | "COMPANY_MANAGED";
-      template: "KANBAN" | "CUSTOMER_SERVICE";
-      category: "SOFTWARE" | "SERVICE";
-      memberIds?: string[];
-    }) => {
+    mutationFn: async (projectData: { name: string; key: string }) => {
       const response = await axios.post("/api/projects", projectData);
-      return response.data;
+      return response.data as Project;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
@@ -58,7 +51,7 @@ export function useCreateProject() {
   });
 
   return {
-    createProject: createProjectMutation.mutate,
+    createProject: createProjectMutation.mutateAsync,
     isCreating: createProjectMutation.isPending,
     createError: createProjectMutation.error,
   };

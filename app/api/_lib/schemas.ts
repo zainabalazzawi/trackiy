@@ -34,9 +34,9 @@ export const CreateProjectSchema = z.object({
     /^[A-Za-z][A-Za-z0-9]*$/,
     "Project key must start with a letter and contain only letters and digits"
   ),
-  type: ProjectTypeSchema,
-  template: ProjectTemplateSchema,
-  category: ProjectCategorySchema,
+  type: ProjectTypeSchema.default("TEAM_MANAGED"),
+  template: ProjectTemplateSchema.default("KANBAN"),
+  category: ProjectCategorySchema.default("SOFTWARE"),
   memberIds: z.array(z.string().min(1, "Member id cannot be empty")).default([]),
 });
 export type CreateProjectInput = z.infer<typeof CreateProjectSchema>;
