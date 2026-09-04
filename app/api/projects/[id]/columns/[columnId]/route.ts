@@ -1,8 +1,8 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { requireProjectPermission } from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { UpdateColumnSchema } from "@/app/api/_lib/schemas";
+import { boardLane } from "@/app/api/_lib/boardLane";
 
 export async function PATCH(
   request: Request,
@@ -18,33 +18,15 @@ export async function PATCH(
     if (!body.ok) return body.response;
     const { name, order } = body.data;
 
-    const existing = await prisma.column.findUnique({
-      where: { id: columnId },
-      select: { projectId: true, statusId: true },
+    const result = await boardLane.rename(projectId, columnId, name, {
+      ...(typeof order === "number" ? { order } : {}),
     });
-
-    if (!existing || existing.projectId !== projectId) {
-      return NextResponse.json({ error: "Column not found" }, { status: 404 });
+    if (!result.ok) {
+      const status = result.code === "NOT_FOUND" ? 404 : 400;
+      return NextResponse.json({ error: result.message }, { status });
     }
 
-    const column = await prisma.column.update({
-      where: { id: columnId },
-      data: {
-        name,
-        ...(typeof order === "number" ? { order } : {}),
-      },
-      include: {
-        status: true,
-        tickets: true,
-      },
-    });
-
-    await prisma.status.update({
-      where: { id: column.statusId },
-      data: { name },
-    });
-
-    return NextResponse.json(column);
+    return NextResponse.json(result.data);
   } catch (error) {
     console.error("Error updating column:", error);
     return NextResponse.json(
@@ -64,33 +46,13 @@ export async function DELETE(
     const guard = await requireProjectPermission(projectId, "manage_columns");
     if (!guard.ok) return guard.response;
 
-    const column = await prisma.column.findUnique({
-      where: { id: columnId },
-      select: { statusId: true, projectId: true },
-    });
-
-    if (!column || column.projectId !== projectId) {
-      return NextResponse.json({ error: "Column not found" }, { status: 404 });
+    const result = await boardLane.delete(projectId, columnId);
+    if (!result.ok) {
+      const status = result.code === "NOT_FOUND" ? 404 : 400;
+      return NextResponse.json({ error: result.message }, { status });
     }
 
-    const deletedColumn = await prisma.column.delete({
-      where: { id: columnId },
-    });
-
-    const otherColumns = await prisma.column.count({
-      where: { statusId: column.statusId },
-    });
-    const otherTickets = await prisma.ticket.count({
-      where: { statusId: column.statusId },
-    });
-
-    if (otherColumns === 0 && otherTickets === 0) {
-      await prisma.status.delete({
-        where: { id: column.statusId },
-      });
-    }
-
-    return NextResponse.json({ success: true, deletedColumn });
+    return NextResponse.json({ success: true, deletedColumn: result.data });
   } catch (error) {
     console.error("Error deleting column:", error);
     return NextResponse.json(

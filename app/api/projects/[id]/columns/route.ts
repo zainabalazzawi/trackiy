@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import {
   requireProjectAccess,
@@ -6,6 +5,7 @@ import {
 } from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { CreateColumnSchema } from "@/app/api/_lib/schemas";
+import { boardLane } from "@/app/api/_lib/boardLane";
 
 export async function GET(
   request: Request,
@@ -17,18 +17,7 @@ export async function GET(
     const guard = await requireProjectAccess(id);
     if (!guard.ok) return guard.response;
 
-    const columns = await prisma.column.findMany({
-      where: {
-        projectId: id,
-      },
-      include: {
-        status: true,
-        tickets: true,
-      },
-      orderBy: {
-        order: "asc",
-      },
-    });
+    const columns = await boardLane.list(id);
 
     return NextResponse.json(columns);
   } catch (error) {
@@ -54,32 +43,7 @@ export async function POST(
     if (!body.ok) return body.response;
     const { name } = body.data;
 
-    const highestOrderColumn = await prisma.column.findFirst({
-      where: { projectId },
-      orderBy: { order: "desc" },
-    });
-
-    const newOrder = highestOrderColumn ? highestOrderColumn.order + 1 : 0;
-
-    const status = await prisma.status.create({
-      data: {
-        name,
-        projectId,
-      },
-    });
-
-    const column = await prisma.column.create({
-      data: {
-        name,
-        statusId: status.id,
-        order: newOrder,
-        projectId,
-      },
-      include: {
-        status: true,
-        tickets: true,
-      },
-    });
+    const column = await boardLane.create(projectId, name);
 
     return NextResponse.json(column);
   } catch (error) {
