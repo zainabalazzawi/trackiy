@@ -1,30 +1,30 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import React from "react";
-import { Status, Ticket } from "../types";
+import { Ticket } from "../types";
 
 interface StatusSelectProps {
-  statuses?: Status[];
+  columns?: { id: string; name: string }[];
   ticket?: Ticket;
-  handleStatusChange: (statusId: string) => void;
+  onColumnChange: (columnId: string) => void;
 }
 const StatusSelect = ({
-  statuses,
+  columns,
   ticket,
-  handleStatusChange,
+  onColumnChange,
 }: StatusSelectProps) => {
   return (
     <div>
       <Select
-        defaultValue={ticket?.statusId}
-        onValueChange={handleStatusChange}
+        defaultValue={ticket?.columnId}
+        onValueChange={onColumnChange}
       >
         <SelectTrigger className="w-full mb-3">
-          <SelectValue placeholder={ticket?.statusId} />
+          <SelectValue placeholder={ticket?.columnId} />
         </SelectTrigger>
         <SelectContent>
-          {statuses?.map((status: Status) => (
-            <SelectItem key={status.id} value={status.id}>
-              {status.name}
+          {columns?.map((column) => (
+            <SelectItem key={column.id} value={column.id}>
+              {column.name}
             </SelectItem>
           ))}
         </SelectContent>

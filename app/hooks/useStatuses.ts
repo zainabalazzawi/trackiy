@@ -1,6 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Status, Ticket } from "@/app/types";
+import { Status } from "@/app/types";
 
 // Hook to get statuses for a project
 export function useStatuses(projectId: string) {
@@ -19,53 +19,6 @@ export function useStatuses(projectId: string) {
   };
 }
 
-// Hook to update ticket status/column (for drag and drop)
-export function useUpdateTicketStatus(projectId: string) {
-  const queryClient = useQueryClient();
-
-  const updateTicketStatusMutation = useMutation({
-    mutationFn: async ({
-      ticketId,
-      statusId,
-    }: {
-      ticketId: string;
-      columnId: string;
-      statusId?: string;
-    }) => {
-      const response = await axios.patch(
-        `/api/projects/${projectId}/tickets/${ticketId}`,
-        {
-          statusId: statusId,
-          projectId,
-        }
-      );
-      return response.data;
-    },
-    onMutate: ({
-      ticketId,
-      columnId,
-    }: {
-      ticketId: string;
-      columnId: string;
-    }) => {
-      // Optimistic update
-      queryClient.setQueryData(["tickets", projectId], (old: Ticket[] | undefined) => {
-        return old?.map((ticket: Ticket) =>
-          ticket.id === ticketId ? { ...ticket, columnId } : ticket
-        );
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
-    },
-  });
-
-  return {
-    updateTicketStatus: updateTicketStatusMutation.mutate,
-    isUpdatingStatus: updateTicketStatusMutation.isPending,
-    updateStatusError: updateTicketStatusMutation.error,
-  };
-}
 export const useAllStatuses = () => {
   const { data: allStatuses = [], isLoading } = useQuery<Status[]>({
     queryKey: ["all-statuses"],

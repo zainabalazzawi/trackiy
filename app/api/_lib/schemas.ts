@@ -61,14 +61,14 @@ export const UpdateTicketSchema = z
     priority: PrioritySchema.optional(),
     assigneeId: z.string().min(1, "Assignee id cannot be empty").nullable().optional(),
     labels: z.array(z.string().min(1, "Label cannot be empty")).optional(),
-    statusId: z.string().min(1, "Status id cannot be empty").optional(),
+    columnId: z.string().min(1, "Column id cannot be empty").optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided",
   });
 export type UpdateTicketInput = z.infer<typeof UpdateTicketSchema>;
 /** Non-lane fields that can ride along with a ticket move/update. */
-export type TicketFieldPatch = Omit<UpdateTicketInput, "statusId">;
+export type TicketFieldPatch = Omit<UpdateTicketInput, "columnId">;
 
 export const CreateColumnSchema = z.object({
   name: trimmedString(60, "Column name"),

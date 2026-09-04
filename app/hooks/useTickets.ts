@@ -86,6 +86,44 @@ export function useCreateTicket(projectId: string) {
   };
 }
 
+// Hook to move a ticket to a column
+export function useMoveTicket(projectId: string) {
+  const queryClient = useQueryClient();
+
+  const moveTicketMutation = useMutation({
+    mutationFn: async ({
+      ticketId,
+      columnId,
+    }: {
+      ticketId: string;
+      columnId: string;
+    }) => {
+      const response = await axios.patch(
+        `/api/projects/${projectId}/tickets/${ticketId}`,
+        { columnId }
+      );
+      return response.data;
+    },
+    onMutate: ({ ticketId, columnId }) => {
+      queryClient.setQueryData(["tickets", projectId], (old: Ticket[] | undefined) => {
+        return old?.map((ticket: Ticket) =>
+          ticket.id === ticketId ? { ...ticket, columnId } : ticket
+        );
+      });
+    },
+    onSuccess: (_data, { ticketId }) => {
+      queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
+      queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
+    },
+  });
+
+  return {
+    moveTicket: moveTicketMutation.mutate,
+    isMoving: moveTicketMutation.isPending,
+    moveError: moveTicketMutation.error,
+  };
+}
+
 // Hook to update a ticket
 export function useUpdateTicket(projectId: string, ticketId?: string) {
   const queryClient = useQueryClient();

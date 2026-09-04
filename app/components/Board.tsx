@@ -31,9 +31,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateTicket, useTickets } from "../hooks/useTickets";
+import { useCreateTicket, useMoveTicket, useTickets } from "../hooks/useTickets";
 import { useColumns, useCreateColumn } from "../hooks/useColumns";
-import { useUpdateTicketStatus } from "../hooks/useStatuses";
 import { findMemberById } from "@/lib/utils";
 
 interface BoardProps {
@@ -45,7 +44,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
   const { members } = useProjectMembers(projectId);
   const { canEditTickets, canManageColumns } = useProjectPermissions(projectId);
   const { tickets } = useTickets(projectId);
-  const { updateTicketStatus } = useUpdateTicketStatus(projectId);
+  const { moveTicket } = useMoveTicket(projectId);
   const { createTicket } = useCreateTicket(projectId);
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -100,11 +99,9 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
       const overTicket = tickets.find((t) => t.id === over.id);
       const targetColumnId = overTicket ? overTicket.columnId : over.id;
 
-      const column = columns.find((col) => col.id === targetColumnId);
-      updateTicketStatus({
+      moveTicket({
         ticketId: active.id as string,
         columnId: targetColumnId as string,
-        statusId: column?.statusId,
       });
     }
 

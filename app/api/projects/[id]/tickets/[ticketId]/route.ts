@@ -77,17 +77,11 @@ export async function PATCH(
       ...(data.labels !== undefined && { labels: data.labels }),
     };
 
-    if (data.statusId !== undefined) {
-      const column = await prisma.column.findFirst({
-        where: { statusId: data.statusId, projectId },
-      });
-      if (!column) {
-        return NextResponse.json({ error: "Column not found" }, { status: 404 });
-      }
+    if (data.columnId !== undefined) {
       const moved = await boardLane.moveTicket(
         projectId,
         ticketId,
-        column.id,
+        data.columnId,
         otherFields
       );
       if (!moved.ok) {
