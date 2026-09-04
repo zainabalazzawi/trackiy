@@ -90,6 +90,27 @@ describe("boardLane", () => {
     expect(moved.data.columnId).toBe(target.id);
   });
 
+  it("moveTicket applies lane and field changes in one update", async () => {
+    const { project } = await withProject();
+    const source = await boardLane.create(project.id, "Todo");
+    const target = await boardLane.create(project.id, "Done");
+    const ticket = await createTicketInColumn({
+      columnId: source.id,
+      title: "Move me",
+    });
+
+    const moved = await boardLane.moveTicket(project.id, ticket.id, target.id, {
+      title: "Moved and renamed",
+      priority: "HIGH",
+    });
+    expect(moved.ok).toBe(true);
+    if (!moved.ok) return;
+    expect(moved.data.columnId).toBe(target.id);
+    expect(moved.data.statusId).toBe(target.statusId);
+    expect(moved.data.title).toBe("Moved and renamed");
+    expect(moved.data.priority).toBe("HIGH");
+  });
+
   it("delete removes an empty column from list", async () => {
     const { project } = await withProject();
     const created = await boardLane.create(project.id, "Temp");

@@ -67,6 +67,8 @@ export const UpdateTicketSchema = z
     message: "At least one field must be provided",
   });
 export type UpdateTicketInput = z.infer<typeof UpdateTicketSchema>;
+/** Non-lane fields that can ride along with a ticket move/update. */
+export type TicketFieldPatch = Omit<UpdateTicketInput, "statusId">;
 
 export const CreateColumnSchema = z.object({
   name: trimmedString(60, "Column name"),

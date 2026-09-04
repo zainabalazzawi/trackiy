@@ -69,20 +69,6 @@ export async function PATCH(
     if (!body.ok) return body.response;
     const data = body.data;
 
-    if (data.statusId !== undefined) {
-      const column = await prisma.column.findFirst({
-        where: { statusId: data.statusId, projectId },
-      });
-      if (!column) {
-        return NextResponse.json({ error: "Column not found" }, { status: 404 });
-      }
-      const moved = await boardLane.moveTicket(projectId, ticketId, column.id);
-      if (!moved.ok) {
-        const status = moved.code === "NOT_FOUND" ? 404 : 400;
-        return NextResponse.json({ error: moved.message }, { status });
-      }
-    }
-
     const otherFields = {
       ...(data.title !== undefined && { title: data.title }),
       ...(data.description !== undefined && { description: data.description }),
@@ -90,6 +76,26 @@ export async function PATCH(
       ...(data.assigneeId !== undefined && { assigneeId: data.assigneeId }),
       ...(data.labels !== undefined && { labels: data.labels }),
     };
+
+    if (data.statusId !== undefined) {
+      const column = await prisma.column.findFirst({
+        where: { statusId: data.statusId, projectId },
+      });
+      if (!column) {
+        return NextResponse.json({ error: "Column not found" }, { status: 404 });
+      }
+      const moved = await boardLane.moveTicket(
+        projectId,
+        ticketId,
+        column.id,
+        otherFields
+      );
+      if (!moved.ok) {
+        const status = moved.code === "NOT_FOUND" ? 404 : 400;
+        return NextResponse.json({ error: moved.message }, { status });
+      }
+      return NextResponse.json(moved.data);
+    }
 
     if (Object.keys(otherFields).length > 0) {
       const updatedTicket = await prisma.ticket.update({

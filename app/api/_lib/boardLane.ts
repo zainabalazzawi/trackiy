@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { TicketFieldPatch } from "@/app/api/_lib/schemas";
 
 export type BoardLaneCode = "NOT_FOUND" | "NOT_EMPTY" | "INVALID_REORDER";
 
@@ -130,7 +131,8 @@ const reorder = async (projectId: string, orderedColumnIds: string[]) => {
 const moveTicket = async (
   projectId: string,
   ticketId: string,
-  columnId: string
+  columnId: string,
+  fields?: TicketFieldPatch
 ) => {
   const columnResult = await requireColumn(projectId, columnId);
   if (!columnResult.ok) return columnResult;
@@ -148,11 +150,13 @@ const moveTicket = async (
     return fail("NOT_FOUND", "Ticket not found");
   }
 
+  // Lane move + any other field changes are one write so PATCH stays atomic.
   const updated = await prisma.ticket.update({
     where: { id: ticketId },
     data: {
       columnId: column.id,
       statusId: column.statusId,
+      ...fields,
     },
     include: {
       status: true,
