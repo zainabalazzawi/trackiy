@@ -47,6 +47,33 @@ const create = async (projectId: string, name: string) => {
   });
 };
 
+/** Create several lanes in one go (e.g. project template columns), ordered as given. */
+const createMany = async (projectId: string, names: string[]) => {
+  await prisma.$transaction(async (tx) => {
+    const highestOrderColumn = await tx.column.findFirst({
+      where: { projectId },
+      orderBy: { order: "desc" },
+    });
+    const startOrder = highestOrderColumn ? highestOrderColumn.order + 1 : 0;
+
+    for (const [index, name] of names.entries()) {
+      const status = await tx.status.create({
+        data: { name, projectId },
+      });
+      await tx.column.create({
+        data: {
+          name,
+          statusId: status.id,
+          order: startOrder + index,
+          projectId,
+        },
+      });
+    }
+  });
+
+  return list(projectId);
+};
+
 const list = async (projectId: string) => {
   return prisma.column.findMany({
     where: { projectId },
@@ -211,6 +238,7 @@ const deleteColumn = async (projectId: string, columnId: string) => {
 
 export const boardLane = {
   create,
+  createMany,
   list,
   rename,
   reorder,

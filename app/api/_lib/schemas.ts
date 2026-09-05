@@ -85,6 +85,13 @@ export const UpdateColumnSchema = z.object({
 });
 export type UpdateColumnInput = z.infer<typeof UpdateColumnSchema>;
 
+export const ReorderColumnsSchema = z.object({
+  columnIds: z
+    .array(z.string().min(1, "Column id cannot be empty"))
+    .min(1, "At least one column id is required"),
+});
+export type ReorderColumnsInput = z.infer<typeof ReorderColumnsSchema>;
+
 export const AddMembersSchema = z.object({
   memberIds: z
     .array(z.string().min(1, "Member id cannot be empty"))

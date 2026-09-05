@@ -4,7 +4,10 @@ import {
   requireProjectPermission,
 } from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
-import { CreateColumnSchema } from "@/app/api/_lib/schemas";
+import {
+  CreateColumnSchema,
+  ReorderColumnsSchema,
+} from "@/app/api/_lib/schemas";
 import { boardLane } from "@/app/api/_lib/boardLane";
 
 export async function GET(
@@ -50,6 +53,35 @@ export async function POST(
     console.error("Error creating column:", error);
     return NextResponse.json(
       { error: "Failed to create column" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: projectId } = await params;
+
+    const guard = await requireProjectPermission(projectId, "manage_columns");
+    if (!guard.ok) return guard.response;
+
+    const body = await parseJson(request, ReorderColumnsSchema);
+    if (!body.ok) return body.response;
+
+    const result = await boardLane.reorder(projectId, body.data.columnIds);
+    if (!result.ok) {
+      const status = result.code === "NOT_FOUND" ? 404 : 400;
+      return NextResponse.json({ error: result.message }, { status });
+    }
+
+    return NextResponse.json(result.data);
+  } catch (error) {
+    console.error("Error reordering columns:", error);
+    return NextResponse.json(
+      { error: "Failed to reorder columns" },
       { status: 500 }
     );
   }

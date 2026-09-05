@@ -48,6 +48,29 @@ describe("boardLane", () => {
     expect(columns.map((c) => c.name)).toEqual(["Todo", "Doing"]);
   });
 
+  it("createMany creates template lanes in the given order", async () => {
+    const { project } = await withProject();
+
+    const created = await boardLane.createMany(project.id, [
+      "Ready to Development",
+      "In Development",
+      "Done",
+    ]);
+
+    expect(created.map((c) => ({ name: c.name, order: c.order }))).toEqual([
+      { name: "Ready to Development", order: 0 },
+      { name: "In Development", order: 1 },
+      { name: "Done", order: 2 },
+    ]);
+
+    const columns = await boardLane.list(project.id);
+    expect(columns.map((c) => c.name)).toEqual([
+      "Ready to Development",
+      "In Development",
+      "Done",
+    ]);
+  });
+
   it("rename updates the column name returned by list", async () => {
     const { project } = await withProject();
     const created = await boardLane.create(project.id, "Old Name");

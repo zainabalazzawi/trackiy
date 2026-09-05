@@ -3,6 +3,15 @@ import { NextResponse } from "next/server";
 import { requireSession } from "../_lib/guards";
 import { parseJson } from "../_lib/validation";
 import { CreateProjectSchema } from "../_lib/schemas";
+import { boardLane } from "../_lib/boardLane";
+
+const DEFAULT_TEMPLATE_LANES = [
+  "Ready to Development",
+  "In Development",
+  "Ready for Code Review",
+  "Ready for QA",
+  "Done",
+];
 
 export async function POST(request: Request) {
   try {
@@ -30,16 +39,8 @@ export async function POST(request: Request) {
       ? memberIds
       : [...memberIds, session.user.id];
 
-    const defaultColumns = [
-      "Ready to Development",
-      "In Development",
-      "Ready for Code Review",
-      "Ready for QA",
-      "Done",
-    ];
-
-    const completeProject = await prisma.$transaction(async (tx) => {
-      const project = await tx.project.create({
+    const project = await prisma.$transaction(async (tx) => {
+      const created = await tx.project.create({
         data: {
           name,
           key: key.toUpperCase(),
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
         allMemberIds.map((userId: string) =>
           tx.projectMember.create({
             data: {
-              projectId: project.id,
+              projectId: created.id,
               userId,
               role: userId === session.user.id ? "OWNER" : "MEMBER",
             },
@@ -62,42 +63,29 @@ export async function POST(request: Request) {
         )
       );
 
-      const statuses = await Promise.all(
-        defaultColumns.map((columnName) =>
-          tx.status.create({
-            data: { name: columnName, projectId: project.id },
-          })
-        )
-      );
+      return created;
+    });
 
-      await tx.column.createMany({
-        data: statuses.map((status, index) => ({
-          name: status.name,
-          statusId: status.id,
-          order: index,
-          projectId: project.id,
-        })),
-      });
+    await boardLane.createMany(project.id, DEFAULT_TEMPLATE_LANES);
 
-      return tx.project.findUniqueOrThrow({
-        where: { id: project.id },
-        include: {
-          columns: {
-            include: { tickets: true, status: true },
-            orderBy: { order: "asc" },
-          },
-          createdBy: {
-            select: { id: true, name: true, email: true, image: true },
-          },
-          members: {
-            include: {
-              user: {
-                select: { id: true, name: true, email: true, image: true },
-              },
+    const completeProject = await prisma.project.findUniqueOrThrow({
+      where: { id: project.id },
+      include: {
+        columns: {
+          include: { tickets: true, status: true },
+          orderBy: { order: "asc" },
+        },
+        createdBy: {
+          select: { id: true, name: true, email: true, image: true },
+        },
+        members: {
+          include: {
+            user: {
+              select: { id: true, name: true, email: true, image: true },
             },
           },
         },
-      });
+      },
     });
 
     return NextResponse.json(completeProject);
