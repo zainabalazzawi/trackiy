@@ -8,7 +8,7 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
 } from '@/components/ui/multi-select';
-import { Project, Status } from '@/app/types';
+import { Project } from '@/app/types';
 
 interface FilterBarProps {
   searchQuery: string;
@@ -19,7 +19,7 @@ interface FilterBarProps {
   assignees: string[];
   selectedAssignees: string[];
   onAssigneesChange: (assignees: string[]) => void;
-  statuses: Status[];
+  statuses: string[];
   selectedStatuses: string[];
   onStatusesChange: (statuses: string[]) => void;
   priorities: string[];
@@ -109,8 +109,8 @@ export function FilterBar({
           <MultiSelectContent>
             <MultiSelectGroup>
               {statuses.map((status) => (
-                <MultiSelectItem key={status.id} value={status.name}>
-                  {status.name}
+                <MultiSelectItem key={status} value={status}>
+                  {status}
                 </MultiSelectItem>
               ))}
             </MultiSelectGroup>

@@ -52,14 +52,13 @@ export const columns: ColumnDef<Ticket>[] = [
     },
   },
   {
-    accessorKey: "status",
+    id: "status",
     header: "Status",
     cell: ({ row }) => {
       const ticket = row.original;
-      const statusName = ticket.status.name;
       return (
         <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-          {statusName}
+          {ticket.column.name}
         </Badge>
       );
     },

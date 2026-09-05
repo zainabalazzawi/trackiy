@@ -48,11 +48,6 @@ export interface Ticket {
       key: string;
     };
   };
-  statusId: string;
-  status: {
-    id: string;
-    name: string;
-  };
   priority: Priority;
   assigneeId?: string | null;
   assignee?: { id: string; name: string | null; email: string | null; image: string | null } | null;
@@ -67,25 +62,10 @@ export interface Ticket {
 export interface Column {
   id: string;
   name: string;
-  statusId: string;
-  status: {
-    id: string;
-    name: string;
-  };
   order: number;
   tickets: Ticket[];
 }
-export type TicketInput = Omit<
-  Ticket,
-  "id" | "columnId" | "column" | "statusId" | "status"
->;
-
-export interface Status {
-  id: string;
-  name: string;
-  column: Column;
-  tickets: Ticket[];
-}
+export type TicketInput = Omit<Ticket, "id" | "columnId" | "column">;
 
 export interface Comment {
   id: string;

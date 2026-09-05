@@ -9,20 +9,17 @@ import { LoadingState } from "@/app/components/LoadingState";
 import { FilterBar } from "@/app/components/FilterBar";
 import { Star, ArrowLeft } from "lucide-react";
 import { Ticket, PRIORITIES } from "@/app/types";
-import { useAllStatuses } from "../hooks/useStatuses";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const ItemsPage = () => {
   const { tickets, isLoading: ticketsLoading } = useAllTickets();
   const { projects, isLoading: projectsLoading } = useProjects();
-  const { allStatuses, isLoading: statusesLoading } = useAllStatuses();
 
-  // Remove duplicates using Set
-  const uniqueNames = [...new Set(allStatuses.map((s) => s.name))];
-  const statuses = uniqueNames.map(
-    (name) => allStatuses.find((s) => s.name === name)!
-  );
+  const laneNames = [
+    ...new Set(tickets?.map((ticket) => ticket.column.name) ?? []),
+  ].sort();
+
   // Build assignee filter options from the same relation used by the table.
   const assignees = [
     ...new Set(
@@ -74,15 +71,11 @@ const ItemsPage = () => {
       });
     }
 
-    // Status filter
+    // Status filter (lane name from column)
     if (selectedStatuses.length > 0) {
-      filtered = filtered.filter((ticket: Ticket) => {
-        const statusName =
-          typeof ticket.status === "object"
-            ? ticket.status.name
-            : ticket.status;
-        return selectedStatuses.includes(statusName);
-      });
+      filtered = filtered.filter((ticket: Ticket) =>
+        selectedStatuses.includes(ticket.column.name)
+      );
     }
 
     // Priority filter
@@ -110,7 +103,7 @@ const ItemsPage = () => {
     selectedLabels,
   ]);
 
-  if (ticketsLoading || projectsLoading || statusesLoading) {
+  if (ticketsLoading || projectsLoading) {
     return <LoadingState text="Loading work items" iconSize={64} />;
   }
 
@@ -140,7 +133,7 @@ const ItemsPage = () => {
         assignees={assignees}
         selectedAssignees={selectedAssignees}
         onAssigneesChange={setSelectedAssignees}
-        statuses={statuses}
+        statuses={laneNames}
         selectedStatuses={selectedStatuses}
         onStatusesChange={setSelectedStatuses}
         priorities={PRIORITIES}

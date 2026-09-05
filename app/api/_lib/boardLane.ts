@@ -186,7 +186,6 @@ const moveTicket = async (
       ...fields,
     },
     include: {
-      status: true,
       assignee: { select: { id: true, name: true, email: true, image: true } },
       reporter: { select: { id: true, name: true, email: true, image: true } },
       column: {

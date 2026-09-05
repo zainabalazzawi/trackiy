@@ -24,7 +24,6 @@ export async function GET(
         },
       },
       include: {
-        status: true,
         assignee: { select: { id: true, name: true, email: true, image: true } },
         reporter: { select: { id: true, name: true, email: true, image: true } },
         column: {
@@ -67,7 +66,6 @@ export async function POST(
         projectId: projectId,
         order: 0,
       },
-      include: { status: true },
     });
 
     const ticket = await prisma.$transaction(async (tx) => {
@@ -92,10 +90,15 @@ export async function POST(
           ticketNumber,
         },
         include: {
-          status: true,
           assignee: { select: { id: true, name: true, email: true, image: true } },
           reporter: { select: { id: true, name: true, email: true, image: true } },
-          column: true,
+          column: {
+            include: {
+              project: {
+                select: { id: true, name: true, key: true },
+              },
+            },
+          },
         },
       });
     });
