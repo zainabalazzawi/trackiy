@@ -146,8 +146,8 @@ Core entities in `prisma/schema.prisma`:
 | **User** | Account; can be assignee or reporter on tickets |
 | **Project** | Board container; `key`, template, `nextTicketSeq` for ticket numbering |
 | **ProjectMember** | Links user to project with a `role` |
-| **Column** + **Status** | Board layout; each column maps to a status |
-| **Ticket** | Work item — number, title, priority, labels, column/status |
+| **Column** | Board lane (name + order); tickets sit in one column |
+| **Ticket** | Work item — number, title, priority, labels, column |
 | **Comment** | Message on a ticket |
 | **Invitation** | Pending email invite with accept token |
 

@@ -82,7 +82,6 @@ export async function POST(
           title,
           description: description ?? null,
           columnId: firstColumn.id,
-          statusId: firstColumn.statusId,
           priority: priority ?? "MEDIUM",
           assigneeId: assigneeId ?? null,
           reporterId: session.user.id,

@@ -22,7 +22,6 @@ export async function GET(
         columns: {
           include: {
             tickets: true,
-            status: true,
           },
           orderBy: {
             order: "asc",

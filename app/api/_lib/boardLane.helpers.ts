@@ -40,7 +40,7 @@ export async function createTicketInColumn(options: {
   const suffix = uniqueSuffix();
   const column = await prisma.column.findUniqueOrThrow({
     where: { id: options.columnId },
-    select: { id: true, statusId: true },
+    select: { id: true },
   });
 
   return prisma.ticket.create({
@@ -48,7 +48,6 @@ export async function createTicketInColumn(options: {
       ticketNumber: `BL-${suffix}`,
       title: options.title ?? `Ticket ${suffix}`,
       columnId: column.id,
-      statusId: column.statusId,
     },
   });
 }

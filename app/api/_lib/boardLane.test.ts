@@ -129,7 +129,6 @@ describe("boardLane", () => {
     expect(moved.ok).toBe(true);
     if (!moved.ok) return;
     expect(moved.data.columnId).toBe(target.id);
-    expect(moved.data.statusId).toBe(target.statusId);
     expect(moved.data.title).toBe("Moved and renamed");
     expect(moved.data.priority).toBe("HIGH");
   });

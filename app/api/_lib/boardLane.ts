@@ -26,22 +26,13 @@ const create = async (projectId: string, name: string) => {
 
   const newOrder = highestOrderColumn ? highestOrderColumn.order + 1 : 0;
 
-  const status = await prisma.status.create({
-    data: {
-      name,
-      projectId,
-    },
-  });
-
   return prisma.column.create({
     data: {
       name,
-      statusId: status.id,
       order: newOrder,
       projectId,
     },
     include: {
-      status: true,
       tickets: true,
     },
   });
@@ -57,13 +48,9 @@ const createMany = async (projectId: string, names: string[]) => {
     const startOrder = highestOrderColumn ? highestOrderColumn.order + 1 : 0;
 
     for (const [index, name] of names.entries()) {
-      const status = await tx.status.create({
-        data: { name, projectId },
-      });
       await tx.column.create({
         data: {
           name,
-          statusId: status.id,
           order: startOrder + index,
           projectId,
         },
@@ -78,7 +65,6 @@ const list = async (projectId: string) => {
   return prisma.column.findMany({
     where: { projectId },
     include: {
-      status: true,
       tickets: true,
     },
     orderBy: { order: "asc" },
@@ -113,14 +99,8 @@ const rename = async (
       ...(typeof options?.order === "number" ? { order: options.order } : {}),
     },
     include: {
-      status: true,
       tickets: true,
     },
-  });
-
-  await prisma.status.update({
-    where: { id: column.statusId },
-    data: { name },
   });
 
   return ok(column);
@@ -182,7 +162,6 @@ const moveTicket = async (
     where: { id: ticketId },
     data: {
       columnId: column.id,
-      statusId: column.statusId,
       ...fields,
     },
     include: {
@@ -205,8 +184,6 @@ const deleteColumn = async (projectId: string, columnId: string) => {
   const existing = await requireColumn(projectId, columnId);
   if (!existing.ok) return existing;
 
-  const column = existing.data;
-
   const ticketCount = await prisma.ticket.count({
     where: { columnId },
   });
@@ -218,19 +195,6 @@ const deleteColumn = async (projectId: string, columnId: string) => {
   const deletedColumn = await prisma.column.delete({
     where: { id: columnId },
   });
-
-  const otherColumns = await prisma.column.count({
-    where: { statusId: column.statusId },
-  });
-  const otherTickets = await prisma.ticket.count({
-    where: { statusId: column.statusId },
-  });
-
-  if (otherColumns === 0 && otherTickets === 0) {
-    await prisma.status.delete({
-      where: { id: column.statusId },
-    });
-  }
 
   return ok(deletedColumn);
 };

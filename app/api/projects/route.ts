@@ -72,7 +72,7 @@ export async function POST(request: Request) {
       where: { id: project.id },
       include: {
         columns: {
-          include: { tickets: true, status: true },
+          include: { tickets: true },
           orderBy: { order: "asc" },
         },
         createdBy: {
@@ -121,7 +121,6 @@ export async function GET() {
         columns: {
           include: {
             tickets: true,
-            status: true,
           },
           orderBy: {
             order: "asc",
