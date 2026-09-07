@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import type { CreateTicketInput } from "@/app/api/_lib/schemas";
 import { Ticket } from "@/app/types";
 
 // Hook to get all tickets for a project
@@ -63,11 +64,7 @@ export function useCreateTicket(projectId: string) {
   const queryClient = useQueryClient();
 
   const createTicketMutation = useMutation({
-    mutationFn: async (ticketData: {
-      title: string;
-      columnId: string;
-      assigneeId?: string;
-    }) => {
+    mutationFn: async (ticketData: CreateTicketInput) => {
       const response = await axios.post(
         `/api/projects/${projectId}/tickets`,
         ticketData

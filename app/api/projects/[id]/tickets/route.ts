@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import {
   requireProjectAccess,
@@ -6,6 +5,10 @@ import {
 } from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { CreateTicketSchema } from "@/app/api/_lib/schemas";
+import { ticketInclude } from "@/app/api/_lib/ticketInclude";
+import { ticketWrite } from "@/app/api/_lib/ticketWrite";
+import { writeErrorResponse } from "@/app/api/_lib/writeHttp";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: Request,
@@ -23,17 +26,7 @@ export async function GET(
           projectId: projectId,
         },
       },
-      include: {
-        assignee: { select: { id: true, name: true, email: true, image: true } },
-        reporter: { select: { id: true, name: true, email: true, image: true } },
-        column: {
-          include: {
-            project: {
-              select: { id: true, name: true, key: true },
-            },
-          },
-        },
-      },
+      include: ticketInclude,
     });
 
     return NextResponse.json(tickets);
@@ -59,50 +52,15 @@ export async function POST(
 
     const body = await parseJson(request, CreateTicketSchema);
     if (!body.ok) return body.response;
-    const { title, description, priority, assigneeId, labels } = body.data;
 
-    const firstColumn = await prisma.column.findFirstOrThrow({
-      where: {
-        projectId: projectId,
-        order: 0,
-      },
-    });
+    const created = await ticketWrite.create(
+      projectId,
+      session.user.id,
+      body.data
+    );
+    if (!created.ok) return writeErrorResponse(created);
 
-    const ticket = await prisma.$transaction(async (tx) => {
-      const project = await tx.project.update({
-        where: { id: projectId },
-        data: { nextTicketSeq: { increment: 1 } },
-        select: { key: true, nextTicketSeq: true },
-      });
-      const seq = project.nextTicketSeq - 1;
-      const ticketNumber = `${project.key}-${seq}`;
-
-      return tx.ticket.create({
-        data: {
-          title,
-          description: description ?? null,
-          columnId: firstColumn.id,
-          priority: priority ?? "MEDIUM",
-          assigneeId: assigneeId ?? null,
-          reporterId: session.user.id,
-          labels: labels ?? [],
-          ticketNumber,
-        },
-        include: {
-          assignee: { select: { id: true, name: true, email: true, image: true } },
-          reporter: { select: { id: true, name: true, email: true, image: true } },
-          column: {
-            include: {
-              project: {
-                select: { id: true, name: true, key: true },
-              },
-            },
-          },
-        },
-      });
-    });
-
-    return NextResponse.json(ticket);
+    return NextResponse.json(created.data);
   } catch (error) {
     console.error("Error creating ticket:", error);
     return NextResponse.json(

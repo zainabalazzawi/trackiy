@@ -6,19 +6,9 @@ import {
 } from "@/app/api/_lib/guards";
 import { parseJson } from "@/app/api/_lib/validation";
 import { UpdateTicketSchema } from "@/app/api/_lib/schemas";
-import { boardLane } from "@/app/api/_lib/boardLane";
-
-const ticketInclude = {
-  assignee: { select: { id: true, name: true, email: true, image: true } },
-  reporter: { select: { id: true, name: true, email: true, image: true } },
-  column: {
-    include: {
-      project: {
-        select: { id: true, name: true, key: true },
-      },
-    },
-  },
-} as const;
+import { ticketInclude } from "@/app/api/_lib/ticketInclude";
+import { ticketWrite } from "@/app/api/_lib/ticketWrite";
+import { writeErrorResponse } from "@/app/api/_lib/writeHttp";
 
 export async function GET(
   request: Request,
@@ -66,47 +56,10 @@ export async function PATCH(
 
     const body = await parseJson(request, UpdateTicketSchema);
     if (!body.ok) return body.response;
-    const data = body.data;
 
-    const otherFields = {
-      ...(data.title !== undefined && { title: data.title }),
-      ...(data.description !== undefined && { description: data.description }),
-      ...(data.priority !== undefined && { priority: data.priority }),
-      ...(data.assigneeId !== undefined && { assigneeId: data.assigneeId }),
-      ...(data.labels !== undefined && { labels: data.labels }),
-    };
-
-    if (data.columnId !== undefined) {
-      const moved = await boardLane.moveTicket(
-        projectId,
-        ticketId,
-        data.columnId,
-        otherFields
-      );
-      if (!moved.ok) {
-        const status = moved.code === "NOT_FOUND" ? 404 : 400;
-        return NextResponse.json({ error: moved.message }, { status });
-      }
-      return NextResponse.json(moved.data);
-    }
-
-    if (Object.keys(otherFields).length > 0) {
-      const updatedTicket = await prisma.ticket.update({
-        where: {
-          id: ticketId,
-          column: { projectId },
-        },
-        data: otherFields,
-        include: ticketInclude,
-      });
-      return NextResponse.json(updatedTicket);
-    }
-
-    const updatedTicket = await prisma.ticket.findUniqueOrThrow({
-      where: { id: ticketId },
-      include: ticketInclude,
-    });
-    return NextResponse.json(updatedTicket);
+    const updated = await ticketWrite.patch(projectId, ticketId, body.data);
+    if (!updated.ok) return writeErrorResponse(updated);
+    return NextResponse.json(updated.data);
   } catch (error) {
     console.error("Error updating ticket:", error);
     return NextResponse.json(
@@ -126,14 +79,8 @@ export async function DELETE(
     const guard = await requireProjectPermission(projectId, "edit_ticket");
     if (!guard.ok) return guard.response;
 
-    await prisma.ticket.delete({
-      where: {
-        id: ticketId,
-        column: {
-          projectId: projectId,
-        },
-      },
-    });
+    const deleted = await ticketWrite.delete(projectId, ticketId);
+    if (!deleted.ok) return writeErrorResponse(deleted);
 
     return NextResponse.json({ message: "Ticket deleted successfully" });
   } catch (error) {

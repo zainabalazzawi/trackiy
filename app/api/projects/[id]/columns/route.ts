@@ -9,6 +9,7 @@ import {
   ReorderColumnsSchema,
 } from "@/app/api/_lib/schemas";
 import { boardLane } from "@/app/api/_lib/boardLane";
+import { writeErrorResponse } from "@/app/api/_lib/writeHttp";
 
 export async function GET(
   request: Request,
@@ -72,10 +73,7 @@ export async function PUT(
     if (!body.ok) return body.response;
 
     const result = await boardLane.reorder(projectId, body.data.columnIds);
-    if (!result.ok) {
-      const status = result.code === "NOT_FOUND" ? 404 : 400;
-      return NextResponse.json({ error: result.message }, { status });
-    }
+    if (!result.ok) return writeErrorResponse(result);
 
     return NextResponse.json(result.data);
   } catch (error) {

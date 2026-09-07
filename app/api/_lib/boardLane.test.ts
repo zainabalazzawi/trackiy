@@ -98,41 +98,6 @@ describe("boardLane", () => {
     expect(columns.map((col) => col.order)).toEqual([0, 1, 2]);
   });
 
-  it("moveTicket places the ticket in the target column", async () => {
-    const { project } = await withProject();
-    const source = await boardLane.create(project.id, "Todo");
-    const target = await boardLane.create(project.id, "Done");
-    const ticket = await createTicketInColumn({
-      columnId: source.id,
-      title: "Move me",
-    });
-
-    const moved = await boardLane.moveTicket(project.id, ticket.id, target.id);
-    expect(moved.ok).toBe(true);
-    if (!moved.ok) return;
-    expect(moved.data.columnId).toBe(target.id);
-  });
-
-  it("moveTicket applies lane and field changes in one update", async () => {
-    const { project } = await withProject();
-    const source = await boardLane.create(project.id, "Todo");
-    const target = await boardLane.create(project.id, "Done");
-    const ticket = await createTicketInColumn({
-      columnId: source.id,
-      title: "Move me",
-    });
-
-    const moved = await boardLane.moveTicket(project.id, ticket.id, target.id, {
-      title: "Moved and renamed",
-      priority: "HIGH",
-    });
-    expect(moved.ok).toBe(true);
-    if (!moved.ok) return;
-    expect(moved.data.columnId).toBe(target.id);
-    expect(moved.data.title).toBe("Moved and renamed");
-    expect(moved.data.priority).toBe("HIGH");
-  });
-
   it("delete removes an empty column from list", async () => {
     const { project } = await withProject();
     const created = await boardLane.create(project.id, "Temp");

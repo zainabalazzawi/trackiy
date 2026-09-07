@@ -119,10 +119,9 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
     }
   };
 
-  const handleCreateTicket = (columnId: string) => {
+  const handleCreateTicket = () => {
     createTicket({
       title: newTicket,
-      columnId: columnId,
       assigneeId: selectedAssignee === "unassigned" ? undefined : selectedAssignee,
     }, {
       onSuccess: () => {
@@ -184,7 +183,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                           className="h-24 sm:h-32 text-sm sm:text-lg border-slate-300 bg-white rounded-lg"
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && newTicket.trim()) {
-                              handleCreateTicket(column.id);
+                              handleCreateTicket();
                             } else if (e.key === "Escape") {
                               setIsCreatingTicket(false);
                               setNewTicket("");
