@@ -124,9 +124,12 @@ const TicketCard = ({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48 border-slate-200">
                   <DropdownMenuItem
+                    onSelect={() => {
+                      // Defer so DropdownMenu finishes teardown before Dialog locks body pointer-events.
+                      setTimeout(() => setOpen(true), 0);
+                    }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setOpen(true);
                     }}
                     className="text-red-600 focus:bg-red-50 focus:text-red-700 cursor-pointer"
                   >
