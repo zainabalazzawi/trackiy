@@ -1,24 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import type { CreateTicketInput } from "@/app/api/_lib/schemas";
 import { Ticket } from "@/app/types";
-
-// Hook to get all tickets for a project
-export function useTickets(projectId: string) {
-  const { data: tickets = [], isLoading } = useQuery<Ticket[]>({
-    queryKey: ["tickets", projectId],
-    queryFn: async () => {
-      const response = await axios.get(`/api/projects/${projectId}/tickets`);
-      return response.data;
-    },
-    enabled: !!projectId,
-  });
-
-  return {
-    tickets,
-    isLoading,
-  };
-}
 
 // Hook to get all tickets across all projects
 export function useAllTickets() {
@@ -47,81 +29,15 @@ export function useTicket(projectId: string, ticketId: string) {
       return response.data;
     },
     enabled: !!projectId && !!ticketId,
-
   });
 
   return {
     ticket,
     isLoading,
-
   };
 }
 
-
-
-// Hook to create a new ticket
-export function useCreateTicket(projectId: string) {
-  const queryClient = useQueryClient();
-
-  const createTicketMutation = useMutation({
-    mutationFn: async (ticketData: CreateTicketInput) => {
-      const response = await axios.post(
-        `/api/projects/${projectId}/tickets`,
-        ticketData
-      );
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
-    },
-  });
-
-  return {
-    createTicket: createTicketMutation.mutate,
-    isCreating: createTicketMutation.isPending,
-    createError: createTicketMutation.error,
-  };
-}
-
-// Hook to move a ticket to a column
-export function useMoveTicket(projectId: string) {
-  const queryClient = useQueryClient();
-
-  const moveTicketMutation = useMutation({
-    mutationFn: async ({
-      ticketId,
-      columnId,
-    }: {
-      ticketId: string;
-      columnId: string;
-    }) => {
-      const response = await axios.patch(
-        `/api/projects/${projectId}/tickets/${ticketId}`,
-        { columnId }
-      );
-      return response.data;
-    },
-    onMutate: ({ ticketId, columnId }) => {
-      queryClient.setQueryData(["tickets", projectId], (old: Ticket[] | undefined) => {
-        return old?.map((ticket: Ticket) =>
-          ticket.id === ticketId ? { ...ticket, columnId } : ticket
-        );
-      });
-    },
-    onSuccess: (_data, { ticketId }) => {
-      queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
-      queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
-    },
-  });
-
-  return {
-    moveTicket: moveTicketMutation.mutate,
-    isMoving: moveTicketMutation.isPending,
-    moveError: moveTicketMutation.error,
-  };
-}
-
-// Hook to update a ticket
+// Hook to update a ticket (fields other than lane membership)
 export function useUpdateTicket(projectId: string, ticketId?: string) {
   const queryClient = useQueryClient();
 
@@ -138,8 +54,7 @@ export function useUpdateTicket(projectId: string, ticketId?: string) {
         queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
       }
       queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
-      
-      // Simple success notification
+
       console.log("✅ Ticket updated successfully");
     },
     onError: (error) => {
@@ -151,30 +66,5 @@ export function useUpdateTicket(projectId: string, ticketId?: string) {
     updateTicket: updateTicketMutation.mutate,
     isUpdating: updateTicketMutation.isPending,
     updateError: updateTicketMutation.error,
-  };
-}
-
-
-
-// Hook to delete a ticket
-export function useDeleteTicket(projectId: string) {
-  const queryClient = useQueryClient();
-
-  const deleteTicketMutation = useMutation({
-    mutationFn: async (ticketId: string) => {
-      const response = await axios.delete(
-        `/api/projects/${projectId}/tickets/${ticketId}`
-      );
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tickets", projectId] });
-    },
-  });
-
-  return {
-    deleteTicket: deleteTicketMutation.mutate,
-    isDeleting: deleteTicketMutation.isPending,
-    deleteError: deleteTicketMutation.error,
   };
 }

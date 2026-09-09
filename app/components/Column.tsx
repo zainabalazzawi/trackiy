@@ -3,7 +3,7 @@ import { Column as ColumnType } from '../types';
 
 import { KeyboardEvent, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { useUpdateColumn, useDeleteColumn } from '@/app/hooks/useColumns';
+import { useBoardSnapshot } from '@/app/hooks/useBoardSnapshot';
 import { useProjectPermissions } from '@/app/hooks/useProjects';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from "lucide-react";
@@ -45,13 +45,12 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
     }
   });
 
-  const { updateColumn } = useUpdateColumn(projectId);
-
-  const { deleteColumn, isDeleting } = useDeleteColumn(projectId);
+  const { updateLane, deleteLane, isDeletingLane: isDeleting } =
+    useBoardSnapshot(projectId);
 
   const handleNameSubmit = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      updateColumn({ 
+      updateLane({ 
         id: column.id, 
         name 
       }, {
@@ -144,7 +143,7 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
             <Button
               variant="destructive"
               onClick={() => {
-                                  deleteColumn(column.id);
+                                  deleteLane(column.id);
                 setOpen(false);
               }}
                                 disabled={isDeleting}

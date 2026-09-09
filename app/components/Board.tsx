@@ -9,11 +9,10 @@ import {
   PointerSensor,
   DragStartEvent,
 } from "@dnd-kit/core";
-import { useQueryClient } from "@tanstack/react-query";
 import Column from "./Column";
 
 import { Button } from "@/components/ui/button";
-import { Ticket, ProjectMember, MemberSelection } from "../types";
+import { ProjectMember, MemberSelection } from "../types";
 import { useState, useRef } from "react";
 import TicketCard from "./TicketCard";
 import {
@@ -31,8 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateTicket, useMoveTicket, useTickets } from "../hooks/useTickets";
-import { useColumns, useCreateColumn } from "../hooks/useColumns";
+import { useBoardSnapshot } from "../hooks/useBoardSnapshot";
 import { findMemberById } from "@/lib/utils";
 
 interface BoardProps {
@@ -43,10 +41,13 @@ interface BoardProps {
 const Board = ({ projectId, selectedMemberId }: BoardProps) => {
   const { members } = useProjectMembers(projectId);
   const { canEditTickets, canManageColumns } = useProjectPermissions(projectId);
-  const { tickets } = useTickets(projectId);
-  const { moveTicket } = useMoveTicket(projectId);
-  const { createTicket } = useCreateTicket(projectId);
-  const queryClient = useQueryClient();
+  const {
+    lanes,
+    tickets,
+    moveTicket,
+    createTicket,
+    createLane,
+  } = useBoardSnapshot(projectId);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnName, setNewColumnName] = useState("");
@@ -64,19 +65,6 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
       },
     })
   );
-
-  const { columns } = useColumns(projectId);
-
-  const { createColumn } = useCreateColumn(projectId);
-
-
-  const handleTicketDeleted = (ticketId: string) => {
-    // Optimistically remove the ticket from the local state
-    queryClient.setQueryData(["tickets", projectId], (old: Ticket[]) => {
-      return old.filter((ticket: Ticket) => ticket.id !== ticketId);
-    });
-    
-  };
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -97,11 +85,11 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
 
     if (active.id !== over.id) {
       const overTicket = tickets.find((t) => t.id === over.id);
-      const targetColumnId = overTicket ? overTicket.columnId : over.id;
+      const targetLaneId = overTicket ? overTicket.columnId : (over.id as string);
 
       moveTicket({
         ticketId: active.id as string,
-        columnId: targetColumnId as string,
+        laneId: targetLaneId,
       });
     }
 
@@ -110,7 +98,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
 
   const handleAddColumn = () => {
     if (newColumnName.trim()) {
-      createColumn(newColumnName, {
+      createLane(newColumnName, {
         onSuccess: () => {
           setIsAddingColumn(false);
           setNewColumnName("");
@@ -120,16 +108,20 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
   };
 
   const handleCreateTicket = () => {
-    createTicket({
-      title: newTicket,
-      assigneeId: selectedAssignee === "unassigned" ? undefined : selectedAssignee,
-    }, {
-      onSuccess: () => {
-        setIsCreatingTicket(false);
-        setNewTicket("");
-        setSelectedAssignee("unassigned");
+    createTicket(
+      {
+        title: newTicket,
+        assigneeId:
+          selectedAssignee === "unassigned" ? undefined : selectedAssignee,
       },
-    });
+      {
+        onSuccess: () => {
+          setIsCreatingTicket(false);
+          setNewTicket("");
+          setSelectedAssignee("unassigned");
+        },
+      }
+    );
   };
 
   return (
@@ -140,34 +132,31 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
         onDragEnd={handleDragEnd}
       >
         <div className="flex gap-2 pb-4 h-full overflow-x-auto">
-          {columns.map((column, index) => {
-            const columnTickets = tickets.filter((ticket) => 
-              ticket.columnId === column.id && 
-              (!selectedMemberId || 
-               (selectedMemberId === "unassigned"
-                 ? !ticket.assigneeId
-                 : ticket.assigneeId === selectedMemberId))
+          {lanes.map((lane, index) => {
+            const laneTickets = tickets.filter(
+              (ticket) =>
+                ticket.columnId === lane.id &&
+                (!selectedMemberId ||
+                  (selectedMemberId === "unassigned"
+                    ? !ticket.assigneeId
+                    : ticket.assigneeId === selectedMemberId))
             );
 
             return (
               <Column
                 projectId={projectId}
-                key={column.id}
+                key={lane.id}
                 column={{
-                  ...column,
-                  tickets: columnTickets,
+                  ...lane,
+                  tickets: laneTickets,
                 }}
               >
                 <SortableContext
-                  items={columnTickets.map((t) => t.id)}
+                  items={laneTickets.map((t) => t.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  {columnTickets.map((ticket) => (
-                    <TicketCard 
-                      key={ticket.id} 
-                      ticket={ticket} 
-                      onTicketDeleted={handleTicketDeleted}
-                    />
+                  {laneTickets.map((ticket) => (
+                    <TicketCard key={ticket.id} ticket={ticket} />
                   ))}
                 </SortableContext>
                 {index === 0 && canEditTickets && (
@@ -205,7 +194,6 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                             onOpenChange={(open) => {
                               setIsSelectOpen(open);
                               if (!open) {
-                                // When Select closes, refocus the input
                                 setTimeout(() => {
                                   inputRef.current?.focus();
                                 }, 10);
@@ -220,12 +208,18 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                                 {selectedAssignee !== "unassigned" ? (
                                   <Avatar className="w-8 h-8">
                                     <AvatarImage
-                                      src={findMemberById(members, selectedAssignee)?.user.image?.replace("s96-c", "s400-c")}
+                                      src={findMemberById(
+                                        members,
+                                        selectedAssignee
+                                      )?.user.image?.replace("s96-c", "s400-c")}
                                       className="object-cover"
                                     />
                                     <AvatarFallback className="text-xs">
-                                      {findMemberById(members, selectedAssignee)?.user.name
-                                        ?.split(" ")
+                                      {findMemberById(
+                                        members,
+                                        selectedAssignee
+                                      )
+                                        ?.user.name?.split(" ")
                                         .map((n: string) => n[0])
                                         .join("")}
                                     </AvatarFallback>
@@ -243,7 +237,10 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                                 <span>Unassigned</span>
                               </SelectItem>
                               {members.map((member: ProjectMember) => (
-                                <SelectItem key={member.id} value={member.user.id}>
+                                <SelectItem
+                                  key={member.id}
+                                  value={member.user.id}
+                                >
                                   <div className="flex items-center gap-2">
                                     <Avatar className="w-6 h-6">
                                       <AvatarImage
@@ -284,59 +281,59 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
             );
           })}
           {canManageColumns && (
-          <div className={`${isAddingColumn ? "w-full" : ""}`}>
-            {isAddingColumn ? (
-              <div className="p-4 rounded-xl bg-gradient-to-br from-slate-100 via-slate-50 to-white border border-slate-200 min-w-[200px]">
-                <div className="flex flex-col gap-2">
-                  <Input
-                    value={newColumnName}
-                    onChange={(e) => setNewColumnName(e.target.value)}
-                    placeholder="Enter column name"
-                    className="bg-white w-full text-sm sm:text-base border-slate-300"
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleAddColumn();
-                      } else if (e.key === "Escape") {
-                        setIsAddingColumn(false);
-                        setNewColumnName("");
-                      }
-                    }}
-                  />
-                  <div className="flex gap-2 justify-end">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={handleAddColumn}
-                      className="h-8 w-8 hover:bg-[#649C9E] hover:text-white bg-white border border-slate-300"
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => {
-                        setIsAddingColumn(false);
-                        setNewColumnName("");
+            <div className={`${isAddingColumn ? "w-full" : ""}`}>
+              {isAddingColumn ? (
+                <div className="p-4 rounded-xl bg-gradient-to-br from-slate-100 via-slate-50 to-white border border-slate-200 min-w-[200px]">
+                  <div className="flex flex-col gap-2">
+                    <Input
+                      value={newColumnName}
+                      onChange={(e) => setNewColumnName(e.target.value)}
+                      placeholder="Enter column name"
+                      className="bg-white w-full text-sm sm:text-base border-slate-300"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleAddColumn();
+                        } else if (e.key === "Escape") {
+                          setIsAddingColumn(false);
+                          setNewColumnName("");
+                        }
                       }}
-                      className="h-8 w-8 hover:bg-red-100 hover:text-red-600 bg-white border border-slate-300"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={handleAddColumn}
+                        className="h-8 w-8 hover:bg-[#649C9E] hover:text-white bg-white border border-slate-300"
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          setIsAddingColumn(false);
+                          setNewColumnName("");
+                        }}
+                        className="h-8 w-8 hover:bg-red-100 hover:text-red-600 bg-white border border-slate-300"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <Button
-                onClick={() => setIsAddingColumn(true)}
-                size='icon'
-                variant="ghost"
-                className="cursor-pointer border-2 border-dashed  transition-all duration-300"
-              >
-                <Plus className="h-4 w-4 text-slate-500" />
-              </Button>
-            )}
-          </div>
+              ) : (
+                <Button
+                  onClick={() => setIsAddingColumn(true)}
+                  size="icon"
+                  variant="ghost"
+                  className="cursor-pointer border-2 border-dashed  transition-all duration-300"
+                >
+                  <Plus className="h-4 w-4 text-slate-500" />
+                </Button>
+              )}
+            </div>
           )}
         </div>
 
@@ -345,7 +342,6 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
             <TicketCard
               ticket={tickets.find((t) => t.id === activeId)!}
               isDragging={true}
-              onTicketDeleted={handleTicketDeleted}
             />
           ) : null}
         </DragOverlay>

@@ -63,7 +63,8 @@ export interface Column {
   id: string;
   name: string;
   order: number;
-  tickets: Ticket[];
+  /** Present only when a view attaches filtered tickets; lanes GET does not include them. */
+  tickets?: Ticket[];
 }
 export type TicketInput = Omit<Ticket, "id" | "columnId" | "column">;
 

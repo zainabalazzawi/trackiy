@@ -9,10 +9,9 @@ import { useProjectMembers } from "@/app/hooks/useProjects";
 import {
   useTicket,
   useUpdateTicket,
-  useMoveTicket,
   useAllTickets,
 } from "@/app/hooks/useTickets";
-import { useColumns } from "@/app/hooks/useColumns";
+import { useBoardSnapshot } from "@/app/hooks/useBoardSnapshot";
 import { User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -42,9 +41,8 @@ const TicketPage = () => {
   };
   const { members } = useProjectMembers(projectId);
   const { ticket, isLoading } = useTicket(projectId, ticketId);
-  const { columns } = useColumns(projectId);
+  const { lanes, moveTicket } = useBoardSnapshot(projectId);
   const { updateTicket } = useUpdateTicket(projectId, ticketId);
-  const { moveTicket } = useMoveTicket(projectId);
   const { tickets } = useAllTickets();
 
   // Get unique labels from all tickets
@@ -105,10 +103,10 @@ const TicketPage = () => {
             <div className="bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl border border-slate-200/80">
               <span className="text-sm sm:text-base font-semibold text-slate-800 block mb-2">Status</span>
               <StatusSelect
-                columns={columns}
+                columns={lanes}
                 ticket={ticket}
                 onColumnChange={(columnId: string) => {
-                  moveTicket({ ticketId, columnId });
+                  moveTicket({ ticketId, laneId: columnId });
                 }}
               />
             </div>

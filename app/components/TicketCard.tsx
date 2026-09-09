@@ -25,18 +25,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { useDeleteTicket } from "@/app/hooks/useTickets";
+import { useBoardSnapshot } from "@/app/hooks/useBoardSnapshot";
 
 interface CardProps {
   ticket: Ticket;
   isDragging?: boolean;
-  onTicketDeleted?: (ticketId: string) => void;
 }
 
 const TicketCard = ({
   ticket,
   isDragging = false,
-  onTicketDeleted,
 }: CardProps) => {
   const router = useRouter();
   const projectId = ticket.column.project.id;
@@ -66,12 +64,12 @@ const TicketCard = ({
 
   const assigneeMember = findMemberById(members, ticket.assigneeId as string);
 
-  const { deleteTicket, isDeleting } = useDeleteTicket(ticket.column.project.id);
+  const { deleteTicket, isDeletingTicket: isDeleting } =
+    useBoardSnapshot(projectId);
 
   const handleDeleteTicket = (ticketId: string) => {
     deleteTicket(ticketId, {
       onSuccess: () => {
-        onTicketDeleted?.(ticketId);
         setOpen(false);
       },
     });

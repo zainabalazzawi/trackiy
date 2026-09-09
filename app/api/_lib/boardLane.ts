@@ -20,9 +20,6 @@ const create = async (projectId: string, name: string) => {
       order: newOrder,
       projectId,
     },
-    include: {
-      tickets: true,
-    },
   });
 };
 
@@ -52,9 +49,6 @@ const createMany = async (projectId: string, names: string[]) => {
 const list = async (projectId: string) => {
   return prisma.column.findMany({
     where: { projectId },
-    include: {
-      tickets: true,
-    },
     orderBy: { order: "asc" },
   });
 };
@@ -89,9 +83,6 @@ const rename = async (
     data: {
       name,
       ...(typeof options?.order === "number" ? { order: options.order } : {}),
-    },
-    include: {
-      tickets: true,
     },
   });
 
