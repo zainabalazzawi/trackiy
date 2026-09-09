@@ -25,16 +25,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { useBoardSnapshot } from "@/app/hooks/useBoardSnapshot";
+import type { useBoardSnapshot } from "@/app/hooks/useBoardSnapshot";
+
+type BoardSnapshot = ReturnType<typeof useBoardSnapshot>;
 
 interface CardProps {
   ticket: Ticket;
   isDragging?: boolean;
+  deleteTicket?: BoardSnapshot["deleteTicket"];
+  isDeletingTicket?: boolean;
 }
 
 const TicketCard = ({
   ticket,
   isDragging = false,
+  deleteTicket,
+  isDeletingTicket = false,
 }: CardProps) => {
   const router = useRouter();
   const projectId = ticket.column.project.id;
@@ -64,11 +70,8 @@ const TicketCard = ({
 
   const assigneeMember = findMemberById(members, ticket.assigneeId as string);
 
-  const { deleteTicket, isDeletingTicket: isDeleting } =
-    useBoardSnapshot(projectId);
-
   const handleDeleteTicket = (ticketId: string) => {
-    deleteTicket(ticketId, {
+    deleteTicket?.(ticketId, {
       onSuccess: () => {
         setOpen(false);
       },
@@ -223,9 +226,9 @@ const TicketCard = ({
               onClick={() => {
                 handleDeleteTicket(ticket.id);
               }}
-              disabled={isDeleting}
+              disabled={isDeletingTicket || !deleteTicket}
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeletingTicket ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>

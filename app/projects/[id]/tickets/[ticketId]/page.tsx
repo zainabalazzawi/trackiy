@@ -103,10 +103,10 @@ const TicketPage = () => {
             <div className="bg-gradient-to-br from-white to-slate-50/30 p-4 rounded-xl border border-slate-200/80">
               <span className="text-sm sm:text-base font-semibold text-slate-800 block mb-2">Status</span>
               <StatusSelect
-                columns={lanes}
+                lanes={lanes}
                 ticket={ticket}
-                onColumnChange={(columnId: string) => {
-                  moveTicket({ ticketId, laneId: columnId });
+                onLaneChange={(laneId: string) => {
+                  moveTicket({ ticketId, laneId });
                 }}
               />
             </div>

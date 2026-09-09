@@ -3,28 +3,29 @@ import React from "react";
 import { Ticket } from "../types";
 
 interface StatusSelectProps {
-  columns?: { id: string; name: string }[];
+  lanes?: { id: string; name: string }[];
   ticket?: Ticket;
-  onColumnChange: (columnId: string) => void;
+  onLaneChange: (laneId: string) => void;
 }
+
 const StatusSelect = ({
-  columns,
+  lanes,
   ticket,
-  onColumnChange,
+  onLaneChange,
 }: StatusSelectProps) => {
   return (
     <div>
       <Select
         defaultValue={ticket?.columnId}
-        onValueChange={onColumnChange}
+        onValueChange={onLaneChange}
       >
         <SelectTrigger className="w-full mb-3">
           <SelectValue placeholder={ticket?.columnId} />
         </SelectTrigger>
         <SelectContent>
-          {columns?.map((column) => (
-            <SelectItem key={column.id} value={column.id}>
-              {column.name}
+          {lanes?.map((lane) => (
+            <SelectItem key={lane.id} value={lane.id}>
+              {lane.name}
             </SelectItem>
           ))}
         </SelectContent>

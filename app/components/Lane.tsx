@@ -1,9 +1,9 @@
 import { useDroppable } from '@dnd-kit/core';
-import { Column as ColumnType } from '../types';
+import { Column as LaneType } from '../types';
 
 import { KeyboardEvent, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { useBoardSnapshot } from '@/app/hooks/useBoardSnapshot';
+import type { useBoardSnapshot } from '@/app/hooks/useBoardSnapshot';
 import { useProjectPermissions } from '@/app/hooks/useProjects';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from "lucide-react";
@@ -24,42 +24,47 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-interface ColumnProps {
-  column: ColumnType;
+type BoardSnapshot = ReturnType<typeof useBoardSnapshot>;
+
+interface LaneProps {
+  lane: LaneType;
   children?: React.ReactNode;
-  projectId: string
+  projectId: string;
+  updateLane: BoardSnapshot["updateLane"];
+  deleteLane: BoardSnapshot["deleteLane"];
+  isDeletingLane: boolean;
 }
 
-const Column = ({ column, children, projectId }: ColumnProps) => {
+const Lane = ({
+  lane,
+  children,
+  projectId,
+  updateLane,
+  deleteLane,
+  isDeletingLane,
+}: LaneProps) => {
   const { canManageColumns } = useProjectPermissions(projectId);
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(column.name);
-
+  const [name, setName] = useState(lane.name);
   const [open, setOpen] = useState(false);
 
   const { setNodeRef, isOver } = useDroppable({
-    id: column.id,
+    id: lane.id,
     data: {
-      type: 'column',
-      column
-    }
+      type: 'lane',
+      lane,
+    },
   });
-
-  const { updateLane, deleteLane, isDeletingLane: isDeleting } =
-    useBoardSnapshot(projectId);
 
   const handleNameSubmit = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      updateLane({ 
-        id: column.id, 
-        name 
-      }, {
+      updateLane({ id: lane.id, name }, {
         onSuccess: () => {
           setIsEditing(false);
         },
       });
     } else if (e.key === 'Escape') {
-      setName(column.name);
+      setName(lane.name);
       setIsEditing(false);
     }
   };
@@ -82,14 +87,13 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
       `}
     >
       <div className="mb-3 flex justify-between items-center px-3 h-[3%]">
-        {/* edit col name */}
         {isEditing ? (
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={handleNameSubmit}
             onBlur={() => {
-              setName(column.name);
+              setName(lane.name);
               setIsEditing(false);
             }}
             autoFocus
@@ -100,7 +104,7 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
             className={`text-slate-700 font-semibold py-2 text-sm ${canManageColumns ? "cursor-pointer" : ""}`}
             onClick={() => canManageColumns && setIsEditing(true)}
           >
-            {column.name}
+            {lane.name}
           </h2>
         )}
         {canManageColumns && (
@@ -127,13 +131,12 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
         {children}
       </div>
 
-      {/* delete col */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="border-slate-200">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-slate-800">Delete column?</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-slate-800">Delete lane?</DialogTitle>
             <DialogDescription className="text-slate-600">
-              Are you sure you want to delete this column? This action cannot be undone.
+              Are you sure you want to delete this lane? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -143,13 +146,13 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
             <Button
               variant="destructive"
               onClick={() => {
-                                  deleteLane(column.id);
+                deleteLane(lane.id);
                 setOpen(false);
               }}
-                                disabled={isDeleting}
+              disabled={isDeletingLane}
               className="bg-red-600 hover:bg-red-700"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeletingLane ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -159,4 +162,4 @@ const Column = ({ column, children, projectId }: ColumnProps) => {
 };
 
 
-export default Column;
+export default Lane;

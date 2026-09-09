@@ -9,7 +9,7 @@ import {
   PointerSensor,
   DragStartEvent,
 } from "@dnd-kit/core";
-import Column from "./Column";
+import Lane from "./Lane";
 
 import { Button } from "@/components/ui/button";
 import { ProjectMember, MemberSelection } from "../types";
@@ -47,10 +47,15 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
     moveTicket,
     createTicket,
     createLane,
+    updateLane,
+    deleteLane,
+    isDeletingLane,
+    deleteTicket,
+    isDeletingTicket,
   } = useBoardSnapshot(projectId);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [isAddingColumn, setIsAddingColumn] = useState(false);
-  const [newColumnName, setNewColumnName] = useState("");
+  const [isAddingLane, setIsAddingLane] = useState(false);
+  const [newLaneName, setNewLaneName] = useState("");
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
   const [newTicket, setNewTicket] = useState("");
   const [selectedAssignee, setSelectedAssignee] =
@@ -96,12 +101,12 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
     setActiveId(null);
   };
 
-  const handleAddColumn = () => {
-    if (newColumnName.trim()) {
-      createLane(newColumnName, {
+  const handleAddLane = () => {
+    if (newLaneName.trim()) {
+      createLane(newLaneName, {
         onSuccess: () => {
-          setIsAddingColumn(false);
-          setNewColumnName("");
+          setIsAddingLane(false);
+          setNewLaneName("");
         },
       });
     }
@@ -143,20 +148,28 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
             );
 
             return (
-              <Column
+              <Lane
                 projectId={projectId}
                 key={lane.id}
-                column={{
+                lane={{
                   ...lane,
                   tickets: laneTickets,
                 }}
+                updateLane={updateLane}
+                deleteLane={deleteLane}
+                isDeletingLane={isDeletingLane}
               >
                 <SortableContext
                   items={laneTickets.map((t) => t.id)}
                   strategy={verticalListSortingStrategy}
                 >
                   {laneTickets.map((ticket) => (
-                    <TicketCard key={ticket.id} ticket={ticket} />
+                    <TicketCard
+                      key={ticket.id}
+                      ticket={ticket}
+                      deleteTicket={deleteTicket}
+                      isDeletingTicket={isDeletingTicket}
+                    />
                   ))}
                 </SortableContext>
                 {index === 0 && canEditTickets && (
@@ -277,26 +290,26 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                     )}
                   </div>
                 )}
-              </Column>
+              </Lane>
             );
           })}
           {canManageColumns && (
-            <div className={`${isAddingColumn ? "w-full" : ""}`}>
-              {isAddingColumn ? (
+            <div className={`${isAddingLane ? "w-full" : ""}`}>
+              {isAddingLane ? (
                 <div className="p-4 rounded-xl bg-gradient-to-br from-slate-100 via-slate-50 to-white border border-slate-200 min-w-[200px]">
                   <div className="flex flex-col gap-2">
                     <Input
-                      value={newColumnName}
-                      onChange={(e) => setNewColumnName(e.target.value)}
-                      placeholder="Enter column name"
+                      value={newLaneName}
+                      onChange={(e) => setNewLaneName(e.target.value)}
+                      placeholder="Enter lane name"
                       className="bg-white w-full text-sm sm:text-base border-slate-300"
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                          handleAddColumn();
+                          handleAddLane();
                         } else if (e.key === "Escape") {
-                          setIsAddingColumn(false);
-                          setNewColumnName("");
+                          setIsAddingLane(false);
+                          setNewLaneName("");
                         }
                       }}
                     />
@@ -304,7 +317,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                       <Button
                         size="icon"
                         variant="ghost"
-                        onClick={handleAddColumn}
+                        onClick={handleAddLane}
                         className="h-8 w-8 hover:bg-[#649C9E] hover:text-white bg-white border border-slate-300"
                       >
                         <Check className="h-4 w-4" />
@@ -313,8 +326,8 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                         size="icon"
                         variant="ghost"
                         onClick={() => {
-                          setIsAddingColumn(false);
-                          setNewColumnName("");
+                          setIsAddingLane(false);
+                          setNewLaneName("");
                         }}
                         className="h-8 w-8 hover:bg-red-100 hover:text-red-600 bg-white border border-slate-300"
                       >
@@ -325,7 +338,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
                 </div>
               ) : (
                 <Button
-                  onClick={() => setIsAddingColumn(true)}
+                  onClick={() => setIsAddingLane(true)}
                   size="icon"
                   variant="ghost"
                   className="cursor-pointer border-2 border-dashed  transition-all duration-300"
