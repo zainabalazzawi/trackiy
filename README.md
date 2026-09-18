@@ -1,6 +1,6 @@
 # Trackiy
 
-Kanban-style project and ticket tracker (Next.js, PostgreSQL). Sign in, create projects, manage tickets on a board, comment, and invite teammates.
+Kanban-style project and ticket tracker (Next.js, PostgreSQL). Sign in, create projects, manage tickets on a board, and comment.
 
 ## Quick start
 
@@ -34,18 +34,6 @@ GOOGLE_CLIENT_SECRET=""
 NEXTAUTH_ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING="true"
 ```
 
-**Optional — email invitations** (all three required)
-
-Sign up at [brevo.com](https://www.brevo.com) (free plan). Verify your sender email under **Settings → Senders**, then create an API key under **Settings → SMTP & API → API keys**.
-
-```env
-BREVO_API_KEY=""
-BREVO_FROM_EMAIL="your-verified@gmail.com"
-NEXT_PUBLIC_BASE_URL="http://localhost:3000"
-```
-
-On Vercel, set `NEXT_PUBLIC_BASE_URL` to your deployment URL (e.g. `https://trackiy.vercel.app`).
-
 **Run**
 
 ```bash
@@ -75,7 +63,7 @@ Trackiy is a small Jira/Trello-style tool for teams:
 2. **Create a project** with a key (e.g. `TRK`), template, and category.
 3. **Work on a Kanban board** — drag tickets across columns; default flow is *Ready to Development → In Development → Ready for Code Review → Ready for QA → Done*.
 4. **Manage tickets** — auto-numbered (`TRK-1000`), priority, assignee, reporter, labels, inline edits.
-5. **Comment** on tickets; **invite** teammates by email; **search** tickets globally or filter all work on `/items`.
+5. **Comment** on tickets; **search** tickets globally or filter all work on `/items`.
 
 Each project has **four roles** — Viewer, Member, Admin, Owner. The creator is always Owner. The API enforces what each role can do; the board hides actions you are not allowed to perform.
 
@@ -84,7 +72,7 @@ Each project has **four roles** — Viewer, Member, Admin, Owner. The creator is
 | Route | What happens there |
 | ----- | ------------------- |
 | `/` | Landing page and sign-in |
-| `/projects` | List projects; accepts invite links (`?invite=TOKEN`) |
+| `/projects` | List projects |
 | `/projects/create` | Multi-step project creation |
 | `/projects/:id` | Kanban board |
 | `/projects/:id/tickets/:ticketId` | Ticket detail |
@@ -100,7 +88,7 @@ Each project has **four roles** — Viewer, Member, Admin, Owner. The creator is
 | `app/projects/`, `app/items/` | Page routes |
 | `app/stores/` | Client state (e.g. recent projects in localStorage) |
 | `components/ui/` | shadcn/ui primitives |
-| `lib/` | Prisma client, permissions, Brevo, utilities |
+| `lib/` | Prisma client, permissions, utilities |
 | `prisma/schema.prisma` | Database schema |
 | `test/` | Shared test helpers (`expectSuccess`, `expectFailure`) |
 
@@ -130,12 +118,12 @@ Roles and rules live in `lib/permissions.ts`. Routes call `app/api/_lib/guards.t
 | ---- | --- |
 | **Viewer** | View board, tickets, comments |
 | **Member** | Edit tickets, drag cards, post comments |
-| **Admin** | Manage columns, invite members |
+| **Admin** | Manage columns, manage members |
 | **Owner** | Delete project |
 
 `GET /api/projects/:id` returns `currentUserRole`. UI uses `useProjectPermissions(projectId)` for `canEditTickets`, `canManageColumns`, and `canManageMembers`.
 
-New members are assigned **Member** on invite or add. Role changes are not exposed in the UI yet.
+New members are assigned **Member** when added. Role changes are not exposed in the UI yet.
 
 ## Data model
 
@@ -149,7 +137,6 @@ Core entities in `prisma/schema.prisma`:
 | **Column** | Board lane (name + order); tickets sit in one column |
 | **Ticket** | Work item — number, title, priority, labels, column |
 | **Comment** | Message on a ticket |
-| **Invitation** | Pending email invite with accept token |
 
 ## Testing
 
@@ -165,4 +152,4 @@ API guard tests mock `next-auth` and Prisma; validation tests use real Zod schem
 
 ## Tech stack
 
-Next.js 15 (App Router) · React 19 · TypeScript · PostgreSQL · Prisma · NextAuth · TanStack React Query · Zustand · axios · Zod · Vitest · Tailwind CSS v4 · shadcn/ui · @dnd-kit · Brevo
+Next.js 15 (App Router) · React 19 · TypeScript · PostgreSQL · Prisma · NextAuth · TanStack React Query · Zustand · axios · Zod · Vitest · Tailwind CSS v4 · shadcn/ui · @dnd-kit

@@ -1,7 +1,5 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import Board from "@/app/components/Board";
 import Members from "@/app/components/Members";
 import { MemberSelection } from "../../types";
@@ -45,19 +43,8 @@ export default function ProjectPage({
     }
   }, [project, addProject]);
 
-  const inviteMutation = useMutation({
-    mutationFn: async (email: string) => {
-      await axios.post(`/api/projects/${project?.id}/invite`, { email });
-    },
-    onSuccess: () => {
-      setInviteEmail("");
-      setOpen(false);
-    },
-  });
-
   const handleInviteSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    inviteMutation.mutate(inviteEmail);
   };
 
   if (isLoading)
@@ -124,10 +111,10 @@ export default function ProjectPage({
                   </Button>
                   <Button
                     className="bg-gradient-to-r from-[#649C9E] to-[#527f81] text-white hover:from-[#527f81] hover:to-[#3d6061] cursor-pointer w-full sm:w-auto transition-all duration-300"
-                    disabled={inviteMutation.isPending || !inviteEmail}
+                    disabled={!inviteEmail}
                     type="submit"
                   >
-                    {inviteMutation.isPending ? "Adding..." : "Add Member"}
+                    Add Member
                   </Button>
                 </DialogFooter>
               </form>

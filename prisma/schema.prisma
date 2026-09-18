@@ -87,11 +87,6 @@ enum ProjectTemplate {
   CUSTOMER_SERVICE
 }
 
-enum InvitationStatus {
-  pending
-  accepted
-}
-
 enum Role {
   OWNER
   ADMIN
@@ -159,7 +154,6 @@ model Project {
   createdBy     User        @relation("ProjectCreatedBy", fields: [userId], references: [id])
   userId        String
   members       ProjectMember[]
-  invitations   Invitation[]
   comments      Comment[]
 }
 
@@ -172,14 +166,4 @@ model ProjectMember {
   role      Role     @default(MEMBER)
 
   @@unique([projectId, userId])
-}
-
-model Invitation {
-  id        String   @id @default(cuid())
-  email     String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId String
-  token     String   @unique
-  status    InvitationStatus @default(pending)
-  createdAt DateTime @default(now())
 }

@@ -99,15 +99,6 @@ export const AddMembersSchema = z.object({
 });
 export type AddMembersInput = z.infer<typeof AddMembersSchema>;
 
-export const SendInviteSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
-});
-export type SendInviteInput = z.infer<typeof SendInviteSchema>;
-
 export const CreateCommentSchema = z.object({
   content: trimmedString(5_000, "Comment"),
 });

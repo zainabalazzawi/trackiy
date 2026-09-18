@@ -5,8 +5,6 @@ import { useProjects } from "@/app/hooks/useProjects";
 import { columns } from "./columns";
 import { Project } from "@/app/types";
 import { DataTable } from "./data-table";
-import { Suspense } from "react";
-import InviteHandler from "./InviteHandler";
 import { LoadingState } from "../components/LoadingState";
 import SearchInput from "../components/SearchInput";
 import {
@@ -78,10 +76,6 @@ const ProjectsPage = () => {
       <div className="bg-gradient-to-br from-white to-slate-50/30 border border-slate-200/80 overflow-hidden">
         <DataTable columns={columns} data={filteredProjects || []} />
       </div>
-
-      <Suspense fallback={null}>
-        <InviteHandler />
-      </Suspense>
     </div>
   );
 };
