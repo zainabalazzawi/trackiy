@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { fail, ok } from "@/app/api/_lib/writeResult";
+import { fail, ok } from "@/app/domain/writeResult";
 
 /** Column must exist and belong to the project. */
 export const requireProjectColumn = async (

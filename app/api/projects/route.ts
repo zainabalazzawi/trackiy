@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { requireSession } from "../_lib/guards";
-import { parseJson } from "../_lib/validation";
-import { CreateProjectSchema } from "../_lib/schemas";
-import { boardLane } from "../_lib/boardLane";
+import { requireSession } from "../httpHelpers/guards";
+import { parseJson } from "../httpHelpers/validation";
+import { CreateProjectSchema } from "../httpHelpers/schemas";
+import { boardLane } from "@/app/domain/boardLane";
 
 const DEFAULT_TEMPLATE_LANES = [
   "Ready to Development",

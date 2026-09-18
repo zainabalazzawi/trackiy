@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { parseJson } from "@/app/api/_lib/validation";
-import { SignupSchema } from "@/app/api/_lib/schemas";
+import { parseJson } from "@/app/api/httpHelpers/validation";
+import { SignupSchema } from "@/app/api/httpHelpers/schemas";
 
 export async function POST(request: Request) {
   try {

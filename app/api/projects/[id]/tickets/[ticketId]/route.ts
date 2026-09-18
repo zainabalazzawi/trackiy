@@ -3,12 +3,12 @@ import { NextResponse } from "next/server";
 import {
   requireProjectAccess,
   requireProjectPermission,
-} from "@/app/api/_lib/guards";
-import { parseJson } from "@/app/api/_lib/validation";
-import { UpdateTicketSchema } from "@/app/api/_lib/schemas";
-import { ticketInclude } from "@/app/api/_lib/ticketInclude";
-import { ticketWrite } from "@/app/api/_lib/ticketWrite";
-import { writeErrorResponse } from "@/app/api/_lib/writeHttp";
+} from "@/app/api/httpHelpers/guards";
+import { parseJson } from "@/app/api/httpHelpers/validation";
+import { UpdateTicketSchema } from "@/app/api/httpHelpers/schemas";
+import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
+import { ticketWrite } from "@/app/domain/ticketWrite";
+import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 
 export async function GET(
   request: Request,

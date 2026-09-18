@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
-import { SignupSchema, type SignupInput } from "@/app/api/_lib/schemas";
+import { SignupSchema, type SignupInput } from "@/app/api/httpHelpers/schemas";
 
 const SignupForm = ({ onSuccess, redirectUrl }: { onSuccess?: () => void; redirectUrl?: string }) => {
   const form = useForm<SignupInput>({

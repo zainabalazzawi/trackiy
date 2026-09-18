@@ -82,7 +82,7 @@ Each project has **four roles** — Viewer, Member, Admin, Owner. The creator is
 
 | Path | Purpose |
 | ---- | ------- |
-| `app/api/` | REST routes; shared guards and Zod schemas in `api/_lib/` |
+| `app/api/` | REST routes; shared guards and Zod schemas in `api/httpHelpers/` |
 | `app/components/` | Feature UI — board, tickets, comments, auth forms |
 | `app/hooks/` | React Query hooks (`useProjects`, `useTickets`, …) |
 | `app/projects/`, `app/items/` | Page routes |
@@ -112,7 +112,7 @@ Mutations invalidate the relevant query keys so the UI stays in sync.
 
 ## Permissions
 
-Roles and rules live in `lib/permissions.ts`. Routes call `app/api/_lib/guards.ts`.
+Roles and rules live in `lib/permissions.ts`. Routes call `app/api/httpHelpers/guards.ts`.
 
 | Role | Can |
 | ---- | --- |
@@ -145,8 +145,8 @@ Unit tests use **Vitest** (`vitest.config.mts`). Run `npm run test` for watch mo
 | Test file | What it covers |
 | --------- | -------------- |
 | `lib/permissions.test.ts` | `roleAtLeast` and `hasPermission` for every role/permission pair |
-| `app/api/_lib/guards.test.ts` | Session and project access guards (`requireSession`, `getProjectRole`, `requireProjectRole`, `requireProjectPermission`, `requireProjectAccess`) |
-| `app/api/_lib/validation.test.ts` | JSON body and query-string parsing (`parseJson`, `parseQuery`) |
+| `app/api/httpHelpers/guards.test.ts` | Session and project access guards (`requireSession`, `getProjectRole`, `requireProjectRole`, `requireProjectPermission`, `requireProjectAccess`) |
+| `app/api/httpHelpers/validation.test.ts` | JSON body and query-string parsing (`parseJson`, `parseQuery`) |
 
 API guard tests mock `next-auth` and Prisma; validation tests use real Zod schemas. Shared assertions live in `test/helpers.ts`.
 

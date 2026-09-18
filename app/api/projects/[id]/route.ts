@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import {
   requireProjectAccess,
   requireProjectPermission,
-} from "@/app/api/_lib/guards";
+} from "@/app/api/httpHelpers/guards";
 
 export async function GET(
   request: Request,

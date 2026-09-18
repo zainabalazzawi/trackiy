@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { requireProjectPermission } from "@/app/api/_lib/guards";
-import { parseJson } from "@/app/api/_lib/validation";
-import { UpdateCommentSchema } from "@/app/api/_lib/schemas";
+import { requireProjectPermission } from "@/app/api/httpHelpers/guards";
+import { parseJson } from "@/app/api/httpHelpers/validation";
+import { UpdateCommentSchema } from "@/app/api/httpHelpers/schemas";
 
 export async function PATCH(
   request: Request,

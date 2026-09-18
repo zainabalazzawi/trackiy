@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { boardLane } from "@/app/api/_lib/boardLane";
+import { boardLane } from "@/app/domain/boardLane";
 import type {
   CreateTicketInput,
   TicketFieldPatch,
-} from "@/app/api/_lib/schemas";
-import { requireProjectColumn } from "@/app/api/_lib/projectColumn";
-import { ticketInclude } from "@/app/api/_lib/ticketInclude";
-import { fail, ok, type WriteResult } from "@/app/api/_lib/writeResult";
+} from "@/app/api/httpHelpers/schemas";
+import { requireProjectColumn } from "@/app/domain/projectColumn";
+import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
+import { fail, ok, type WriteResult } from "@/app/domain/writeResult";
 
 export type TicketWriteCode = "NOT_FOUND";
 

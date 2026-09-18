@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { requireProjectColumn } from "@/app/api/_lib/projectColumn";
-import { fail, ok, type WriteResult } from "@/app/api/_lib/writeResult";
+import { requireProjectColumn } from "@/app/domain/projectColumn";
+import { fail, ok, type WriteResult } from "@/app/domain/writeResult";
 
 export type BoardLaneCode = "NOT_FOUND" | "NOT_EMPTY" | "INVALID_REORDER";
 

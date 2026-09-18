@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { requireProjectPermission } from "@/app/api/_lib/guards";
-import { parseJson } from "@/app/api/_lib/validation";
-import { UpdateColumnSchema } from "@/app/api/_lib/schemas";
-import { boardLane } from "@/app/api/_lib/boardLane";
-import { writeErrorResponse } from "@/app/api/_lib/writeHttp";
+import { requireProjectPermission } from "@/app/api/httpHelpers/guards";
+import { parseJson } from "@/app/api/httpHelpers/validation";
+import { UpdateColumnSchema } from "@/app/api/httpHelpers/schemas";
+import { boardLane } from "@/app/domain/boardLane";
+import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 
 export async function PATCH(
   request: Request,

@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
-import { requireSession } from "../../_lib/guards";
-import { parseQuery } from "../../_lib/validation";
-import { SearchTicketsQuerySchema } from "../../_lib/schemas";
+import { requireSession } from "../../httpHelpers/guards";
+import { parseQuery } from "../../httpHelpers/validation";
+import { SearchTicketsQuerySchema } from "../../httpHelpers/schemas";
 
 export async function GET(request: NextRequest) {
   try {

@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import type { CreateTicketInput } from "@/app/api/_lib/schemas";
+import type { CreateTicketInput } from "@/app/api/httpHelpers/schemas";
 import type { Column, Ticket } from "@/app/types";
 import {
   deleteTicketFromSnapshot,

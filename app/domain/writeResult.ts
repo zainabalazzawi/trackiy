@@ -1,4 +1,4 @@
-/** Shared ok/fail Result shape used by boardLane and ticketWrite. */
+/** Shared ok/fail Result shape used by domain write modules. */
 export type WriteResult<T, C extends string> =
   | { ok: true; data: T }
   | { ok: false; code: C; message: string };

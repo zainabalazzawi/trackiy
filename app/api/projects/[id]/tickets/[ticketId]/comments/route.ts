@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 import {
   requireProjectAccess,
   requireProjectPermission,
-} from "@/app/api/_lib/guards";
-import { parseJson } from "@/app/api/_lib/validation";
-import { CreateCommentSchema } from "@/app/api/_lib/schemas";
+} from "@/app/api/httpHelpers/guards";
+import { parseJson } from "@/app/api/httpHelpers/validation";
+import { CreateCommentSchema } from "@/app/api/httpHelpers/schemas";
 
 export async function GET(
   request: Request,
