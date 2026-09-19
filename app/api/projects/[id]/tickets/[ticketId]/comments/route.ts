@@ -6,6 +6,8 @@ import {
 } from "@/app/api/httpHelpers/guards";
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { CreateCommentSchema } from "@/app/api/httpHelpers/schemas";
+import { commentWrite } from "@/app/domain/commentWrite";
+import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 
 export async function GET(
   request: Request,
@@ -59,27 +61,16 @@ export async function POST(
 
     const body = await parseJson(request, CreateCommentSchema);
     if (!body.ok) return body.response;
-    const { content } = body.data;
 
-    const comment = await prisma.comment.create({
-      data: {
-        content,
-        ticketId,
-        userId: session.user.id,
-        projectId,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
-        },
-      },
-    });
+    const created = await commentWrite.create(
+      projectId,
+      ticketId,
+      session.user.id,
+      body.data
+    );
+    if (!created.ok) return writeErrorResponse(created);
 
-    return NextResponse.json(comment);
+    return NextResponse.json(created.data);
   } catch (error) {
     console.error("Error creating comment:", error);
     return NextResponse.json(

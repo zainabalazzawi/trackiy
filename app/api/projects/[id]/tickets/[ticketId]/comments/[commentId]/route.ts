@@ -1,8 +1,9 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { requireProjectPermission } from "@/app/api/httpHelpers/guards";
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { UpdateCommentSchema } from "@/app/api/httpHelpers/schemas";
+import { commentWrite } from "@/app/domain/commentWrite";
+import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 
 export async function PATCH(
   request: Request,
@@ -17,42 +18,17 @@ export async function PATCH(
 
     const body = await parseJson(request, UpdateCommentSchema);
     if (!body.ok) return body.response;
-    const { content } = body.data;
 
-    const comment = await prisma.comment.findUnique({
-      where: {
-        id: commentId,
-        ticketId,
-        projectId,
-      },
-      select: { userId: true },
-    });
+    const updated = await commentWrite.patch(
+      projectId,
+      ticketId,
+      commentId,
+      session.user.id,
+      body.data
+    );
+    if (!updated.ok) return writeErrorResponse(updated);
 
-    if (!comment) {
-      return NextResponse.json({ error: "Comment not found" }, { status: 404 });
-    }
-
-    if (comment.userId !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    const updatedComment = await prisma.comment.update({
-      where: { id: commentId },
-      data: {
-        content,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
-        },
-      },
-    });
-
-    return NextResponse.json(updatedComment);
+    return NextResponse.json(updated.data);
   } catch (error) {
     console.error("Error updating comment:", error);
     return NextResponse.json(
@@ -73,26 +49,13 @@ export async function DELETE(
     if (!guard.ok) return guard.response;
     const { session } = guard;
 
-    const comment = await prisma.comment.findUnique({
-      where: {
-        id: commentId,
-        ticketId,
-        projectId,
-      },
-      select: { userId: true },
-    });
-
-    if (!comment) {
-      return NextResponse.json({ error: "Comment not found" }, { status: 404 });
-    }
-
-    if (comment.userId !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    await prisma.comment.delete({
-      where: { id: commentId },
-    });
+    const deleted = await commentWrite.delete(
+      projectId,
+      ticketId,
+      commentId,
+      session.user.id
+    );
+    if (!deleted.ok) return writeErrorResponse(deleted);
 
     return NextResponse.json({ message: "Comment deleted successfully" });
   } catch (error) {
