@@ -1,5 +1,5 @@
 /** Shared ok/fail Result shape used by product modules. */
-export type OpResult<T, C extends string> =
+export type ProductResult<T, C extends string> =
   | { ok: true; data: T }
   | { ok: false; code: C; message: string };
 

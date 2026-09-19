@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { requireProjectPermission } from "@/app/api/httpHelpers/guards";
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { UpdateColumnSchema } from "@/app/api/httpHelpers/schemas";
-import { boardLane } from "@/app/product/boardLane";
-import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
+import { boardLanes } from "@/app/product/boardLanes";
+import { errorResponse } from "@/app/api/httpHelpers/resultHttp";
 
 export async function PATCH(
   request: Request,
@@ -19,10 +19,10 @@ export async function PATCH(
     if (!body.ok) return body.response;
     const { name, order } = body.data;
 
-    const result = await boardLane.rename(projectId, columnId, name, {
+    const result = await boardLanes.rename(projectId, columnId, name, {
       ...(typeof order === "number" ? { order } : {}),
     });
-    if (!result.ok) return writeErrorResponse(result);
+    if (!result.ok) return errorResponse(result);
 
     return NextResponse.json(result.data);
   } catch (error) {
@@ -44,8 +44,8 @@ export async function DELETE(
     const guard = await requireProjectPermission(projectId, "manage_columns");
     if (!guard.ok) return guard.response;
 
-    const result = await boardLane.delete(projectId, columnId);
-    if (!result.ok) return writeErrorResponse(result);
+    const result = await boardLanes.delete(projectId, columnId);
+    if (!result.ok) return errorResponse(result);
 
     return NextResponse.json({ success: true, deletedColumn: result.data });
   } catch (error) {

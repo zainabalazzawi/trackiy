@@ -1,16 +1,15 @@
 import { prisma } from "@/lib/prisma";
-import { boardLane } from "@/app/product/boardLane";
+import { boardLanes, requireBoardLane } from "@/app/product/boardLanes";
 import type {
   CreateTicketInput,
   TicketFieldPatch,
 } from "@/app/api/httpHelpers/schemas";
-import { requireProjectColumn } from "@/app/product/projectColumn";
 import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
-import { fail, ok, type OpResult } from "@/app/product/result";
+import { fail, ok, type ProductResult } from "@/app/product/result";
 
 export type TicketCode = "NOT_FOUND";
 
-export type TicketResult<T> = OpResult<T, TicketCode>;
+export type TicketResult<T> = ProductResult<T, TicketCode>;
 
 export type TicketPatch = TicketFieldPatch & { columnId?: string };
 
@@ -34,7 +33,7 @@ const create = async (
   reporterId: string,
   input: CreateTicketInput
 ) => {
-  const lane = await boardLane.firstLane(projectId);
+  const lane = await boardLanes.firstLane(projectId);
   if (!lane.ok) return fail("NOT_FOUND", lane.message);
 
   const ticket = await prisma.$transaction(async (tx) => {
@@ -72,7 +71,7 @@ const patch = async (
   const { columnId, ...otherFields } = fields;
 
   if (columnId !== undefined) {
-    const columnResult = await requireProjectColumn(projectId, columnId);
+    const columnResult = await requireBoardLane(projectId, columnId);
     if (!columnResult.ok) return columnResult;
   }
 

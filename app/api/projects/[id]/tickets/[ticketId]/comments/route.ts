@@ -7,7 +7,7 @@ import {
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { CreateCommentSchema } from "@/app/api/httpHelpers/schemas";
 import { comments } from "@/app/product/comments";
-import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
+import { errorResponse } from "@/app/api/httpHelpers/resultHttp";
 
 export async function GET(
   request: Request,
@@ -68,7 +68,7 @@ export async function POST(
       session.user.id,
       body.data
     );
-    if (!created.ok) return writeErrorResponse(created);
+    if (!created.ok) return errorResponse(created);
 
     return NextResponse.json(created.data);
   } catch (error) {

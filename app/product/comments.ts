@@ -4,11 +4,11 @@ import type {
   CreateCommentInput,
   UpdateCommentInput,
 } from "@/app/api/httpHelpers/schemas";
-import { fail, ok, type OpResult } from "@/app/product/result";
+import { fail, ok, type ProductResult } from "@/app/product/result";
 
 export type CommentCode = "NOT_FOUND" | "FORBIDDEN";
 
-export type CommentResult<T> = OpResult<T, CommentCode>;
+export type CommentResult<T> = ProductResult<T, CommentCode>;
 
 const commentInclude = {
   user: {

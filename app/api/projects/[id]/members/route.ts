@@ -7,10 +7,10 @@ import {
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { AddMembersSchema } from "@/app/api/httpHelpers/schemas";
 import {
-  memberInclude,
+  projectMemberInclude,
   projectMembers,
 } from "@/app/product/projectMembers";
-import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
+import { errorResponse } from "@/app/api/httpHelpers/resultHttp";
 import type { ProjectMember, Role } from "@/app/types";
 
 function toMemberResponse(member: {
@@ -37,7 +37,7 @@ export async function GET(
 
     const memberships = await prisma.projectMember.findMany({
       where: { projectId },
-      include: memberInclude,
+      include: projectMemberInclude,
     });
 
     return NextResponse.json(memberships.map(toMemberResponse));
@@ -67,7 +67,7 @@ export async function POST(
     const members = [];
     for (const userId of memberIds) {
       const added = await projectMembers.add(projectId, userId);
-      if (!added.ok) return writeErrorResponse(added);
+      if (!added.ok) return errorResponse(added);
       members.push(added.data);
     }
 

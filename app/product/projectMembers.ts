@@ -1,13 +1,13 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { ProjectMember } from "@/app/types";
-import { fail, ok, type OpResult } from "@/app/product/result";
+import { fail, ok, type ProductResult } from "@/app/product/result";
 
 export type ProjectMemberCode = "ALREADY_MEMBER";
 
-export type ProjectMemberResult<T> = OpResult<T, ProjectMemberCode>;
+export type ProjectMemberResult<T> = ProductResult<T, ProjectMemberCode>;
 
-export const memberInclude = {
+export const projectMemberInclude = {
   user: {
     select: {
       id: true,
@@ -29,7 +29,7 @@ const add = async (
         userId,
         role: "MEMBER",
       },
-      include: memberInclude,
+      include: projectMemberInclude,
     });
     return ok({
       id: member.id,

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { boardLane } from "./boardLane";
-import { createTestProject, createTicketInColumn } from "./boardLane.helpers";
+import { boardLanes } from "./boardLanes";
+import { createTestProject, createTicketInColumn } from "./boardLanes.helpers";
 import { tickets } from "./tickets";
 
 const cleanups: Array<() => Promise<void>> = [];
@@ -21,8 +21,8 @@ async function withProject() {
 describe("tickets", () => {
   it("create numbers tickets from nextTicketSeq and places them on order-0 lane", async () => {
     const { project, user } = await withProject();
-    const backlog = await boardLane.create(project.id, "Backlog");
-    await boardLane.create(project.id, "Doing");
+    const backlog = await boardLanes.create(project.id, "Backlog");
+    await boardLanes.create(project.id, "Doing");
 
     const first = await tickets.create(project.id, user.id, {
       title: "First ticket",
@@ -62,8 +62,8 @@ describe("tickets", () => {
 
   it("patch applies lane and field changes together", async () => {
     const { project } = await withProject();
-    const source = await boardLane.create(project.id, "Todo");
-    const target = await boardLane.create(project.id, "Done");
+    const source = await boardLanes.create(project.id, "Todo");
+    const target = await boardLanes.create(project.id, "Done");
     const ticket = await createTicketInColumn({
       columnId: source.id,
       title: "Move me",
@@ -83,8 +83,8 @@ describe("tickets", () => {
 
   it("patch moves a ticket when only columnId is provided", async () => {
     const { project } = await withProject();
-    const source = await boardLane.create(project.id, "Todo");
-    const target = await boardLane.create(project.id, "Done");
+    const source = await boardLanes.create(project.id, "Todo");
+    const target = await boardLanes.create(project.id, "Done");
     const ticket = await createTicketInColumn({
       columnId: source.id,
       title: "Move me",
@@ -101,7 +101,7 @@ describe("tickets", () => {
 
   it("patch returns NOT_FOUND when the target column is missing from the project", async () => {
     const { project } = await withProject();
-    const source = await boardLane.create(project.id, "Todo");
+    const source = await boardLanes.create(project.id, "Todo");
     const ticket = await createTicketInColumn({
       columnId: source.id,
       title: "Stuck",
@@ -119,7 +119,7 @@ describe("tickets", () => {
 
   it("patch updates fields without changing the lane", async () => {
     const { project } = await withProject();
-    const column = await boardLane.create(project.id, "Todo");
+    const column = await boardLanes.create(project.id, "Todo");
     const ticket = await createTicketInColumn({
       columnId: column.id,
       title: "Original",
@@ -153,7 +153,7 @@ describe("tickets", () => {
 
   it("delete removes the ticket from the project", async () => {
     const { project } = await withProject();
-    const column = await boardLane.create(project.id, "Todo");
+    const column = await boardLanes.create(project.id, "Todo");
     const ticket = await createTicketInColumn({
       columnId: column.id,
       title: "Delete me",

@@ -7,7 +7,7 @@ import { parseJson } from "@/app/api/httpHelpers/validation";
 import { CreateTicketSchema } from "@/app/api/httpHelpers/schemas";
 import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
 import { tickets } from "@/app/product/tickets";
-import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
+import { errorResponse } from "@/app/api/httpHelpers/resultHttp";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
@@ -58,7 +58,7 @@ export async function POST(
       session.user.id,
       body.data
     );
-    if (!created.ok) return writeErrorResponse(created);
+    if (!created.ok) return errorResponse(created);
 
     return NextResponse.json(created.data);
   } catch (error) {

@@ -15,3 +15,7 @@ Five canonical triage roles mapped to GitHub label strings. See `docs/agents/tri
 ### Domain docs
 
 Single-context layout: root `CONTEXT.md` and `docs/adr/`. See `docs/agents/domain.md`.
+
+### Naming
+
+Product module and HTTP helper naming. See `docs/agents/naming.md`.

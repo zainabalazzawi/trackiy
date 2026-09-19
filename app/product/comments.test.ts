@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
-import { boardLane } from "./boardLane";
-import { createTestProject, createTicketInColumn } from "./boardLane.helpers";
+import { boardLanes } from "./boardLanes";
+import { createTestProject, createTicketInColumn } from "./boardLanes.helpers";
 import { comments } from "./comments";
 
 const cleanups: Array<() => Promise<void>> = [];
@@ -16,7 +16,7 @@ afterEach(async () => {
 async function withProjectAndTicket() {
   const ctx = await createTestProject();
   cleanups.push(ctx.cleanup);
-  const column = await boardLane.create(ctx.project.id, "Todo");
+  const column = await boardLanes.create(ctx.project.id, "Todo");
   const ticket = await createTicketInColumn({
     columnId: column.id,
     title: "Commented ticket",

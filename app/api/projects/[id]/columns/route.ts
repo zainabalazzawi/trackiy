@@ -8,8 +8,8 @@ import {
   CreateColumnSchema,
   ReorderColumnsSchema,
 } from "@/app/api/httpHelpers/schemas";
-import { boardLane } from "@/app/product/boardLane";
-import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
+import { boardLanes } from "@/app/product/boardLanes";
+import { errorResponse } from "@/app/api/httpHelpers/resultHttp";
 
 export async function GET(
   request: Request,
@@ -21,7 +21,7 @@ export async function GET(
     const guard = await requireProjectAccess(id);
     if (!guard.ok) return guard.response;
 
-    const columns = await boardLane.list(id);
+    const columns = await boardLanes.list(id);
 
     return NextResponse.json(columns);
   } catch (error) {
@@ -47,7 +47,7 @@ export async function POST(
     if (!body.ok) return body.response;
     const { name } = body.data;
 
-    const column = await boardLane.create(projectId, name);
+    const column = await boardLanes.create(projectId, name);
 
     return NextResponse.json(column);
   } catch (error) {
@@ -72,8 +72,8 @@ export async function PUT(
     const body = await parseJson(request, ReorderColumnsSchema);
     if (!body.ok) return body.response;
 
-    const result = await boardLane.reorder(projectId, body.data.columnIds);
-    if (!result.ok) return writeErrorResponse(result);
+    const result = await boardLanes.reorder(projectId, body.data.columnIds);
+    if (!result.ok) return errorResponse(result);
 
     return NextResponse.json(result.data);
   } catch (error) {

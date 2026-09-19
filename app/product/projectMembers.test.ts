@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
-import { createTestProject } from "./boardLane.helpers";
+import { createTestProject } from "./boardLanes.helpers";
 import { projectMembers } from "./projectMembers";
 
 const cleanups: Array<() => Promise<void>> = [];

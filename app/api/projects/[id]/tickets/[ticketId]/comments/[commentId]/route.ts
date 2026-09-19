@@ -3,7 +3,7 @@ import { requireProjectPermission } from "@/app/api/httpHelpers/guards";
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { UpdateCommentSchema } from "@/app/api/httpHelpers/schemas";
 import { comments } from "@/app/product/comments";
-import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
+import { errorResponse } from "@/app/api/httpHelpers/resultHttp";
 
 export async function PATCH(
   request: Request,
@@ -26,7 +26,7 @@ export async function PATCH(
       session.user.id,
       body.data
     );
-    if (!updated.ok) return writeErrorResponse(updated);
+    if (!updated.ok) return errorResponse(updated);
 
     return NextResponse.json(updated.data);
   } catch (error) {
@@ -55,7 +55,7 @@ export async function DELETE(
       commentId,
       session.user.id
     );
-    if (!deleted.ok) return writeErrorResponse(deleted);
+    if (!deleted.ok) return errorResponse(deleted);
 
     return NextResponse.json({ message: "Comment deleted successfully" });
   } catch (error) {

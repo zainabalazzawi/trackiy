@@ -8,7 +8,7 @@ import { parseJson } from "@/app/api/httpHelpers/validation";
 import { UpdateTicketSchema } from "@/app/api/httpHelpers/schemas";
 import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
 import { tickets } from "@/app/product/tickets";
-import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
+import { errorResponse } from "@/app/api/httpHelpers/resultHttp";
 
 export async function GET(
   request: Request,
@@ -58,7 +58,7 @@ export async function PATCH(
     if (!body.ok) return body.response;
 
     const updated = await tickets.patch(projectId, ticketId, body.data);
-    if (!updated.ok) return writeErrorResponse(updated);
+    if (!updated.ok) return errorResponse(updated);
     return NextResponse.json(updated.data);
   } catch (error) {
     console.error("Error updating ticket:", error);
@@ -80,7 +80,7 @@ export async function DELETE(
     if (!guard.ok) return guard.response;
 
     const deleted = await tickets.delete(projectId, ticketId);
-    if (!deleted.ok) return writeErrorResponse(deleted);
+    if (!deleted.ok) return errorResponse(deleted);
 
     return NextResponse.json({ message: "Ticket deleted successfully" });
   } catch (error) {

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { requireSession } from "../httpHelpers/guards";
 import { parseJson } from "../httpHelpers/validation";
 import { CreateProjectSchema } from "../httpHelpers/schemas";
-import { boardLane } from "@/app/product/boardLane";
+import { boardLanes } from "@/app/product/boardLanes";
 
 const DEFAULT_TEMPLATE_LANES = [
   "Ready to Development",
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       return created;
     });
 
-    await boardLane.createMany(project.id, DEFAULT_TEMPLATE_LANES);
+    await boardLanes.createMany(project.id, DEFAULT_TEMPLATE_LANES);
 
     const completeProject = await prisma.project.findUniqueOrThrow({
       where: { id: project.id },

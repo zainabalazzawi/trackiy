@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { boardLane } from "./boardLane";
-import { createTestProject, createTicketInColumn } from "./boardLane.helpers";
+import { boardLanes } from "./boardLanes";
+import { createTestProject, createTicketInColumn } from "./boardLanes.helpers";
 
 const cleanups: Array<() => Promise<void>> = [];
 
@@ -17,17 +17,17 @@ async function withProject() {
   return ctx;
 }
 
-describe("boardLane", () => {
+describe("boardLanes", () => {
   it("create makes a column listable for the project", async () => {
     const { project } = await withProject();
 
-    const created = await boardLane.create(project.id, "Backlog");
+    const created = await boardLanes.create(project.id, "Backlog");
 
     expect(created.name).toBe("Backlog");
     expect(created.projectId).toBe(project.id);
     expect(created.order).toBe(0);
 
-    const columns = await boardLane.list(project.id);
+    const columns = await boardLanes.list(project.id);
     expect(columns).toEqual([
       expect.objectContaining({
         id: created.id,
@@ -40,18 +40,18 @@ describe("boardLane", () => {
   it("create appends columns after the highest existing order", async () => {
     const { project } = await withProject();
 
-    await boardLane.create(project.id, "Todo");
-    const second = await boardLane.create(project.id, "Doing");
+    await boardLanes.create(project.id, "Todo");
+    const second = await boardLanes.create(project.id, "Doing");
 
     expect(second.order).toBe(1);
-    const columns = await boardLane.list(project.id);
+    const columns = await boardLanes.list(project.id);
     expect(columns.map((c) => c.name)).toEqual(["Todo", "Doing"]);
   });
 
   it("createMany creates template lanes in the given order", async () => {
     const { project } = await withProject();
 
-    const created = await boardLane.createMany(project.id, [
+    const created = await boardLanes.createMany(project.id, [
       "Ready to Development",
       "In Development",
       "Done",
@@ -63,7 +63,7 @@ describe("boardLane", () => {
       { name: "Done", order: 2 },
     ]);
 
-    const columns = await boardLane.list(project.id);
+    const columns = await boardLanes.list(project.id);
     expect(columns.map((c) => c.name)).toEqual([
       "Ready to Development",
       "In Development",
@@ -73,56 +73,56 @@ describe("boardLane", () => {
 
   it("rename updates the column name returned by list", async () => {
     const { project } = await withProject();
-    const created = await boardLane.create(project.id, "Old Name");
+    const created = await boardLanes.create(project.id, "Old Name");
 
-    const renamed = await boardLane.rename(project.id, created.id, "New Name");
+    const renamed = await boardLanes.rename(project.id, created.id, "New Name");
     expect(renamed.ok).toBe(true);
     if (!renamed.ok) return;
     expect(renamed.data.name).toBe("New Name");
 
-    const columns = await boardLane.list(project.id);
+    const columns = await boardLanes.list(project.id);
     expect(columns[0]?.name).toBe("New Name");
   });
 
   it("reorder persists the new column order across list", async () => {
     const { project } = await withProject();
-    const a = await boardLane.create(project.id, "A");
-    const b = await boardLane.create(project.id, "B");
-    const c = await boardLane.create(project.id, "C");
+    const a = await boardLanes.create(project.id, "A");
+    const b = await boardLanes.create(project.id, "B");
+    const c = await boardLanes.create(project.id, "C");
 
-    const reordered = await boardLane.reorder(project.id, [c.id, a.id, b.id]);
+    const reordered = await boardLanes.reorder(project.id, [c.id, a.id, b.id]);
     expect(reordered.ok).toBe(true);
 
-    const columns = await boardLane.list(project.id);
+    const columns = await boardLanes.list(project.id);
     expect(columns.map((col) => col.name)).toEqual(["C", "A", "B"]);
     expect(columns.map((col) => col.order)).toEqual([0, 1, 2]);
   });
 
   it("delete removes an empty column from list", async () => {
     const { project } = await withProject();
-    const created = await boardLane.create(project.id, "Temp");
+    const created = await boardLanes.create(project.id, "Temp");
 
-    const deleted = await boardLane.delete(project.id, created.id);
+    const deleted = await boardLanes.delete(project.id, created.id);
     expect(deleted.ok).toBe(true);
 
-    expect(await boardLane.list(project.id)).toEqual([]);
+    expect(await boardLanes.list(project.id)).toEqual([]);
   });
 
   it("delete refuses when the column still has tickets", async () => {
     const { project } = await withProject();
-    const created = await boardLane.create(project.id, "Busy");
+    const created = await boardLanes.create(project.id, "Busy");
     await createTicketInColumn({
       columnId: created.id,
     });
 
-    const result = await boardLane.delete(project.id, created.id);
+    const result = await boardLanes.delete(project.id, created.id);
     expect(result).toEqual({
       ok: false,
       code: "NOT_EMPTY",
       message: "Cannot delete a column that still has tickets",
     });
 
-    const columns = await boardLane.list(project.id);
+    const columns = await boardLanes.list(project.id);
     expect(columns).toHaveLength(1);
     expect(columns[0]?.id).toBe(created.id);
   });

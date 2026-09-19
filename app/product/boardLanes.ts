@@ -1,10 +1,22 @@
 import { prisma } from "@/lib/prisma";
-import { requireProjectColumn } from "@/app/product/projectColumn";
-import { fail, ok, type OpResult } from "@/app/product/result";
+import { fail, ok, type ProductResult } from "@/app/product/result";
 
 export type BoardLaneCode = "NOT_FOUND" | "NOT_EMPTY" | "INVALID_REORDER";
 
-export type BoardLaneResult<T> = OpResult<T, BoardLaneCode>;
+export type BoardLaneResult<T> = ProductResult<T, BoardLaneCode>;
+
+/** Lane must exist and belong to the project. */
+export const requireBoardLane = async (projectId: string, columnId: string) => {
+  const column = await prisma.column.findUnique({
+    where: { id: columnId },
+  });
+
+  if (!column || column.projectId !== projectId) {
+    return fail("NOT_FOUND", "Column not found");
+  }
+
+  return ok(column);
+};
 
 const create = async (projectId: string, name: string) => {
   const highestOrderColumn = await prisma.column.findFirst({
@@ -75,7 +87,7 @@ const rename = async (
   name: string,
   options?: { order?: number }
 ) => {
-  const existing = await requireProjectColumn(projectId, columnId);
+  const existing = await requireBoardLane(projectId, columnId);
   if (!existing.ok) return existing;
 
   const column = await prisma.column.update({
@@ -119,7 +131,7 @@ const reorder = async (projectId: string, orderedColumnIds: string[]) => {
 };
 
 const deleteColumn = async (projectId: string, columnId: string) => {
-  const existing = await requireProjectColumn(projectId, columnId);
+  const existing = await requireBoardLane(projectId, columnId);
   if (!existing.ok) return existing;
 
   const ticketCount = await prisma.ticket.count({
@@ -137,7 +149,7 @@ const deleteColumn = async (projectId: string, columnId: string) => {
   return ok(deletedColumn);
 };
 
-export const boardLane = {
+export const boardLanes = {
   create,
   createMany,
   list,
