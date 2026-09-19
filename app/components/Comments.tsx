@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useProjectPermissions } from "@/app/hooks/useProjects";
 import {
   useComments,
@@ -30,6 +31,7 @@ interface CommentsProps {
 }
 
 const Comments = ({ projectId, ticketId }: CommentsProps) => {
+  const { data: session } = useSession();
   const { canEditTickets } = useProjectPermissions(projectId);
   const [newComment, setNewComment] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -38,6 +40,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
   const { createComment, isCreating } = useCreateComment(projectId, ticketId);
   const { deleteComment, isDeleting } = useDeleteComment(projectId, ticketId);
   const { updateComment } = useUpdateComment(projectId, ticketId);
+  const currentUserId = session?.user?.id;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,7 +103,11 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
             <p>No comments yet. Be the first to add one!</p>
           </div>
         ) : (
-          comments.map((comment) => (
+          comments.map((comment) => {
+            const canManageComment =
+              canEditTickets && currentUserId === comment.user.id;
+
+            return (
             <div
               key={comment.id}
               className="flex flex-col gap-3 p-4 bg-gray-50"
@@ -126,7 +133,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
                     {formatDate(comment.createdAt)}
                   </span>
                 </div>
-                {canEditTickets && (
+                {canManageComment && (
                 <div>
                   <Button
                     variant="ghost"
@@ -141,7 +148,7 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
                 )}
               </div>
               <div className="ml-5">
-                {canEditTickets ? (
+                {canManageComment ? (
                 <EditableField
                   value={comment.content}
                   onSave={(value) => handleUpdateComment(comment.id, value)}
@@ -152,7 +159,8 @@ const Comments = ({ projectId, ticketId }: CommentsProps) => {
                 )}
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
