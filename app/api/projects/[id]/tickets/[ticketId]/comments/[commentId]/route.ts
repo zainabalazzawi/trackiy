@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireProjectPermission } from "@/app/api/httpHelpers/guards";
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { UpdateCommentSchema } from "@/app/api/httpHelpers/schemas";
-import { commentWrite } from "@/app/domain/commentWrite";
+import { comments } from "@/app/product/comments";
 import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 
 export async function PATCH(
@@ -19,7 +19,7 @@ export async function PATCH(
     const body = await parseJson(request, UpdateCommentSchema);
     if (!body.ok) return body.response;
 
-    const updated = await commentWrite.patch(
+    const updated = await comments.patch(
       projectId,
       ticketId,
       commentId,
@@ -49,7 +49,7 @@ export async function DELETE(
     if (!guard.ok) return guard.response;
     const { session } = guard;
 
-    const deleted = await commentWrite.delete(
+    const deleted = await comments.delete(
       projectId,
       ticketId,
       commentId,

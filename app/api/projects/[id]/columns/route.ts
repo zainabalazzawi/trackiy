@@ -8,7 +8,7 @@ import {
   CreateColumnSchema,
   ReorderColumnsSchema,
 } from "@/app/api/httpHelpers/schemas";
-import { boardLane } from "@/app/domain/boardLane";
+import { boardLane } from "@/app/product/boardLane";
 import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 
 export async function GET(

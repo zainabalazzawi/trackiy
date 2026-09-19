@@ -8,8 +8,8 @@ import { parseJson } from "@/app/api/httpHelpers/validation";
 import { AddMembersSchema } from "@/app/api/httpHelpers/schemas";
 import {
   memberInclude,
-  projectMemberWrite,
-} from "@/app/domain/projectMemberWrite";
+  projectMembers,
+} from "@/app/product/projectMembers";
 import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 import type { ProjectMember, Role } from "@/app/types";
 
@@ -66,7 +66,7 @@ export async function POST(
 
     const members = [];
     for (const userId of memberIds) {
-      const added = await projectMemberWrite.add(projectId, userId);
+      const added = await projectMembers.add(projectId, userId);
       if (!added.ok) return writeErrorResponse(added);
       members.push(added.data);
     }

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { createTestProject } from "./boardLane.helpers";
-import { projectMemberWrite } from "./projectMemberWrite";
+import { projectMembers } from "./projectMembers";
 
 const cleanups: Array<() => Promise<void>> = [];
 
@@ -31,12 +31,12 @@ async function createOtherUser() {
   return other;
 }
 
-describe("projectMemberWrite", () => {
+describe("projectMembers", () => {
   it("add stores a MEMBER for the given user", async () => {
     const { project } = await withProject();
     const other = await createOtherUser();
 
-    const added = await projectMemberWrite.add(project.id, other.id);
+    const added = await projectMembers.add(project.id, other.id);
 
     expect(added.ok).toBe(true);
     if (!added.ok) return;
@@ -55,10 +55,10 @@ describe("projectMemberWrite", () => {
     const { project } = await withProject();
     const other = await createOtherUser();
 
-    const first = await projectMemberWrite.add(project.id, other.id);
+    const first = await projectMembers.add(project.id, other.id);
     expect(first.ok).toBe(true);
 
-    const duplicate = await projectMemberWrite.add(project.id, other.id);
+    const duplicate = await projectMembers.add(project.id, other.id);
     expect(duplicate).toEqual({
       ok: false,
       code: "ALREADY_MEMBER",

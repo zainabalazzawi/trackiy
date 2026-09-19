@@ -1,16 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import { boardLane } from "@/app/domain/boardLane";
+import { boardLane } from "@/app/product/boardLane";
 import type {
   CreateTicketInput,
   TicketFieldPatch,
 } from "@/app/api/httpHelpers/schemas";
-import { requireProjectColumn } from "@/app/domain/projectColumn";
+import { requireProjectColumn } from "@/app/product/projectColumn";
 import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
-import { fail, ok, type WriteResult } from "@/app/domain/writeResult";
+import { fail, ok, type OpResult } from "@/app/product/result";
 
-export type TicketWriteCode = "NOT_FOUND";
+export type TicketCode = "NOT_FOUND";
 
-export type TicketWriteResult<T> = WriteResult<T, TicketWriteCode>;
+export type TicketResult<T> = OpResult<T, TicketCode>;
 
 export type TicketPatch = TicketFieldPatch & { columnId?: string };
 
@@ -102,7 +102,7 @@ const deleteTicket = async (projectId: string, ticketId: string) => {
   return ok(deleted);
 };
 
-export const ticketWrite = {
+export const tickets = {
   create,
   patch,
   delete: deleteTicket,

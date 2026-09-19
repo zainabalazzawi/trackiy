@@ -7,7 +7,7 @@ import {
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { UpdateTicketSchema } from "@/app/api/httpHelpers/schemas";
 import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
-import { ticketWrite } from "@/app/domain/ticketWrite";
+import { tickets } from "@/app/product/tickets";
 import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 
 export async function GET(
@@ -57,7 +57,7 @@ export async function PATCH(
     const body = await parseJson(request, UpdateTicketSchema);
     if (!body.ok) return body.response;
 
-    const updated = await ticketWrite.patch(projectId, ticketId, body.data);
+    const updated = await tickets.patch(projectId, ticketId, body.data);
     if (!updated.ok) return writeErrorResponse(updated);
     return NextResponse.json(updated.data);
   } catch (error) {
@@ -79,7 +79,7 @@ export async function DELETE(
     const guard = await requireProjectPermission(projectId, "edit_ticket");
     if (!guard.ok) return guard.response;
 
-    const deleted = await ticketWrite.delete(projectId, ticketId);
+    const deleted = await tickets.delete(projectId, ticketId);
     if (!deleted.ok) return writeErrorResponse(deleted);
 
     return NextResponse.json({ message: "Ticket deleted successfully" });

@@ -6,7 +6,7 @@ import {
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { CreateTicketSchema } from "@/app/api/httpHelpers/schemas";
 import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
-import { ticketWrite } from "@/app/domain/ticketWrite";
+import { tickets } from "@/app/product/tickets";
 import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 import { prisma } from "@/lib/prisma";
 
@@ -53,7 +53,7 @@ export async function POST(
     const body = await parseJson(request, CreateTicketSchema);
     if (!body.ok) return body.response;
 
-    const created = await ticketWrite.create(
+    const created = await tickets.create(
       projectId,
       session.user.id,
       body.data

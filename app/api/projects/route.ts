@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { requireSession } from "../httpHelpers/guards";
 import { parseJson } from "../httpHelpers/validation";
 import { CreateProjectSchema } from "../httpHelpers/schemas";
-import { boardLane } from "@/app/domain/boardLane";
+import { boardLane } from "@/app/product/boardLane";
 
 const DEFAULT_TEMPLATE_LANES = [
   "Ready to Development",

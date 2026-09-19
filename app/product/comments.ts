@@ -4,11 +4,11 @@ import type {
   CreateCommentInput,
   UpdateCommentInput,
 } from "@/app/api/httpHelpers/schemas";
-import { fail, ok, type WriteResult } from "@/app/domain/writeResult";
+import { fail, ok, type OpResult } from "@/app/product/result";
 
-export type CommentWriteCode = "NOT_FOUND" | "FORBIDDEN";
+export type CommentCode = "NOT_FOUND" | "FORBIDDEN";
 
-export type CommentWriteResult<T> = WriteResult<T, CommentWriteCode>;
+export type CommentResult<T> = OpResult<T, CommentCode>;
 
 const commentInclude = {
   user: {
@@ -29,7 +29,7 @@ const requireAuthorComment = async (
   ticketId: string,
   commentId: string,
   actorId: string
-): Promise<CommentWriteResult<{ userId: string }>> => {
+): Promise<CommentResult<{ userId: string }>> => {
   const comment = await prisma.comment.findUnique({
     where: {
       id: commentId,
@@ -55,7 +55,7 @@ const create = async (
   ticketId: string,
   authorId: string,
   input: CreateCommentInput
-): Promise<CommentWriteResult<CommentWithAuthor>> => {
+): Promise<CommentResult<CommentWithAuthor>> => {
   const comment = await prisma.comment.create({
     data: {
       content: input.content,
@@ -75,7 +75,7 @@ const patch = async (
   commentId: string,
   actorId: string,
   input: UpdateCommentInput
-): Promise<CommentWriteResult<CommentWithAuthor>> => {
+): Promise<CommentResult<CommentWithAuthor>> => {
   const existing = await requireAuthorComment(
     projectId,
     ticketId,
@@ -98,7 +98,7 @@ const deleteComment = async (
   ticketId: string,
   commentId: string,
   actorId: string
-): Promise<CommentWriteResult<{ id: string }>> => {
+): Promise<CommentResult<{ id: string }>> => {
   const existing = await requireAuthorComment(
     projectId,
     ticketId,
@@ -114,7 +114,7 @@ const deleteComment = async (
   return ok(deleted);
 };
 
-export const commentWrite = {
+export const comments = {
   create,
   patch,
   delete: deleteComment,

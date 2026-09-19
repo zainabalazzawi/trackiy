@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireProjectPermission } from "@/app/api/httpHelpers/guards";
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { UpdateColumnSchema } from "@/app/api/httpHelpers/schemas";
-import { boardLane } from "@/app/domain/boardLane";
+import { boardLane } from "@/app/product/boardLane";
 import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 
 export async function PATCH(

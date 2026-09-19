@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { requireProjectColumn } from "@/app/domain/projectColumn";
-import { fail, ok, type WriteResult } from "@/app/domain/writeResult";
+import { requireProjectColumn } from "@/app/product/projectColumn";
+import { fail, ok, type OpResult } from "@/app/product/result";
 
 export type BoardLaneCode = "NOT_FOUND" | "NOT_EMPTY" | "INVALID_REORDER";
 
-export type BoardLaneResult<T> = WriteResult<T, BoardLaneCode>;
+export type BoardLaneResult<T> = OpResult<T, BoardLaneCode>;
 
 const create = async (projectId: string, name: string) => {
   const highestOrderColumn = await prisma.column.findFirst({

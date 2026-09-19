@@ -1,11 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { ProjectMember } from "@/app/types";
-import { fail, ok, type WriteResult } from "@/app/domain/writeResult";
+import { fail, ok, type OpResult } from "@/app/product/result";
 
-export type ProjectMemberWriteCode = "ALREADY_MEMBER";
+export type ProjectMemberCode = "ALREADY_MEMBER";
 
-export type ProjectMemberWriteResult<T> = WriteResult<T, ProjectMemberWriteCode>;
+export type ProjectMemberResult<T> = OpResult<T, ProjectMemberCode>;
 
 export const memberInclude = {
   user: {
@@ -21,7 +21,7 @@ export const memberInclude = {
 const add = async (
   projectId: string,
   userId: string
-): Promise<ProjectMemberWriteResult<ProjectMember>> => {
+): Promise<ProjectMemberResult<ProjectMember>> => {
   try {
     const member = await prisma.projectMember.create({
       data: {
@@ -47,6 +47,6 @@ const add = async (
   }
 };
 
-export const projectMemberWrite = {
+export const projectMembers = {
   add,
 };

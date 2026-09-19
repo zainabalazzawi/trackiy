@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { boardLane } from "./boardLane";
 import { createTestProject, createTicketInColumn } from "./boardLane.helpers";
-import { ticketWrite } from "./ticketWrite";
+import { tickets } from "./tickets";
 
 const cleanups: Array<() => Promise<void>> = [];
 
@@ -18,13 +18,13 @@ async function withProject() {
   return ctx;
 }
 
-describe("ticketWrite", () => {
+describe("tickets", () => {
   it("create numbers tickets from nextTicketSeq and places them on order-0 lane", async () => {
     const { project, user } = await withProject();
     const backlog = await boardLane.create(project.id, "Backlog");
     await boardLane.create(project.id, "Doing");
 
-    const first = await ticketWrite.create(project.id, user.id, {
+    const first = await tickets.create(project.id, user.id, {
       title: "First ticket",
     });
     expect(first.ok).toBe(true);
@@ -37,7 +37,7 @@ describe("ticketWrite", () => {
     expect(first.data.description).toBeNull();
     expect(first.data.assigneeId).toBeNull();
 
-    const second = await ticketWrite.create(project.id, user.id, {
+    const second = await tickets.create(project.id, user.id, {
       title: "Second ticket",
     });
     expect(second.ok).toBe(true);
@@ -50,7 +50,7 @@ describe("ticketWrite", () => {
   it("create returns NOT_FOUND when the project has no order-0 lane", async () => {
     const { project, user } = await withProject();
 
-    const result = await ticketWrite.create(project.id, user.id, {
+    const result = await tickets.create(project.id, user.id, {
       title: "Orphan",
     });
     expect(result).toEqual({
@@ -69,7 +69,7 @@ describe("ticketWrite", () => {
       title: "Move me",
     });
 
-    const moved = await ticketWrite.patch(project.id, ticket.id, {
+    const moved = await tickets.patch(project.id, ticket.id, {
       columnId: target.id,
       title: "Moved and renamed",
       priority: "HIGH",
@@ -90,7 +90,7 @@ describe("ticketWrite", () => {
       title: "Move me",
     });
 
-    const moved = await ticketWrite.patch(project.id, ticket.id, {
+    const moved = await tickets.patch(project.id, ticket.id, {
       columnId: target.id,
     });
     expect(moved.ok).toBe(true);
@@ -107,7 +107,7 @@ describe("ticketWrite", () => {
       title: "Stuck",
     });
 
-    const result = await ticketWrite.patch(project.id, ticket.id, {
+    const result = await tickets.patch(project.id, ticket.id, {
       columnId: "missing-column",
     });
     expect(result).toEqual({
@@ -125,7 +125,7 @@ describe("ticketWrite", () => {
       title: "Original",
     });
 
-    const updated = await ticketWrite.patch(project.id, ticket.id, {
+    const updated = await tickets.patch(project.id, ticket.id, {
       title: "Updated title",
       priority: "LOW",
       description: "New description",
@@ -141,7 +141,7 @@ describe("ticketWrite", () => {
   it("patch returns NOT_FOUND when the ticket is missing from the project", async () => {
     const { project } = await withProject();
 
-    const result = await ticketWrite.patch(project.id, "missing-ticket", {
+    const result = await tickets.patch(project.id, "missing-ticket", {
       title: "Nope",
     });
     expect(result).toEqual({
@@ -159,12 +159,12 @@ describe("ticketWrite", () => {
       title: "Delete me",
     });
 
-    const deleted = await ticketWrite.delete(project.id, ticket.id);
+    const deleted = await tickets.delete(project.id, ticket.id);
     expect(deleted.ok).toBe(true);
     if (!deleted.ok) return;
     expect(deleted.data.id).toBe(ticket.id);
 
-    const stillThere = await ticketWrite.patch(project.id, ticket.id, {
+    const stillThere = await tickets.patch(project.id, ticket.id, {
       title: "ghost",
     });
     expect(stillThere.ok).toBe(false);
@@ -173,7 +173,7 @@ describe("ticketWrite", () => {
   it("delete returns NOT_FOUND for a missing ticket", async () => {
     const { project } = await withProject();
 
-    const result = await ticketWrite.delete(project.id, "missing-ticket");
+    const result = await tickets.delete(project.id, "missing-ticket");
     expect(result).toEqual({
       ok: false,
       code: "NOT_FOUND",

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { boardLane } from "./boardLane";
 import { createTestProject, createTicketInColumn } from "./boardLane.helpers";
-import { commentWrite } from "./commentWrite";
+import { comments } from "./comments";
 
 const cleanups: Array<() => Promise<void>> = [];
 
@@ -37,11 +37,11 @@ async function createOtherUser() {
   return other;
 }
 
-describe("commentWrite", () => {
+describe("comments", () => {
   it("create stores a comment authored by the given user", async () => {
     const { project, user, ticket } = await withProjectAndTicket();
 
-    const created = await commentWrite.create(
+    const created = await comments.create(
       project.id,
       ticket.id,
       user.id,
@@ -62,7 +62,7 @@ describe("commentWrite", () => {
 
   it("patch lets the author update their comment", async () => {
     const { project, user, ticket } = await withProjectAndTicket();
-    const created = await commentWrite.create(
+    const created = await comments.create(
       project.id,
       ticket.id,
       user.id,
@@ -71,7 +71,7 @@ describe("commentWrite", () => {
     expect(created.ok).toBe(true);
     if (!created.ok) return;
 
-    const updated = await commentWrite.patch(
+    const updated = await comments.patch(
       project.id,
       ticket.id,
       created.data.id,
@@ -87,7 +87,7 @@ describe("commentWrite", () => {
 
   it("delete lets the author remove their comment", async () => {
     const { project, user, ticket } = await withProjectAndTicket();
-    const created = await commentWrite.create(
+    const created = await comments.create(
       project.id,
       ticket.id,
       user.id,
@@ -96,7 +96,7 @@ describe("commentWrite", () => {
     expect(created.ok).toBe(true);
     if (!created.ok) return;
 
-    const deleted = await commentWrite.delete(
+    const deleted = await comments.delete(
       project.id,
       ticket.id,
       created.data.id,
@@ -106,7 +106,7 @@ describe("commentWrite", () => {
     if (!deleted.ok) return;
     expect(deleted.data.id).toBe(created.data.id);
 
-    const again = await commentWrite.patch(
+    const again = await comments.patch(
       project.id,
       ticket.id,
       created.data.id,
@@ -124,7 +124,7 @@ describe("commentWrite", () => {
     const { project, user, ticket } = await withProjectAndTicket();
     const other = await createOtherUser();
 
-    const created = await commentWrite.create(
+    const created = await comments.create(
       project.id,
       ticket.id,
       user.id,
@@ -133,7 +133,7 @@ describe("commentWrite", () => {
     expect(created.ok).toBe(true);
     if (!created.ok) return;
 
-    const result = await commentWrite.patch(
+    const result = await comments.patch(
       project.id,
       ticket.id,
       created.data.id,
@@ -151,7 +151,7 @@ describe("commentWrite", () => {
     const { project, user, ticket } = await withProjectAndTicket();
     const other = await createOtherUser();
 
-    const created = await commentWrite.create(
+    const created = await comments.create(
       project.id,
       ticket.id,
       user.id,
@@ -160,7 +160,7 @@ describe("commentWrite", () => {
     expect(created.ok).toBe(true);
     if (!created.ok) return;
 
-    const result = await commentWrite.delete(
+    const result = await comments.delete(
       project.id,
       ticket.id,
       created.data.id,
@@ -176,7 +176,7 @@ describe("commentWrite", () => {
   it("patch returns NOT_FOUND when the comment is missing", async () => {
     const { project, user, ticket } = await withProjectAndTicket();
 
-    const result = await commentWrite.patch(
+    const result = await comments.patch(
       project.id,
       ticket.id,
       "missing-comment",
@@ -193,7 +193,7 @@ describe("commentWrite", () => {
   it("delete returns NOT_FOUND when the comment is missing", async () => {
     const { project, user, ticket } = await withProjectAndTicket();
 
-    const result = await commentWrite.delete(
+    const result = await comments.delete(
       project.id,
       ticket.id,
       "missing-comment",

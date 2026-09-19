@@ -1,5 +1,5 @@
-/** Shared ok/fail Result shape used by domain write modules. */
-export type WriteResult<T, C extends string> =
+/** Shared ok/fail Result shape used by product modules. */
+export type OpResult<T, C extends string> =
   | { ok: true; data: T }
   | { ok: false; code: C; message: string };
 

@@ -6,7 +6,7 @@ import {
 } from "@/app/api/httpHelpers/guards";
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { CreateCommentSchema } from "@/app/api/httpHelpers/schemas";
-import { commentWrite } from "@/app/domain/commentWrite";
+import { comments } from "@/app/product/comments";
 import { writeErrorResponse } from "@/app/api/httpHelpers/writeHttp";
 
 export async function GET(
@@ -62,7 +62,7 @@ export async function POST(
     const body = await parseJson(request, CreateCommentSchema);
     if (!body.ok) return body.response;
 
-    const created = await commentWrite.create(
+    const created = await comments.create(
       projectId,
       ticketId,
       session.user.id,
