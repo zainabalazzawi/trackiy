@@ -6,7 +6,7 @@ import {
 } from "@/app/api/httpHelpers/guards";
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { UpdateTicketSchema } from "@/app/api/httpHelpers/schemas";
-import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
+import { mapTicket, ticketInclude } from "@/app/product/ticketShape";
 import { tickets } from "@/app/product/tickets";
 import { errorResponse } from "@/app/api/httpHelpers/resultHttp";
 
@@ -34,7 +34,7 @@ export async function GET(
       return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
     }
 
-    return NextResponse.json(ticket);
+    return NextResponse.json(mapTicket(ticket));
   } catch (error) {
     console.error("Error fetching ticket:", error);
     return NextResponse.json(

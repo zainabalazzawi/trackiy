@@ -13,7 +13,7 @@ export const columns: ColumnDef<Ticket>[] = [
       return (
         <div className="flex flex-row gap-2 text-sm">
           <Link
-            href={`/projects/${ticket.column.project.id}/tickets/${ticket.id}`}
+            href={`/projects/${ticket.projectId}/tickets/${ticket.id}`}
             className="font-light hover:underline text-lime-900"
           >
             {ticket.ticketNumber}
@@ -58,7 +58,7 @@ export const columns: ColumnDef<Ticket>[] = [
       const ticket = row.original;
       return (
         <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-          {ticket.column.name}
+          {ticket.columnName}
         </Badge>
       );
     },

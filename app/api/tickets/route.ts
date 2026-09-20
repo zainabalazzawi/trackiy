@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/lib/auth";
+import { mapTickets, ticketInclude } from "@/app/product/ticketShape";
 
 export async function GET() {
   try {
@@ -15,7 +16,7 @@ export async function GET() {
     }
 
     // Get all tickets from projects where user is a member or creator
-    const tickets = await prisma.ticket.findMany({
+    const rows = await prisma.ticket.findMany({
       where: {
         column: {
           project: {
@@ -34,27 +35,11 @@ export async function GET() {
           }
         }
       },
-      include: {
-        assignee: { select: { id: true, name: true, email: true, image: true } },
-        reporter: { select: { id: true, name: true, email: true, image: true } },
-        column: {
-          include: {
-            project: {
-              select: { 
-                id: true, 
-                name: true, 
-                key: true,
-                type: true,
-                category: true
-              }
-            }
-          }
-        },
-      },
+      include: ticketInclude,
       orderBy: { updatedAt: "desc" },
     });
 
-    return NextResponse.json(tickets);
+    return NextResponse.json(mapTickets(rows));
   } catch (error) {
     console.error("Error fetching all tickets:", error);
     return NextResponse.json(

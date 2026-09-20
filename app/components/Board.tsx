@@ -151,10 +151,7 @@ const Board = ({ projectId, selectedMemberId }: BoardProps) => {
               <Lane
                 projectId={projectId}
                 key={lane.id}
-                lane={{
-                  ...lane,
-                  tickets: laneTickets,
-                }}
+                lane={lane}
                 updateLane={updateLane}
                 deleteLane={deleteLane}
                 isDeletingLane={isDeletingLane}

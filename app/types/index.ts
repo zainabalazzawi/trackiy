@@ -32,40 +32,18 @@ export interface ProjectMember {
   };
 }
 
-export interface Ticket {
-  id: string;
-  ticketNumber: string;
-  title: string;
-  description?: string;
-  columnId: string;
-  column: {
-    id: string;
-    name: string;
-    project: {
-      id: string;
-      name: string;
-      key: string;
-    };
-  };
-  priority: Priority;
-  assigneeId?: string | null;
-  assignee?: { id: string; name: string | null; email: string | null; image: string | null } | null;
-  reporterId?: string | null;
-  reporter?: { id: string; name: string | null; email: string | null; image: string | null } | null;
-  labels?: string[];
-  createdAt: string;
-  updatedAt: string;
-  comments?: Comment[];
-}
+import type { Ticket } from "@/app/product/ticketShape";
+export type { Ticket };
 
 export interface Column {
   id: string;
   name: string;
   order: number;
-  /** Present only when a view attaches filtered tickets; lanes GET does not include them. */
-  tickets?: Ticket[];
 }
-export type TicketInput = Omit<Ticket, "id" | "columnId" | "column">;
+export type TicketInput = Omit<
+  Ticket,
+  "id" | "columnId" | "columnName" | "projectId" | "projectName"
+>;
 
 export interface Comment {
   id: string;

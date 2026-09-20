@@ -3,6 +3,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { requireSession } from "../../httpHelpers/guards";
 import { parseQuery } from "../../httpHelpers/validation";
 import { SearchTicketsQuerySchema } from "../../httpHelpers/schemas";
+import { mapTickets, ticketInclude } from "@/app/product/ticketShape";
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
     const { q } = parsed.data;
     const userId = sessionGuard.session.user.id;
 
-    const tickets = await prisma.ticket.findMany({
+    const rows = await prisma.ticket.findMany({
       where: {
         AND: [
           {
@@ -38,22 +39,12 @@ export async function GET(request: NextRequest) {
           },
         ],
       },
-      include: {
-        assignee: { select: { id: true, name: true, email: true, image: true } },
-        reporter: { select: { id: true, name: true, email: true, image: true } },
-        column: {
-          include: {
-            project: {
-              select: { id: true, name: true, key: true },
-            },
-          },
-        },
-      },
+      include: ticketInclude,
       take: 10,
       orderBy: { updatedAt: "desc" },
     });
 
-    return NextResponse.json(tickets);
+    return NextResponse.json(mapTickets(rows));
   } catch (error) {
     console.error("Error searching tickets:", error);
     return NextResponse.json(

@@ -11,7 +11,7 @@ const TicketSearch = () => {
   const router = useRouter();
 
   const handleTicketClick = (ticket: Ticket) => {
-    router.push(`/projects/${ticket.column.project?.id}/tickets/${ticket.id}`);
+    router.push(`/projects/${ticket.projectId}/tickets/${ticket.id}`);
     clearSearch();
   };
 
@@ -43,7 +43,7 @@ const TicketSearch = () => {
                     {result.ticketNumber} &nbsp; {result.title}
                   </div>
                   <span className="text-xs text-gray-700 font-medium">
-                    {result?.column?.project?.name}
+                    {result.projectName}
                   </span>
                 </div>
               ))

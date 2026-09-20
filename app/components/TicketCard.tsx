@@ -43,7 +43,7 @@ const TicketCard = ({
   isDeletingTicket = false,
 }: CardProps) => {
   const router = useRouter();
-  const projectId = ticket.column.project.id;
+  const projectId = ticket.projectId;
   const { members = [] } = useProjectMembers(projectId);
   const { canEditTickets } = useProjectPermissions(projectId);
   const [open, setOpen] = useState(false);
@@ -81,7 +81,7 @@ const TicketCard = ({
   const handleCardClick = () => {
       if (!isCurrentlyDragging) {
             router.push(
-              `/projects/${ticket.column.project.id}/tickets/${ticket.id}`
+              `/projects/${ticket.projectId}/tickets/${ticket.id}`
             );
           }
   };

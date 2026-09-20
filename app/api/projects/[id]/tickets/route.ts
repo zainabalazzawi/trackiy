@@ -5,7 +5,7 @@ import {
 } from "@/app/api/httpHelpers/guards";
 import { parseJson } from "@/app/api/httpHelpers/validation";
 import { CreateTicketSchema } from "@/app/api/httpHelpers/schemas";
-import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
+import { mapTickets, ticketInclude } from "@/app/product/ticketShape";
 import { tickets } from "@/app/product/tickets";
 import { errorResponse } from "@/app/api/httpHelpers/resultHttp";
 import { prisma } from "@/lib/prisma";
@@ -20,7 +20,7 @@ export async function GET(
     const guard = await requireProjectAccess(projectId);
     if (!guard.ok) return guard.response;
 
-    const tickets = await prisma.ticket.findMany({
+    const rows = await prisma.ticket.findMany({
       where: {
         column: {
           projectId: projectId,
@@ -29,7 +29,7 @@ export async function GET(
       include: ticketInclude,
     });
 
-    return NextResponse.json(tickets);
+    return NextResponse.json(mapTickets(rows));
   } catch (error) {
     console.error("Error fetching tickets:", error);
     return NextResponse.json(

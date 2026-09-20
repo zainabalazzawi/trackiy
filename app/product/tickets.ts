@@ -4,7 +4,7 @@ import type {
   CreateTicketInput,
   TicketFieldPatch,
 } from "@/app/api/httpHelpers/schemas";
-import { ticketInclude } from "@/app/api/httpHelpers/ticketInclude";
+import { mapTicket, ticketInclude } from "@/app/product/ticketShape";
 import { fail, ok, type ProductResult } from "@/app/product/result";
 
 export type TicketCode = "NOT_FOUND";
@@ -60,7 +60,7 @@ const create = async (
     });
   });
 
-  return ok(ticket);
+  return ok(mapTicket(ticket));
 };
 
 const patch = async (
@@ -87,7 +87,7 @@ const patch = async (
     include: ticketInclude,
   });
 
-  return ok(updated);
+  return ok(mapTicket(updated));
 };
 
 const deleteTicket = async (projectId: string, ticketId: string) => {

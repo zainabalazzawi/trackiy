@@ -17,7 +17,7 @@ const ItemsPage = () => {
   const { projects, isLoading: projectsLoading } = useProjects();
 
   const laneNames = [
-    ...new Set(tickets?.map((ticket) => ticket.column.name) ?? []),
+    ...new Set(tickets?.map((ticket) => ticket.columnName) ?? []),
   ].sort();
 
   // Build assignee filter options from the same relation used by the table.
@@ -59,7 +59,7 @@ const ItemsPage = () => {
     // Project filter
     if (selectedProjects.length > 0) {
       filtered = filtered.filter((ticket: Ticket) =>
-        selectedProjects.includes(ticket.column.project.id)
+        selectedProjects.includes(ticket.projectId)
       );
     }
 
@@ -74,7 +74,7 @@ const ItemsPage = () => {
     // Status filter (lane name from column)
     if (selectedStatuses.length > 0) {
       filtered = filtered.filter((ticket: Ticket) =>
-        selectedStatuses.includes(ticket.column.name)
+        selectedStatuses.includes(ticket.columnName)
       );
     }
 
